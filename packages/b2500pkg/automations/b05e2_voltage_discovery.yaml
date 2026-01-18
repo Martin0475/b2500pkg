@@ -22,7 +22,7 @@ automation:
                 "unit_of_measurement": "mV",
                 "value_template": "{{ value.split('c0=')[1].split(',')[0] }}",
                 "unique_id": "sensor.b2500_05_extern2_zelle01",
-                "object_id": "b2500_05_extern2_zelle01",
+                "default_entity_id": "b2500_05_extern2_zelle01",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -41,7 +41,7 @@ automation:
                 "unit_of_measurement": "mV",
                 "value_template": "{{ value.split('c1=')[1].split(',')[0] }}",
                 "unique_id": "sensor.b2500_05_extern2_zelle02",
-                "object_id": "b2500_05_extern2_zelle02",
+                "default_entity_id": "b2500_05_extern2_zelle02",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -60,7 +60,7 @@ automation:
                 "unit_of_measurement": "mV",
                 "value_template": "{{ value.split('c2=')[1].split(',')[0] }}",
                 "unique_id": "sensor.b2500_05_extern2_zelle03",
-                "object_id": "b2500_05_extern2_zelle03",
+                "default_entity_id": "b2500_05_extern2_zelle03",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -79,7 +79,7 @@ automation:
                 "unit_of_measurement": "mV",
                 "value_template": "{{ value.split('c3=')[1].split(',')[0] }}",
                 "unique_id": "sensor.b2500_05_extern2_zelle04",
-                "object_id": "b2500_05_extern2_zelle04",
+                "default_entity_id": "b2500_05_extern2_zelle04",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -98,7 +98,7 @@ automation:
                 "unit_of_measurement": "mV",
                 "value_template": "{{ value.split('c4=')[1].split(',')[0] }}",
                 "unique_id": "sensor.b2500_05_extern2_zelle05",
-                "object_id": "b2500_05_extern2_zelle05",
+                "default_entity_id": "b2500_05_extern2_zelle05",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -117,7 +117,7 @@ automation:
                 "unit_of_measurement": "mV",
                 "value_template": "{{ value.split('c5=')[1].split(',')[0] }}",
                 "unique_id": "sensor.b2500_05_extern2_zelle06",
-                "object_id": "b2500_05_extern2_zelle06",
+                "default_entity_id": "b2500_05_extern2_zelle06",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -136,7 +136,7 @@ automation:
                 "unit_of_measurement": "mV",
                 "value_template": "{{ value.split('c6=')[1].split(',')[0] }}",
                 "unique_id": "sensor.b2500_05_extern2_zelle07",
-                "object_id": "b2500_05_extern2_zelle07",
+                "default_entity_id": "b2500_05_extern2_zelle07",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -155,7 +155,7 @@ automation:
                 "unit_of_measurement": "mV",
                 "value_template": "{{ value.split('c7=')[1].split(',')[0] }}",
                 "unique_id": "sensor.b2500_05_extern2_zelle08",
-                "object_id": "b2500_05_extern2_zelle08",
+                "default_entity_id": "b2500_05_extern2_zelle08",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -174,7 +174,7 @@ automation:
                 "unit_of_measurement": "mV",
                 "value_template": "{{ value.split('c8=')[1].split(',')[0] }}",
                 "unique_id": "sensor.b2500_05_extern2_zelle09",
-                "object_id": "b2500_05_extern2_zelle09",
+                "default_entity_id": "b2500_05_extern2_zelle09",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -193,7 +193,7 @@ automation:
                 "unit_of_measurement": "mV",
                 "value_template": "{{ value.split('c9=')[1].split(',')[0] }}",
                 "unique_id": "sensor.b2500_05_extern2_zelle10",
-                "object_id": "b2500_05_extern2_zelle10",
+                "default_entity_id": "b2500_05_extern2_zelle10",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -212,7 +212,7 @@ automation:
                 "unit_of_measurement": "mV",
                 "value_template": "{{ value.split('ca=')[1].split(',')[0] }}",
                 "unique_id": "sensor.b2500_05_extern2_zelle11",
-                "object_id": "b2500_05_extern2_zelle11",
+                "default_entity_id": "b2500_05_extern2_zelle11",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -231,7 +231,7 @@ automation:
                 "unit_of_measurement": "mV",
                 "value_template": "{{ value.split('cb=')[1].split(',')[0] }}",
                 "unique_id": "sensor.b2500_05_extern2_zelle12",
-                "object_id": "b2500_05_extern2_zelle12",
+                "default_entity_id": "b2500_05_extern2_zelle12",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -250,7 +250,7 @@ automation:
                 "unit_of_measurement": "mV",
                 "value_template": "{{ value.split('cc=')[1].split(',')[0] }}",
                 "unique_id": "sensor.b2500_05_extern2_zelle13",
-                "object_id": "b2500_05_extern2_zelle13",
+                "default_entity_id": "b2500_05_extern2_zelle13",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -269,7 +269,7 @@ automation:
                 "unit_of_measurement": "mV",
                 "value_template": "{{ value.split('cd=')[1].split(',')[0] }}",
                 "unique_id": "sensor.b2500_05_extern2_zelle14",
-                "object_id": "b2500_05_extern2_zelle14",
+                "default_entity_id": "b2500_05_extern2_zelle14",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -288,7 +288,7 @@ automation:
                 "unit_of_measurement": "mV",
                 "value_template": "{{ value.split('ce=')[1].split(',')[0] }}",
                 "unique_id": "sensor.b2500_05_extern2_zelle15",
-                "object_id": "b2500_05_extern2_zelle15",
+                "default_entity_id": "b2500_05_extern2_zelle15",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -307,7 +307,7 @@ automation:
                 "unit_of_measurement": "mV",
                 "value_template": "{{ value.split('cf=')[1].split(',')[0] }}",
                 "unique_id": "sensor.b2500_05_extern2_zelle16",
-                "object_id": "b2500_05_extern2_zelle16",
+                "default_entity_id": "b2500_05_extern2_zelle16",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
