@@ -317,7 +317,7 @@ script:
                     {% set pv_mode = states('sensor.b2500_' ~ id_str ~ '_p2') | float(0) | int %} 
                     {% set passthrough = (pv_mode == 2) %}
                     {% set pv_mode3 = (pv_mode == 3) or (pv_mode == 0 and soc == 100) %}
-                    {% set output_act = is_state('sensor.b2500_' ~ id_str ~ '_o2', '1') %}
+                    {% set output_act = is_state('sensor.b2500_' ~ id_str ~ '_o1', '1') %}
                     {% if enabled > 0 and timer_enabled and (output_act or passthrough) %}
                       {% set entry = {'id': i, 'soc': soc, 'soc_rounded': soc_rounded, 'pt': passthrough, 'pvm3': pv_mode3, 'sp_rounded': sp_rounded, 'max_limit': max_limit, 'both_outputs': both_outputs} %}
                       {% set ns.batteries_list = ns.batteries_list + [entry] %}
@@ -348,8 +348,8 @@ script:
             - variables:
                 target: "{{ states('input_number.zeropower_target_value') | int }}"
                 curr_diff: >-
-                  {{ (states('sensor.zeropower_measure_load') | float(0) | int) -
-                  (target) }}
+                  {{ ((states('sensor.zeropower_measure_load') | float(0) | int) -
+                  (target)) * 1.1 }}
                 p_master_candidate: "{{ power_master + curr_diff }}"
                 min_limit: "{{ states('input_number.zeropower_min_limit') | int }}"
                 master_max_limit: "{{ useable_batteries_list[0].max_limit if useable_batteries_list|length>0 else 0 }}"
@@ -552,9 +552,25 @@ script:
                           - data:
                               topic: "{{ current_topic }}"
                               payload: "{{ current_payload }}"
-                              qos: "1"
+                              qos: "0"
                             action: mqtt.publish
                             alias: Sende MQTT an aktuelle Batterie
+                          - delay:
+                              hours: 0
+                              minutes: 0
+                              seconds: 3
+                              milliseconds: 0
+                          - data:
+                              topic: "{{ current_topic }}"
+                              payload: "cd=01"
+                              qos: "0"
+                            action: mqtt.publish
+
+
+
+
+
+
                   enabled: true
               enabled: true
             - target:
