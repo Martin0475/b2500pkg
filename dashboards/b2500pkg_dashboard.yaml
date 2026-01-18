@@ -5,7 +5,7 @@ views:
         cards:
           - type: heading
             heading_style: title
-            heading: 'B2500 Package 2025-09-17 (Bugfix: Zeropower Skript)'
+            heading: 'B2500 Package 2025-01-19 (Sensor Discovery: Object_id ersetzt)'
             grid_options:
               columns: 12
               rows: 1
