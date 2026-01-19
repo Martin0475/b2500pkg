@@ -5,7 +5,9 @@ views:
         cards:
           - type: heading
             heading_style: title
-            heading: 'B2500 Package 2025-01-19 (Sensor Discovery: Object_id ersetzt)'
+            heading: >-
+              B2500 Package 2025-09-17 (Bugfix: MQTT Discovery default_entity_id
+              )
             grid_options:
               columns: 12
               rows: 1
@@ -2010,6 +2012,7 @@ views:
               - entity: sensor.b2500_02_pt
               - entity: sensor.b2500_03_pt
               - entity: sensor.b2500_04_pt
+              - entity: sensor.b2500_05_pt
             state_color: true
             title: 'Solarerzeugung '
             columns: 4
@@ -2026,6 +2029,8 @@ views:
               - entity: sensor.b2500_03_w2
               - entity: sensor.b2500_04_w1
               - entity: sensor.b2500_04_w2
+              - entity: sensor.b2500_05_w1
+              - entity: sensor.b2500_05_w2
             title: Momentanleistung
             columns: 2
             state_color: true
@@ -2042,6 +2047,8 @@ views:
               - entity: sensor.b2500_03_g2
               - entity: sensor.b2500_04_g1
               - entity: sensor.b2500_04_g2
+              - entity: sensor.b2500_05_g1
+              - entity: sensor.b2500_05_g2
             columns: 2
   - type: sections
     max_columns: 4
@@ -2287,7 +2294,7 @@ views:
                     name: OUT1
               - type: entities
                 entities:
-                  - entity: sensor.b2500_01_cd26i2
+                  - entity: sensor.b2500_01_cd16i2
                     name: OUT2
                   - entity: sensor.b2500_01_cd16c4
                     name: OUT2
@@ -2356,7 +2363,7 @@ views:
                     name: OUT1
               - type: entities
                 entities:
-                  - entity: sensor.b2500_02_cd26i2
+                  - entity: sensor.b2500_02_cd16i2
                     name: OUT2
                   - entity: sensor.b2500_02_cd16c4
                     name: OUT2
@@ -2425,7 +2432,7 @@ views:
                     name: OUT1
               - type: entities
                 entities:
-                  - entity: sensor.b2500_03_cd26i2
+                  - entity: sensor.b2500_01_cd16i2
                     name: OUT2
                   - entity: sensor.b2500_03_cd16c4
                     name: OUT2
@@ -2494,7 +2501,7 @@ views:
                     name: OUT1
               - type: entities
                 entities:
-                  - entity: sensor.b2500_04_cd26i2
+                  - entity: sensor.b2500_04_cd16i2
                     name: OUT2
                   - entity: sensor.b2500_04_cd16c4
                     name: OUT2
@@ -2563,7 +2570,7 @@ views:
                     name: OUT1
               - type: entities
                 entities:
-                  - entity: sensor.b2500_05_cd26i2
+                  - entity: sensor.b2500_05_cd16i2
                     name: OUT2
                   - entity: sensor.b2500_05_cd16c4
                     name: OUT2
@@ -2632,7 +2639,7 @@ views:
                     name: OUT1
               - type: entities
                 entities:
-                  - entity: sensor.b2500_06_cd26i2
+                  - entity: sensor.b2500_06_cd16i2
                     name: OUT2
                   - entity: sensor.b2500_06_cd16c4
                     name: OUT2
@@ -2701,7 +2708,7 @@ views:
                     name: OUT1
               - type: entities
                 entities:
-                  - entity: sensor.b2500_07_cd26i2
+                  - entity: sensor.b2500_07_cd16i2
                     name: OUT2
                   - entity: sensor.b2500_07_cd16c4
                     name: OUT2
@@ -2770,7 +2777,7 @@ views:
                     name: OUT1
               - type: entities
                 entities:
-                  - entity: sensor.b2500_08_cd26i2
+                  - entity: sensor.b2500_08_cd16i2
                     name: OUT2
                   - entity: sensor.b2500_08_cd16c4
                     name: OUT2
@@ -2839,7 +2846,7 @@ views:
                     name: OUT1
               - type: entities
                 entities:
-                  - entity: sensor.b2500_09_cd26i2
+                  - entity: sensor.b2500_09_cd16i2
                     name: OUT2
                   - entity: sensor.b2500_09_cd16c4
                     name: OUT2
