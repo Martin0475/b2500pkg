@@ -22,8 +22,8 @@ automation:
                 "state_topic": "B2500PKG/B2500_02/CD16",
                 "unit_of_measurement": "V",
                 "value_template": "{{ (value.split('m1=')[1].split(',')[0] | float) / 1000 }}",
-                "unique_id": "sensor.b2500_02_cd16m1",
-                "default_entity_id": "b2500_02_cd16m1",
+                "default_entity_id": "sensor.b2500_02_cd16m1",
+                "unique_id": "b2500_02_cd16m1",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -40,8 +40,8 @@ automation:
                 "state_topic": "B2500PKG/B2500_02/CD16",
                 "unit_of_measurement": "V",
                 "value_template": "{{ (value.split('m2=')[1].split(',')[0] | float) / 1000 }}",
-                "unique_id": "sensor.b2500_02_cd16m2",
-                "default_entity_id": "b2500_02_cd16m2",
+                "default_entity_id": "sensor.b2500_02_cd16m2",
+                "unique_id": "b2500_02_cd16m2",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -59,8 +59,8 @@ automation:
                 "state_topic": "B2500PKG/B2500_02/CD16",
                 "unit_of_measurement": "V",
                 "value_template": "{{ (value.split('i1=')[1].split(',')[0] | float) / 1000 }}",
-                "unique_id": "sensor.b2500_02_cd16i1",
-                "default_entity_id": "b2500_02_cd16i1",
+                "default_entity_id": "sensor.b2500_02_cd16i1",
+                "unique_id": "b2500_02_cd16i1",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -78,8 +78,8 @@ automation:
                 "state_topic": "B2500PKG/B2500_02/CD16",
                 "unit_of_measurement": "V",
                 "value_template": "{{ (value.split('i2=')[1].split(',')[0] | float) /1000 }}",
-                "unique_id": "sensor.b2500_02_cd16i2",
-                "default_entity_id": "b2500_02_cd26i2",
+                "default_entity_id": "sensor.b2500_02_cd16i2",
+                "unique_id": "b2500_02_cd26i2",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -97,8 +97,8 @@ automation:
                 "state_topic": "B2500PKG/B2500_02/CD16",
                 "unit_of_measurement": "A",
                 "value_template": "{{ (value.split('c1=')[1].split(',')[0] | float) / 1000 }}",
-                "unique_id": "sensor.b2500_02_cd16c1",
-                "default_entity_id": "b2500_02_cd16c1",
+                "default_entity_id": "sensor.b2500_02_cd16c1",
+                "unique_id": "b2500_02_cd16c1",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -116,8 +116,8 @@ automation:
                 "state_topic": "B2500PKG/B2500_02/CD16",
                 "unit_of_measurement": "A",
                 "value_template": "{{ (value.split('c2=')[1].split(',')[0] | float) / 1000 }}",
-                "unique_id": "sensor.b2500_02_cd16c2",
-                "default_entity_id": "b2500_02_cd16c2",
+                "default_entity_id": "sensor.b2500_02_cd16c2",
+                "unique_id": "b2500_02_cd16c2",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -135,8 +135,8 @@ automation:
                 "state_topic": "B2500PKG/B2500_02/CD16",
                 "unit_of_measurement": "A",
                 "value_template": "{{ (value.split('c3=')[1].split(',')[0] | float) / 1000 }}",
-                "unique_id": "sensor.b2500_02_cd16c3",
-                "default_entity_id": "b2500_02_cd16c3",
+                "default_entity_id": "sensor.b2500_02_cd16c3",
+                "unique_id": "b2500_02_cd16c3",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -154,8 +154,8 @@ automation:
                 "state_topic": "B2500PKG/B2500_02/CD16",
                 "unit_of_measurement": "A",
                 "value_template": "{{ (value.split('c4=')[1].split(',')[0] | float) / 1000 }}",
-                "unique_id": "sensor.b2500_02_cd16c4",
-                "default_entity_id": "b2500_02_cd16c4",
+                "default_entity_id": "sensor.b2500_02_cd16c4",
+                "unique_id": "b2500_02_cd16c4",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -173,8 +173,8 @@ automation:
                 "state_topic": "B2500PKG/B2500_02/CD16",
                 "unit_of_measurement": "V",
                 "value_template": "{{ (value.split('bv=')[1].split(',')[0] | float) / 1000 }}",
-                "unique_id": "sensor.b2500_02_cd16bv",
-                "default_entity_id": "b2500_02_cd16bv",
+                "default_entity_id": "sensor.b2500_02_cd16bv",
+                "unique_id": "b2500_02_cd16bv",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -192,8 +192,8 @@ automation:
                 "state_topic": "B2500PKG/B2500_02/CD16",
                 "unit_of_measurement": "A",
                 "value_template": "{{ (value.split('bc=')[1].split(',')[0] | float) / 1000 }}",
-                "unique_id": "sensor.b2500_02_cd16bc",
-                "default_entity_id": "b2500_02_cd16bc",
+                "default_entity_id": "sensor.b2500_02_cd16bc",
+                "unique_id": "b2500_02_cd16bc",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -211,8 +211,8 @@ automation:
                 "state_topic": "B2500PKG/B2500_02/CD16",
                 "unit_of_measurement": "W",
                 "value_template": "{{ value.split('bb=')[1].split(',')[0] }}",
-                "unique_id": "sensor.b2500_02_cd16bb",
-                "default_entity_id": "b2500_02_cd16bb",
+                "default_entity_id": "sensor.b2500_02_cd16bb",
+                "unique_id": "b2500_02_cd16bb",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish

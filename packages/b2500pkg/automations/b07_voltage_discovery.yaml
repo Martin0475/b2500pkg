@@ -21,8 +21,8 @@ automation:
                 "device_class": "voltage",
                 "unit_of_measurement": "mV",
                 "value_template": "{{ value.split('a0=')[1].split(',')[0] }}",
-                "unique_id": "sensor.b2500_07_zelle01",
-                "default_entity_id": "b2500_07_zelle01",
+                "default_entity_id": "sensor.b2500_07_zelle01",
+                "unique_id": "b2500_07_zelle01",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -40,8 +40,8 @@ automation:
                 "device_class": "voltage",
                 "unit_of_measurement": "mV",
                 "value_template": "{{ value.split('a1=')[1].split(',')[0] }}",
-                "unique_id": "sensor.b2500_07_zelle02",
-                "default_entity_id": "b2500_07_zelle02",
+                "default_entity_id": "sensor.b2500_07_zelle02",
+                "unique_id": "b2500_07_zelle02",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -59,8 +59,8 @@ automation:
                 "device_class": "voltage",
                 "unit_of_measurement": "mV",
                 "value_template": "{{ value.split('a2=')[1].split(',')[0] }}",
-                "unique_id": "sensor.b2500_07_zelle03",
-                "default_entity_id": "b2500_07_zelle03",
+                "default_entity_id": "sensor.b2500_07_zelle03",
+                "unique_id": "b2500_07_zelle03",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -78,8 +78,8 @@ automation:
                 "device_class": "voltage",
                 "unit_of_measurement": "mV",
                 "value_template": "{{ value.split('a3=')[1].split(',')[0] }}",
-                "unique_id": "sensor.b2500_07_zelle04",
-                "default_entity_id": "b2500_07_zelle04",
+                "default_entity_id": "sensor.b2500_07_zelle04",
+                "unique_id": "b2500_07_zelle04",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -97,8 +97,8 @@ automation:
                 "device_class": "voltage",
                 "unit_of_measurement": "mV",
                 "value_template": "{{ value.split('a4=')[1].split(',')[0] }}",
-                "unique_id": "sensor.b2500_07_zelle05",
-                "default_entity_id": "b2500_07_zelle05",
+                "default_entity_id": "sensor.b2500_07_zelle05",
+                "unique_id": "b2500_07_zelle05",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -116,8 +116,8 @@ automation:
                 "device_class": "voltage",
                 "unit_of_measurement": "mV",
                 "value_template": "{{ value.split('a5=')[1].split(',')[0] }}",
-                "unique_id": "sensor.b2500_07_zelle06",
-                "default_entity_id": "b2500_07_zelle06",
+                "default_entity_id": "sensor.b2500_07_zelle06",
+                "unique_id": "b2500_07_zelle06",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -135,8 +135,8 @@ automation:
                 "device_class": "voltage",
                 "unit_of_measurement": "mV",
                 "value_template": "{{ value.split('a6=')[1].split(',')[0] }}",
-                "unique_id": "sensor.b2500_07_zelle07",
-                "default_entity_id": "b2500_07_zelle07",
+                "default_entity_id": "sensor.b2500_07_zelle07",
+                "unique_id": "b2500_07_zelle07",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -154,8 +154,8 @@ automation:
                 "device_class": "voltage",
                 "unit_of_measurement": "mV",
                 "value_template": "{{ value.split('a7=')[1].split(',')[0] }}",
-                "unique_id": "sensor.b2500_07_zelle08",
-                "default_entity_id": "b2500_07_zelle08",
+                "default_entity_id": "sensor.b2500_07_zelle08",
+                "unique_id": "b2500_07_zelle08",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -173,8 +173,8 @@ automation:
                 "device_class": "voltage",
                 "unit_of_measurement": "mV",
                 "value_template": "{{ value.split('a8=')[1].split(',')[0] }}",
-                "unique_id": "sensor.b2500_07_zelle09",
-                "default_entity_id": "b2500_07_zelle09",
+                "default_entity_id": "sensor.b2500_07_zelle09",
+                "unique_id": "b2500_07_zelle09",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -192,8 +192,8 @@ automation:
                 "device_class": "voltage",
                 "unit_of_measurement": "mV",
                 "value_template": "{{ value.split('a9=')[1].split(',')[0] }}",
-                "unique_id": "sensor.b2500_07_zelle10",
-                "default_entity_id": "b2500_07_zelle10",
+                "default_entity_id": "sensor.b2500_07_zelle10",
+                "unique_id": "b2500_07_zelle10",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -211,8 +211,8 @@ automation:
                 "device_class": "voltage",
                 "unit_of_measurement": "mV",
                 "value_template": "{{ value.split('aa=')[1].split(',')[0] }}",
-                "unique_id": "sensor.b2500_07_zelle11",
-                "default_entity_id": "b2500_07_zelle11",
+                "default_entity_id": "sensor.b2500_07_zelle11",
+                "unique_id": "b2500_07_zelle11",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -230,8 +230,8 @@ automation:
                 "device_class": "voltage",
                 "unit_of_measurement": "mV",
                 "value_template": "{{ value.split('ab=')[1].split(',')[0] }}",
-                "unique_id": "sensor.b2500_07_zelle12",
-                "default_entity_id": "b2500_07_zelle12",
+                "default_entity_id": "sensor.b2500_07_zelle12",
+                "unique_id": "b2500_07_zelle12",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -249,8 +249,8 @@ automation:
                 "device_class": "voltage",
                 "unit_of_measurement": "mV",
                 "value_template": "{{ value.split('ac=')[1].split(',')[0] }}",
-                "unique_id": "sensor.b2500_07_zelle13",
-                "default_entity_id": "b2500_07_zelle13",
+                "default_entity_id": "sensor.b2500_07_zelle13",
+                "unique_id": "b2500_07_zelle13",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -268,8 +268,8 @@ automation:
                 "device_class": "voltage",
                 "unit_of_measurement": "mV",
                 "value_template": "{{ value.split('ad=')[1].split(',')[0] }}",
-                "unique_id": "sensor.b2500_07_zelle14",
-                "default_entity_id": "b2500_07_zelle14",
+                "default_entity_id": "sensor.b2500_07_zelle14",
+                "unique_id": "b2500_07_zelle14",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -287,8 +287,8 @@ automation:
                 "device_class": "voltage",
                 "unit_of_measurement": "mV",
                 "value_template": "{{ value.split('ae=')[1].split(',')[0] }}",
-                "unique_id": "sensor.b2500_07_zelle15",
-                "default_entity_id": "b2500_07_zelle15",
+                "default_entity_id": "sensor.b2500_07_zelle15",
+                "unique_id": "b2500_07_zelle15",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -306,8 +306,8 @@ automation:
                 "device_class": "voltage",
                 "unit_of_measurement": "mV",
                 "value_template": "{{ value.split('af=')[1].split(',')[0] }}",
-                "unique_id": "sensor.b2500_07_zelle16",
-                "default_entity_id": "b2500_07_zelle16",
+                "default_entity_id": "sensor.b2500_07_zelle16",
+                "unique_id": "b2500_07_zelle16",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish

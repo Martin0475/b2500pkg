@@ -22,8 +22,8 @@ automation:
                 "payload_on": "1",
                 "payload_off": "0",
                 "value_template": "{{ ('{:0=8b}'.format(value.split('l0=')[1].split(',')[0] | int(0) )|batch(1)|map('join')|join(' ')).split(' ')[7] }}",
-                "unique_id": "sensor.b2500_04_l0_bit0",
-                "default_entity_id": "b2500_04_l0_bit0",
+                "default_entity_id": "sensor.b2500_04_l0_bit0",
+                "unique_id": "b2500_04_l0_bit0",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -41,8 +41,8 @@ automation:
                 "payload_on": "1",
                 "payload_off": "0",
                 "value_template": "{{ ('{:0=8b}'.format(value.split('l0=')[1].split(',')[0] | int(0) )|batch(1)|map('join')|join(' ')).split(' ')[6] }}",
-                "unique_id": "sensor.b2500_04_l0_bit1",
-                "default_entity_id": "b2500_04_l0_bit1",
+                "default_entity_id": "sensor.b2500_04_l0_bit1",
+                "unique_id": "b2500_04_l0_bit1",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -60,8 +60,8 @@ automation:
                 "payload_on": "1",
                 "payload_off": "0",
                 "value_template": "{{ ('{:0=8b}'.format(value.split('l0=')[1].split(',')[0] | int(0) )|batch(1)|map('join')|join(' ')).split(' ')[5] }}",
-                "unique_id": "sensor.b2500_04_l0_bit2",
-                "default_entity_id": "b2500_04_l0_bit2",
+                "default_entity_id": "sensor.b2500_04_l0_bit2",
+                "unique_id": "b2500_04_l0_bit2",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -79,8 +79,8 @@ automation:
                 "payload_on": "1",
                 "payload_off": "0",
                 "value_template": "{{ ('{:0=8b}'.format(value.split('l0=')[1].split(',')[0] | int(0) )|batch(1)|map('join')|join(' ')).split(' ')[4] }}",
-                "unique_id": "sensor.b2500_04_l0_bit3",
-                "default_entity_id": "b2500_04_l0_bit3",
+                "default_entity_id": "sensor.b2500_04_l0_bit3",
+                "unique_id": "b2500_04_l0_bit3",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -98,8 +98,8 @@ automation:
                 "payload_on": "1",
                 "payload_off": "0",
                 "value_template": "{{ ('{:0=8b}'.format(value.split('l1=')[1].split(',')[0] | int(0) )|batch(1)|map('join')|join(' ')).split(' ')[7] }}",
-                "unique_id": "sensor.b2500_04_l1_bit0",
-                "default_entity_id": "b2500_04_l1_bit0",
+                "default_entity_id": "sensor.b2500_04_l1_bit0",
+                "unique_id": "b2500_04_l1_bit0",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -117,8 +117,8 @@ automation:
                 "payload_on": "1",
                 "payload_off": "0",
                 "value_template": "{{ ('{:0=8b}'.format(value.split('l1=')[1].split(',')[0] | int(0) )|batch(1)|map('join')|join(' ')).split(' ')[6] }}",
-                "unique_id": "sensor.b2500_04_l1_bit1",
-                "default_entity_id": "b2500_04_l1_bit1",
+                "default_entity_id": "sensor.b2500_04_l1_bit1",
+                "unique_id": "b2500_04_l1_bit1",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -136,8 +136,8 @@ automation:
                 "payload_on": "1",
                 "payload_off": "0",
                 "value_template": "{{ ('{:0=8b}'.format(value.split('l1=')[1].split(',')[0] | int(0) )|batch(1)|map('join')|join(' ')).split(' ')[5] }}",
-                "unique_id": "sensor.b2500_04_l1_bit2",
-                "default_entity_id": "b2500_04_l1_bit2",
+                "default_entity_id": "sensor.b2500_04_l1_bit2",
+                "unique_id": "b2500_04_l1_bit2",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -155,8 +155,8 @@ automation:
                 "payload_on": "1",
                 "payload_off": "0",
                 "value_template": "{{ ('{:0=8b}'.format(value.split('l1=')[1].split(',')[0] | int(0) )|batch(1)|map('join')|join(' ')).split(' ')[4] }}",
-                "unique_id": "sensor.b2500_04_l1_bit3",
-                "default_entity_id": "b2500_04_l1_bit3",
+                "default_entity_id": "sensor.b2500_04_l1_bit3",
+                "unique_id": "b2500_04_l1_bit3",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -174,8 +174,8 @@ automation:
                 "payload_on": "1",
                 "payload_off": "0",
                 "value_template": "{{ ('{:0=8b}'.format(value.split('l1=')[1].split(',')[0] | int(0) )|batch(1)|map('join')|join(' ')).split(' ')[3] }}",
-                "unique_id": "sensor.b2500_04_l1_bit4",
-                "default_entity_id": "b2500_04_l1_bit4",
+                "default_entity_id": "sensor.b2500_04_l1_bit4",
+                "unique_id": "b2500_04_l1_bit4",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -193,8 +193,8 @@ automation:
                 "payload_on": "1",
                 "payload_off": "0",
                 "value_template": "{{ ('{:0=8b}'.format(value.split('l1=')[1].split(',')[0] | int(0) )|batch(1)|map('join')|join(' ')).split(' ')[2] }}",
-                "unique_id": "sensor.b2500_04_l1_bit5",
-                "default_entity_id": "b2500_04_l1_bit5",
+                "default_entity_id": "sensor.b2500_04_l1_bit5",
+                "unique_id": "b2500_04_l1_bit5",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -212,8 +212,8 @@ automation:
                 "payload_on": "1",
                 "payload_off": "0",
                 "value_template": "{{ ('{:0=8b}'.format(value.split('l1=')[1].split(',')[0] | int(0) )|batch(1)|map('join')|join(' ')).split(' ')[1] }}",
-                "unique_id": "sensor.b2500_04_l1_bit6",
-                "default_entity_id": "b2500_04_l1_bit6",
+                "default_entity_id": "sensor.b2500_04_l1_bit6",
+                "unique_id": "b2500_04_l1_bit6",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -231,8 +231,8 @@ automation:
                 "payload_on": "1",
                 "payload_off": "0",
                 "value_template": "{{ ('{:0=8b}'.format(value.split('l1=')[1].split(',')[0] | int(0) )|batch(1)|map('join')|join(' ')).split(' ')[0] }}",
-                "unique_id": "sensor.b2500_04_l1_bit7",
-                "default_entity_id": "b2500_04_l1_bit7",
+                "default_entity_id": "sensor.b2500_04_l1_bit7",
+                "unique_id": "b2500_04_l1_bit7",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -250,8 +250,8 @@ automation:
                 "payload_on": "1",
                 "payload_off": "0",
                 "value_template": "{{ value.split('b1=')[1].split(',')[0] }}",
-                "unique_id": "sensor.b2500_04_b1",
-                "default_entity_id": "b2500_04_b1",
+                "default_entity_id": "sensor.b2500_04_b1",
+                "unique_id": "b2500_04_b1",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -269,8 +269,8 @@ automation:
                 "payload_on": "1",
                 "payload_off": "0",
                 "value_template": "{{ value.split('b2=')[1].split(',')[0] }}",
-                "unique_id": "sensor.b2500_04_b2",
-                "default_entity_id": "b2500_04_b2",
+                "default_entity_id": "sensor.b2500_04_b2",
+                "unique_id": "b2500_04_b2",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -286,8 +286,8 @@ automation:
                 "name": "B04 Solar1 Input Status",
                 "state_topic": "B2500PKG/B2500_04/CD01",
                 "value_template": "{{ value.split('p1=')[1].split(',')[0] }}",
-                "unique_id": "sensor.b2500_04_p1",
-                "default_entity_id": "b2500_04_p1",
+                "default_entity_id": "sensor.b2500_04_p1",
+                "unique_id": "b2500_04_p1",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -303,8 +303,8 @@ automation:
                 "name": "B04 Solar2 Input Status",
                 "state_topic": "B2500PKG/B2500_04/CD01",
                 "value_template": "{{ value.split('p2=')[1].split(',')[0] }}",
-                "unique_id": "sensor.b2500_04_p2",
-                "default_entity_id": "b2500_04_p2",
+                "default_entity_id": "sensor.b2500_04_p2",
+                "unique_id": "b2500_04_p2",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -323,8 +323,8 @@ automation:
                 "device_class": "power",
                 "unit_of_measurement": "W",
                 "value_template": "{{ value.split('w1=')[1].split(',')[0] }}",
-                "unique_id": "sensor.b2500_04_w1",
-                "default_entity_id": "b2500_04_w1",
+                "default_entity_id": "sensor.b2500_04_w1",
+                "unique_id": "b2500_04_w1",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -343,8 +343,8 @@ automation:
                 "device_class": "power",
                 "unit_of_measurement": "W",
                 "value_template": "{{ value.split('w2=')[1].split(',')[0] }}",
-                "unique_id": "sensor.b2500_04_w2",
-                "default_entity_id": "b2500_04_w2",
+                "default_entity_id": "sensor.b2500_04_w2",
+                "unique_id": "b2500_04_w2",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -363,8 +363,8 @@ automation:
                 "device_class": "battery",
                 "unit_of_measurement": "%",
                 "value_template": "{{ value.split('pe=')[1].split(',')[0] }}",
-                "unique_id": "sensor.b2500_04_pe",
-                "default_entity_id": "b2500_04_pe",
+                "default_entity_id": "sensor.b2500_04_pe",
+                "unique_id": "b2500_04_pe",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -380,8 +380,8 @@ automation:
                 "name": "B04 Geräteversion",
                 "state_topic": "B2500PKG/B2500_04/CD01",
                 "value_template": "{{ value.split('vv=')[1].split(',')[0] }}",
-                "unique_id": "sensor.b2500_04_vv",
-                "default_entity_id": "b2500_04_vv",
+                "default_entity_id": "sensor.b2500_04_vv",
+                "unique_id": "b2500_04_vv",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -397,8 +397,8 @@ automation:
                 "name": "B04 Gerätesubversion",
                 "state_topic": "B2500PKG/B2500_04/CD01",
                 "value_template": "{{ value.split('sv=')[1].split(',')[0] }}",
-                "unique_id": "sensor.b2500_04_sv",
-                "default_entity_id": "b2500_04_sv",
+                "default_entity_id": "sensor.b2500_04_sv",
+                "unique_id": "b2500_04_sv",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -414,8 +414,8 @@ automation:
                 "name": "B04 Ladeeinstellung",
                 "state_topic": "B2500PKG/B2500_04/CD01",
                 "value_template": "{{ value.split('cs=')[1].split(',')[0].replace('0','Laden und Entladen gleichzeitig').replace('1','Laden vor dem Entladen') }}",
-                "unique_id": "sensor.b2500_04_cs",
-                "default_entity_id": "b2500_04_cs",
+                "default_entity_id": "sensor.b2500_04_cs",
+                "unique_id": "b2500_04_cs",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -431,8 +431,8 @@ automation:
                 "name": "B04 Entladeeinstellung",
                 "state_topic": "B2500PKG/B2500_04/CD01",
                 "value_template": "{% set parts = value.split('cd=') %}{% if parts | length > 1 %}{% set cd = parts[1].split(',')[0] %}{% if cd == '0' %}Ausgang PV1 und PV2 off{% elif cd == '1' %}Ausgang PV1 on, PV2 off{% elif cd == '2' %}Ausgang PV1 off, PV2 on{% elif cd == '3' %}Ausgang PV1 und PV2 on{% else %}unbekannt{% endif %}{% else %}unbekannt{% endif %}",
-                "unique_id": "sensor.b2500_04_cd",
-                "default_entity_id": "b2500_04_cd",
+                "default_entity_id": "sensor.b2500_04_cd",
+                "unique_id": "b2500_04_cd",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -448,8 +448,8 @@ automation:
                 "name": "B04 AM",
                 "state_topic": "B2500PKG/B2500_04/CD01",
                 "value_template": "{{ value.split('am=')[1].split(',')[0] }}",
-                "unique_id": "sensor.b2500_04_am",
-                "default_entity_id": "b2500_04_am",
+                "default_entity_id": "sensor.b2500_04_am",
+                "unique_id": "b2500_04_am",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -465,8 +465,8 @@ automation:
                 "name": "B04 Output Status 1",
                 "state_topic": "B2500PKG/B2500_04/CD01",
                 "value_template": "{{ value.split('o1=')[1].split(',')[0] }}",
-                "unique_id": "sensor.b2500_04_o1",
-                "default_entity_id": "b2500_04_o1",
+                "default_entity_id": "sensor.b2500_04_o1",
+                "unique_id": "b2500_04_o1",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -482,8 +482,8 @@ automation:
                 "name": "B04 Output Status 2",
                 "state_topic": "B2500PKG/B2500_04/CD01",
                 "value_template": "{{ value.split('o2=')[1].split(',')[0] }}",
-                "unique_id": "sensor.b2500_04_o2",
-                "default_entity_id": "b2500_04_o2",
+                "default_entity_id": "sensor.b2500_04_o2",
+                "unique_id": "b2500_04_o2",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -499,8 +499,8 @@ automation:
                 "name": "B04 DOD Entnehmbare Kapazität in %",
                 "state_topic": "B2500PKG/B2500_04/CD01",
                 "value_template": "{{ value.split('do=')[1].split(',')[0] }}",
-                "unique_id": "sensor.b2500_04_do",
-                "default_entity_id": "b2500_04_do",
+                "default_entity_id": "sensor.b2500_04_do",
+                "unique_id": "b2500_04_do",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -516,8 +516,8 @@ automation:
                 "name": "B04 Entladeschwelle",
                 "state_topic": "B2500PKG/B2500_04/CD01",
                 "value_template": "{{ value.split('lv=')[1].split(',')[0] }}",
-                "unique_id": "sensor.b2500_04_lv",
-                "default_entity_id": "b2500_04_lv",
+                "default_entity_id": "sensor.b2500_04_lv",
+                "unique_id": "b2500_04_lv",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -533,8 +533,8 @@ automation:
                 "name": "B04 CJ Scene",
                 "state_topic": "B2500PKG/B2500_04/CD01",
                 "value_template": "{{ value.split('cj=')[1].split(',')[0] }}",
-                "unique_id": "sensor.b2500_04_cj",
-                "default_entity_id": "b2500_04_cj",
+                "default_entity_id": "sensor.b2500_04_cj",
+                "unique_id": "b2500_04_cj",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -553,8 +553,8 @@ automation:
                 "state_class": "measurement",
                 "unit_of_measurement": "Wh",
                 "value_template": "{{ value.split('kn=')[1].split(',')[0] }}",
-                "unique_id": "sensor.b2500_04_kn",
-                "default_entity_id": "b2500_04_kn",
+                "default_entity_id": "sensor.b2500_04_kn",
+                "unique_id": "b2500_04_kn",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -573,8 +573,8 @@ automation:
                 "device_class": "power",
                 "unit_of_measurement": "W",
                 "value_template": "{{ value.split('g1=')[1].split(',')[0] }}",
-                "unique_id": "sensor.b2500_04_g1",
-                "default_entity_id": "b2500_04_g1",
+                "default_entity_id": "sensor.b2500_04_g1",
+                "unique_id": "b2500_04_g1",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -593,8 +593,8 @@ automation:
                 "device_class": "power",
                 "unit_of_measurement": "W",
                 "value_template": "{{ value.split('g2=')[1].split(',')[0] }}",
-                "unique_id": "sensor.b2500_04_g2",
-                "default_entity_id": "b2500_04_g2",
+                "default_entity_id": "sensor.b2500_04_g2",
+                "unique_id": "b2500_04_g2",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -612,8 +612,8 @@ automation:
                 "value_template": "{{ value.split('tl=')[1].split(',')[0] }}",
                 "device_class": "temperature",
                 "unit_of_measurement": "°C",
-                "unique_id": "sensor.b2500_04_tl",
-                "default_entity_id": "b2500_04_tl",
+                "default_entity_id": "sensor.b2500_04_tl",
+                "unique_id": "b2500_04_tl",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -631,8 +631,8 @@ automation:
                 "value_template": "{{ value.split('th=')[1].split(',')[0] }}",
                 "device_class": "temperature",
                 "unit_of_measurement": "°C",
-                "unique_id": "sensor.b2500_04_th",
-                "default_entity_id": "b2500_04_th",
+                "default_entity_id": "sensor.b2500_04_th",
+                "unique_id": "b2500_04_th",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -648,8 +648,8 @@ automation:
                 "name": "B04 Temperaturalarm (Laden)",
                 "state_topic": "B2500PKG/B2500_04/CD01",
                 "value_template": "{{ value.split('tc=')[1].split(',')[0] }}",
-                "unique_id": "sensor.b2500_04_tc",
-                "default_entity_id": "b2500_04_tc",
+                "default_entity_id": "sensor.b2500_04_tc",
+                "unique_id": "b2500_04_tc",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -665,8 +665,8 @@ automation:
                 "name": "B04 Temperaturalarm (Entladen)",
                 "state_topic": "B2500PKG/B2500_04/CD01",
                 "value_template": "{{ value.split('tf=')[1].split(',')[0] }}",
-                "unique_id": "sensor.b2500_04_tf",
-                "default_entity_id": "b2500_04_tf",
+                "default_entity_id": "sensor.b2500_04_tf",
+                "unique_id": "b2500_04_tf",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -682,8 +682,8 @@ automation:
                 "name": "B04 Chip Version",
                 "state_topic": "B2500PKG/B2500_04/CD01",
                 "value_template": "{{ value.split('fc=')[1].split(',')[0] }}",
-                "unique_id": "sensor.b2500_04_fc",
-                "default_entity_id": "b2500_04_fc",
+                "default_entity_id": "sensor.b2500_04_fc",
+                "unique_id": "b2500_04_fc",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -699,8 +699,8 @@ automation:
                 "name": "B04 Geräte ID",
                 "state_topic": "B2500PKG/B2500_04/CD01",
                 "value_template": "{{ value.split('id=')[1].split(',')[0] }}",
-                "unique_id": "sensor.b2500_04_id",
-                "default_entity_id": "b2500_04_id",
+                "default_entity_id": "sensor.b2500_04_id",
+                "unique_id": "b2500_04_id",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -717,8 +717,8 @@ automation:
                 "state_topic": "B2500PKG/B2500_04/CD01",
                 "unit_of_measurement": "%",
                 "value_template": "{{ value.split('a0=')[1].split(',')[0] }}",
-                "unique_id": "sensor.b2500_04_a0",
-                "default_entity_id": "b2500_04_a0",
+                "default_entity_id": "sensor.b2500_04_a0",
+                "unique_id": "b2500_04_a0",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -735,8 +735,8 @@ automation:
                 "state_topic": "B2500PKG/B2500_04/CD01",
                 "unit_of_measurement": "%",
                 "value_template": "{{ value.split('a1=')[1].split(',')[0] }}",
-                "unique_id": "sensor.b2500_04_a1",
-                "default_entity_id": "b2500_04_a1",
+                "default_entity_id": "sensor.b2500_04_a1",
+                "unique_id": "b2500_04_a1",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -753,8 +753,8 @@ automation:
                 "state_topic": "B2500PKG/B2500_04/CD01",
                 "unit_of_measurement": "%",
                 "value_template": "{{ value.split('a2=')[1].split(',')[0] }}",
-                "unique_id": "sensor.b2500_04_a2",
-                "default_entity_id": "b2500_04_a2",
+                "default_entity_id": "sensor.b2500_04_a2",
+                "unique_id": "b2500_04_a2",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -770,8 +770,8 @@ automation:
                 "name": "B04 Timer1 Beginn",
                 "state_topic": "B2500PKG/B2500_04/CD01",
                 "value_template": "{{ value.split('e1=')[1].split(',')[0] }}",
-                "unique_id": "sensor.b2500_04_e1",
-                "default_entity_id": "b2500_04_e1",
+                "default_entity_id": "sensor.b2500_04_e1",
+                "unique_id": "b2500_04_e1",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -787,8 +787,8 @@ automation:
                 "name": "B04 Timer1 Ende",
                 "state_topic": "B2500PKG/B2500_04/CD01",
                 "value_template": "{{ value.split('f1=')[1].split(',')[0] }}",
-                "unique_id": "sensor.b2500_04_f1",
-                "default_entity_id": "b2500_04_f1",
+                "default_entity_id": "sensor.b2500_04_f1",
+                "unique_id": "b2500_04_f1",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -805,8 +805,8 @@ automation:
                 "state_topic": "B2500PKG/B2500_04/CD01",
                 "unit_of_measurement": "W",
                 "value_template": "{{ value.split('h1=')[1].split(',')[0] }}",
-                "unique_id": "sensor.b2500_04_h1",
-                "default_entity_id": "b2500_04_h1",
+                "default_entity_id": "sensor.b2500_04_h1",
+                "unique_id": "b2500_04_h1",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -822,8 +822,8 @@ automation:
                 "name": "B04 Timer2 Beginn",
                 "state_topic": "B2500PKG/B2500_04/CD01",
                 "value_template": "{{ value.split('e2=')[1].split(',')[0] }}",
-                "unique_id": "sensor.b2500_04_e2",
-                "default_entity_id": "b2500_04_e2",
+                "default_entity_id": "sensor.b2500_04_e2",
+                "unique_id": "b2500_04_e2",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -839,8 +839,8 @@ automation:
                 "name": "B04 Timer2 Ende",
                 "state_topic": "B2500PKG/B2500_04/CD01",
                 "value_template": "{{ value.split('f2=')[1].split(',')[0] }}",
-                "unique_id": "sensor.b2500_04_f2",
-                "default_entity_id": "b2500_04_f2",
+                "default_entity_id": "sensor.b2500_04_f2",
+                "unique_id": "b2500_04_f2",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -857,8 +857,8 @@ automation:
                 "state_topic": "B2500PKG/B2500_04/CD01",
                 "unit_of_measurement": "W",
                 "value_template": "{{ value.split('h2=')[1].split(',')[0] }}",
-                "unique_id": "sensor.b2500_04_h2",
-                "default_entity_id": "b2500_04_h2",
+                "default_entity_id": "sensor.b2500_04_h2",
+                "unique_id": "b2500_04_h2",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -874,8 +874,8 @@ automation:
                 "name": "B04 Timer3 Beginn",
                 "state_topic": "B2500PKG/B2500_04/CD01",
                 "value_template": "{{ value.split('e3=')[1].split(',')[0] }}",
-                "unique_id": "sensor.b2500_04_e3",
-                "default_entity_id": "b2500_04_e3",
+                "default_entity_id": "sensor.b2500_04_e3",
+                "unique_id": "b2500_04_e3",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -891,8 +891,8 @@ automation:
               "name": "B04 Timer3 Ende",
               "state_topic": "B2500PKG/B2500_04/CD01",
               "value_template": "{{ value.split('f3=')[1].split(',')[0] }}",
-              "unique_id": "sensor.b2500_04_f3",
-              "default_entity_id": "b2500_04_f3",
+              "default_entity_id": "sensor.b2500_04_f3",
+              "unique_id": "b2500_04_f3",
               "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -909,8 +909,8 @@ automation:
                 "state_topic": "B2500PKG/B2500_04/CD01",
                 "unit_of_measurement": "W",
                 "value_template": "{{ value.split('h3=')[1].split(',')[0] }}",
-                "unique_id": "sensor.b2500_04_h3",
-                "default_entity_id": "b2500_04_h3",
+                "default_entity_id": "sensor.b2500_04_h3",
+                "unique_id": "b2500_04_h3",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -926,8 +926,8 @@ automation:
                 "name": "B04 Timer4 Beginn",
                 "state_topic": "B2500PKG/B2500_04/CD01",
                 "value_template": "{{ value.split('e4=')[1].split(',')[0] }}",
-                "unique_id": "sensor.b2500_04_e4",
-                "default_entity_id": "b2500_04_e4",
+                "default_entity_id": "sensor.b2500_04_e4",
+                "unique_id": "b2500_04_e4",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -943,8 +943,8 @@ automation:
                 "name": "B04 Timer4 Ende",
                 "state_topic": "B2500PKG/B2500_04/CD01",
                 "value_template": "{{ value.split('f4=')[1].split(',')[0] }}",
-                "unique_id": "sensor.b2500_04_f4",
-                "default_entity_id": "b2500_04_f4",
+                "default_entity_id": "sensor.b2500_04_f4",
+                "unique_id": "b2500_04_f4",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -961,8 +961,8 @@ automation:
                 "state_topic": "B2500PKG/B2500_04/CD01",
                 "unit_of_measurement": "W",
                 "value_template": "{{ value.split('h4=')[1].split(',')[0] }}",
-                "unique_id": "sensor.b2500_04_h4",
-                "default_entity_id": "b2500_04_h4",
+                "default_entity_id": "sensor.b2500_04_h4",
+                "unique_id": "b2500_04_h4",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -978,8 +978,8 @@ automation:
                 "name": "B04 Timer5 Beginn",
                 "state_topic": "B2500PKG/B2500_04/CD01",
                 "value_template": "{{ value.split('e5=')[1].split(',')[0] }}",
-                "unique_id": "sensor.b2500_04_e5",
-                "default_entity_id": "b2500_04_e5",
+                "default_entity_id": "sensor.b2500_04_e5",
+                "unique_id": "b2500_04_e5",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -995,8 +995,8 @@ automation:
                 "name": "B04 Timer5 Ende",
                 "state_topic": "B2500PKG/B2500_04/CD01",
                 "value_template": "{{ value.split('f5=')[1].split(',')[0] }}",
-                "unique_id": "sensor.b2500_04_f5",
-                "default_entity_id": "b2500_04_f5",
+                "default_entity_id": "sensor.b2500_04_f5",
+                "unique_id": "b2500_04_f5",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -1013,8 +1013,8 @@ automation:
                 "state_topic": "B2500PKG/B2500_04/CD01",
                 "unit_of_measurement": "W",
                 "value_template": "{{ value.split('h5=')[1].split(',')[0] }}",
-                "unique_id": "sensor.b2500_04_h5",
-                "default_entity_id": "b2500_04_h5",
+                "default_entity_id": "sensor.b2500_04_h5",
+                "unique_id": "b2500_04_h5",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -1032,8 +1032,8 @@ automation:
                 "payload_on": "1",
                 "payload_off": "0",
                 "value_template": "{{ value.split('d1=')[1].split(',')[0] }}",
-                "unique_id": "binary_sensor.b2500_04_d1",
-                "default_entity_id": "b2500_04_d1",
+                "default_entity_id": "binary_sensor.b2500_04_d1",
+                "unique_id": "b2500_04_d1",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -1051,8 +1051,8 @@ automation:
                 "payload_on": "1",
                 "payload_off": "0",
                 "value_template": "{{ value.split('d2=')[1].split(',')[0] }}",
-                "unique_id": "binary_sensor.b2500_04_d2",
-                "default_entity_id": "b2500_04_d2",
+                "default_entity_id": "binary_sensor.b2500_04_d2",
+                "unique_id": "b2500_04_d2",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -1070,8 +1070,8 @@ automation:
                 "payload_on": "1",
                 "payload_off": "0",
                 "value_template": "{{ value.split('d3=')[1].split(',')[0] }}",
-                "unique_id": "binary_sensor.b2500_04_d3",
-                "default_entity_id": "b2500_04_d3",
+                "default_entity_id": "binary_sensor.b2500_04_d3",
+                "unique_id": "b2500_04_d3",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -1089,8 +1089,8 @@ automation:
                 "payload_on": "1",
                 "payload_off": "0",
                 "value_template": "{{ value.split('d4=')[1].split(',')[0] }}",
-                "unique_id": "binary_sensor.b2500_04_d4",
-                "default_entity_id": "b2500_04_d4",
+                "default_entity_id": "binary_sensor.b2500_04_d4",
+                "unique_id": "b2500_04_d4",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -1108,8 +1108,8 @@ automation:
                 "payload_on": "1",
                 "payload_off": "0",
                 "value_template": "{{ value.split('d5=')[1].split(',')[0] }}",
-                "unique_id": "binary_sensor.b2500_04_d5",
-                "default_entity_id": "b2500_04_d5",
+                "default_entity_id": "binary_sensor.b2500_04_d5",
+                "unique_id": "b2500_04_d5",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -1128,8 +1128,8 @@ automation:
                 "device_class": "energy",
                 "unit_of_measurement": "Wh",
                 "value_template": "{{ value.split('bc=')[1].split(',')[0] }}",
-                "unique_id": "sensor.b2500_04_bc",
-                "default_entity_id": "b2500_04_bc",
+                "default_entity_id": "sensor.b2500_04_bc",
+                "unique_id": "b2500_04_bc",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -1148,8 +1148,8 @@ automation:
                 "device_class": "energy",
                 "unit_of_measurement": "Wh",
                 "value_template": "{{ value.split('bs=')[1].split(',')[0] }}",
-                "unique_id": "sensor.b2500_04_bs",
-                "default_entity_id": "b2500_04_bs",
+                "default_entity_id": "sensor.b2500_04_bs",
+                "unique_id": "b2500_04_bs",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -1168,8 +1168,8 @@ automation:
                 "device_class": "energy",
                 "unit_of_measurement": "Wh",
                 "value_template": "{{ value.split('pt=')[1].split(',')[0] }}",
-                "unique_id": "sensor.b2500_04_pt",
-                "default_entity_id": "b2500_04_pt",
+                "default_entity_id": "sensor.b2500_04_pt",
+                "unique_id": "b2500_04_pt",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -1185,8 +1185,8 @@ automation:
                 "name": "B04 Entlademodus Timer/Selbstanpassung",
                 "state_topic": "B2500PKG/B2500_04/CD01",
                 "value_template": "{{ value.split('md=')[1].split(',')[0].replace('0','Timer').replace('1','Selbstanpassung') }}",
-                "unique_id": "sensor.b2500_04_md",
-                "default_entity_id": "b2500_04_md",
+                "default_entity_id": "sensor.b2500_04_md",
+                "unique_id": "b2500_04_md",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -1202,8 +1202,8 @@ automation:
                 "name": "B04 CT Sensor verbunden",
                 "state_topic": "B2500PKG/B2500_04/CD01",
                 "value_template": "{{ value.split('sg=')[1].split(',')[0] }}",
-                "unique_id": "sensor.b2500_04_sg",
-                "default_entity_id": "b2500_04_sg",
+                "default_entity_id": "sensor.b2500_04_sg",
+                "unique_id": "b2500_04_sg",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -1219,8 +1219,8 @@ automation:
                 "name": "B04 SP",
                 "state_topic": "B2500PKG/B2500_04/CD01",
                 "value_template": "{{ value.split('sp=')[1].split(',')[0] }}",
-                "unique_id": "sensor.b2500_04_sp",
-                "default_entity_id": "b2500_04_sp",
+                "default_entity_id": "sensor.b2500_04_sp",
+                "unique_id": "b2500_04_sp",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -1236,8 +1236,8 @@ automation:
                 "name": "B04 ST",
                 "state_topic": "B2500PKG/B2500_04/CD01",
                 "value_template": "{{ value.split('st=')[1].split(',')[0] }}",
-                "unique_id": "sensor.b2500_04_st",
-                "default_entity_id": "b2500_04_st",
+                "default_entity_id": "sensor.b2500_04_st",
+                "unique_id": "b2500_04_st",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -1253,8 +1253,8 @@ automation:
                 "name": "B04 CTCH Kanal",
                 "state_topic": "B2500PKG/B2500_04/CD01",
                 "value_template": "{{ value.split('c0=')[1].split(',')[0] }}",
-                "unique_id": "sensor.b2500_04_c0",
-                "default_entity_id": "b2500_04_c0",
+                "default_entity_id": "sensor.b2500_04_c0",
+                "unique_id": "b2500_04_c0",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -1270,8 +1270,8 @@ automation:
                 "name": "B04 Status CT",
                 "state_topic": "B2500PKG/B2500_04/CD01",
                 "value_template": "{{ value.split('c1=')[1].split(',')[0] }}",
-                "unique_id": "sensor.b2500_04_c1",
-                "default_entity_id": "b2500_04_c1",
+                "default_entity_id": "sensor.b2500_04_c1",
+                "unique_id": "b2500_04_c1",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -1287,8 +1287,8 @@ automation:
                 "name": "B04 IT Tägliche abgegebene Leistung",
                 "state_topic": "B2500PKG/B2500_04/CD01",
                 "value_template": "{{ value.split('it=')[1].split(',')[0] }}",
-                "unique_id": "sensor.b2500_04_it",
-                "default_entity_id": "b2500_04_it",
+                "default_entity_id": "sensor.b2500_04_it",
+                "unique_id": "b2500_04_it",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -1304,8 +1304,8 @@ automation:
                 "name": "B04 Leistungsmessung Phase1",
                 "state_topic": "B2500PKG/B2500_04/CD01",
                 "value_template": "{{ value.split('m0=')[1].split(',')[0] }}",
-                "unique_id": "sensor.b2500_04_m0",
-                "default_entity_id": "b2500_04_m0",
+                "default_entity_id": "sensor.b2500_04_m0",
+                "unique_id": "b2500_04_m0",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -1321,8 +1321,8 @@ automation:
                 "name": "B04 Leistungsmessung Phase2",
                 "state_topic": "B2500PKG/B2500_04/CD01",
                 "value_template": "{{ value.split('m1=')[1].split(',')[0] }}",
-                "unique_id": "sensor.b2500_04_m1",
-                "default_entity_id": "b2500_04_m1",
+                "default_entity_id": "sensor.b2500_04_m1",
+                "unique_id": "b2500_04_m1",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -1338,8 +1338,8 @@ automation:
                 "name": "B04 Leistungsmessung Phase3",
                 "state_topic": "B2500PKG/B2500_04/CD01",
                 "value_template": "{{ value.split('m2=')[1].split(',')[0] }}",
-                "unique_id": "sensor.b2500_04_m2",
-                "default_entity_id": "b2500_04_m2",
+                "default_entity_id": "sensor.b2500_04_m2",
+                "unique_id": "b2500_04_m2",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -1355,8 +1355,8 @@ automation:
                 "name": "B04 M3",
                 "state_topic": "B2500PKG/B2500_04/CD01",
                 "value_template": "{{ value.split('m3=')[1].split(',')[0] }}",
-                "unique_id": "sensor.b2500_04_m3",
-                "default_entity_id": "b2500_04_m3",
+                "default_entity_id": "sensor.b2500_04_m3",
+                "unique_id": "b2500_04_m3",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -1373,8 +1373,8 @@ automation:
                 "state_topic": "B2500PKG/B2500_04/CD01",
                 "unit_of_measurement": "W",
                 "value_template": "{{ value.split('lmo=')[1].split(',')[0] }}",
-                "unique_id": "sensor.b2500_04_lmo",
-                "default_entity_id": "b2500_04_lmo",
+                "default_entity_id": "sensor.b2500_04_lmo",
+                "unique_id": "b2500_04_lmo",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -1391,8 +1391,8 @@ automation:
                 "state_topic": "B2500PKG/B2500_04/CD01",
                 "unit_of_measurement": "W",
                 "value_template": "{{ value.split('lmi=')[1].split(',')[0] }}",
-                "unique_id": "sensor.b2500_04_lmi",
-                "default_entity_id": "b2500_04_lmi",
+                "default_entity_id": "sensor.b2500_04_lmi",
+                "unique_id": "b2500_04_lmi",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
@@ -1408,8 +1408,8 @@ automation:
                 "name": "B04 LMF Gerätebeschränkung",
                 "state_topic": "B2500PKG/B2500_04/CD01",
                 "value_template": "{{ value.split('lmf=')[1].split(',')[0] }}",
-                "unique_id": "sensor.b2500_04_lmf",
-                "default_entity_id": "b2500_04_lmf",
+                "default_entity_id": "sensor.b2500_04_lmf",
+                "unique_id": "b2500_04_lmf",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
