@@ -6,8 +6,8 @@ views:
           - type: heading
             heading_style: title
             heading: >-
-              B2500 Package 2025-09-17 (Bugfix: MQTT Discovery default_entity_id
-              )
+              B2500 Package 2025-09-17 (Erweiterung Smartmeter: EcoTracker
+              hinzugefügt, Seiten auf 9 Speicher erweitert )
             grid_options:
               columns: 12
               rows: 1
@@ -1823,7 +1823,8 @@ views:
                     state_not: '0'
                 card:
                   type: entities
-                  entities: []
+                  entities:
+                    - entity: sensor.b2500_01_tc_dis
                   show_header_toggle: false
               - type: conditional
                 conditions:
@@ -1832,7 +1833,8 @@ views:
                     state_not: '0'
                 card:
                   type: entities
-                  entities: []
+                  entities:
+                    - entity: sensor.b2500_02_tc_dis
                   show_header_toggle: false
               - type: conditional
                 conditions:
@@ -1841,7 +1843,8 @@ views:
                     state_not: '0'
                 card:
                   type: entities
-                  entities: []
+                  entities:
+                    - entity: sensor.b2500_03_tc_dis
                   show_header_toggle: false
               - type: conditional
                 conditions:
@@ -1850,7 +1853,8 @@ views:
                     state_not: '0'
                 card:
                   type: entities
-                  entities: []
+                  entities:
+                    - entity: sensor.b2500_04_tc_dis
                   show_header_toggle: false
               - type: conditional
                 conditions:
@@ -1859,7 +1863,8 @@ views:
                     state_not: '0'
                 card:
                   type: entities
-                  entities: []
+                  entities:
+                    - entity: sensor.b2500_05_tc_dis
                   show_header_toggle: false
               - type: conditional
                 conditions:
@@ -1868,7 +1873,8 @@ views:
                     state_not: '0'
                 card:
                   type: entities
-                  entities: []
+                  entities:
+                    - entity: sensor.b2500_06_tc_dis
                   show_header_toggle: false
               - type: conditional
                 conditions:
@@ -1877,7 +1883,8 @@ views:
                     state_not: '0'
                 card:
                   type: entities
-                  entities: []
+                  entities:
+                    - entity: sensor.b2500_07_tc_dis
                   show_header_toggle: false
               - type: conditional
                 conditions:
@@ -1886,7 +1893,8 @@ views:
                     state_not: '0'
                 card:
                   type: entities
-                  entities: []
+                  entities:
+                    - entity: sensor.b2500_08_tc_dis
                   show_header_toggle: false
               - type: conditional
                 conditions:
@@ -1895,7 +1903,8 @@ views:
                     state_not: '0'
                 card:
                   type: entities
-                  entities: []
+                  entities:
+                    - entity: sensor.b2500_09_tc_dis
                   show_header_toggle: false
   - type: sections
     max_columns: 4
@@ -1914,63 +1923,192 @@ views:
               - entity: input_button.b2500_smartmeter_setzen
             title: Smartmeter
             show_header_toggle: false
-          - show_name: true
-            show_icon: true
-            show_state: true
-            type: glance
-            entities: []
-            columns: 2
-            title: Smartmeter infos (Entitäten fehlen noch !)
-      - type: grid
-        cards:
-          - type: heading
-            heading: Neuer Abschnitt
-          - type: entities
-            entities:
-              - entity: sensor.b2500_01_c0
-              - entity: sensor.b2500_02_c0
-              - entity: sensor.b2500_03_c0
-              - entity: sensor.b2500_04_c0
-              - entity: sensor.b2500_01_c1
-              - entity: sensor.b2500_02_c1
-              - entity: sensor.b2500_03_c1
-              - entity: sensor.b2500_04_c1
-            show_header_toggle: false
-          - type: entities
-            entities:
-              - entity: sensor.b2500_01_it
-              - entity: sensor.b2500_02_it
-              - entity: sensor.b2500_03_it
-              - entity: sensor.b2500_04_it
-              - entity: sensor.b2500_01_m0
-              - entity: sensor.b2500_02_m0
-              - entity: sensor.b2500_03_m0
-              - entity: sensor.b2500_04_m0
-              - entity: sensor.b2500_01_m1
-              - entity: sensor.b2500_02_m1
-              - entity: sensor.b2500_03_m1
-              - entity: sensor.b2500_04_m1
-              - entity: sensor.b2500_01_m2
-              - entity: sensor.b2500_02_m2
-              - entity: sensor.b2500_03_m2
-              - entity: sensor.b2500_04_m2
-              - entity: sensor.b2500_01_m3
-              - entity: sensor.b2500_02_m3
-              - entity: sensor.b2500_03_m3
-              - entity: sensor.b2500_04_m3
-              - entity: sensor.b2500_01_sg
-              - entity: sensor.b2500_02_sg
-              - entity: sensor.b2500_03_sg
-              - entity: sensor.b2500_04_sg
-              - entity: sensor.b2500_01_sp
-              - entity: sensor.b2500_02_sp
-              - entity: sensor.b2500_03_sp
-              - entity: sensor.b2500_04_sp
-              - entity: sensor.b2500_01_st
-              - entity: sensor.b2500_02_st
-              - entity: sensor.b2500_03_st
-              - entity: sensor.b2500_04_st
-            show_header_toggle: false
+          - type: markdown
+            content: >-
+              **Nach setzen des Smartmeter Typs ist evtl ein Restart des
+              Speichers nötig!**
+          - type: vertical-stack
+            cards:
+              - type: conditional
+                conditions:
+                  - condition: state
+                    entity: input_text.b01_mac
+                    state_not: '0'
+                card:
+                  type: entities
+                  entities:
+                    - entity: sensor.b2500_01_ct_t
+                    - entity: sensor.b2500_01_c0
+                    - entity: sensor.b2500_01_c1
+                    - entity: sensor.b2500_01_m0
+                    - entity: sensor.b2500_01_m1
+                    - entity: sensor.b2500_01_m2
+                    - entity: sensor.b2500_01_m3
+                    - entity: sensor.b2500_01_sg
+                    - entity: sensor.b2500_01_sp
+                    - entity: sensor.b2500_01_st
+                    - entity: sensor.b2500_01_it
+                  show_header_toggle: false
+              - type: conditional
+                conditions:
+                  - condition: state
+                    entity: input_text.b02_mac
+                    state_not: '0'
+                card:
+                  type: entities
+                  entities:
+                    - entity: sensor.b2500_02_ct_t
+                    - entity: sensor.b2500_02_c0
+                    - entity: sensor.b2500_02_c1
+                    - entity: sensor.b2500_02_m0
+                    - entity: sensor.b2500_02_m1
+                    - entity: sensor.b2500_02_m2
+                    - entity: sensor.b2500_02_m3
+                    - entity: sensor.b2500_02_sg
+                    - entity: sensor.b2500_02_sp
+                    - entity: sensor.b2500_02_st
+                    - entity: sensor.b2500_02_it
+                  show_header_toggle: false
+              - type: conditional
+                conditions:
+                  - condition: state
+                    entity: input_text.b03_mac
+                    state_not: '0'
+                card:
+                  type: entities
+                  entities:
+                    - entity: sensor.b2500_03_ct_t
+                    - entity: sensor.b2500_03_c0
+                    - entity: sensor.b2500_03_c1
+                    - entity: sensor.b2500_03_m0
+                    - entity: sensor.b2500_03_m1
+                    - entity: sensor.b2500_03_m2
+                    - entity: sensor.b2500_03_m3
+                    - entity: sensor.b2500_03_sg
+                    - entity: sensor.b2500_03_sp
+                    - entity: sensor.b2500_03_st
+                    - entity: sensor.b2500_03_it
+                  show_header_toggle: false
+              - type: conditional
+                conditions:
+                  - condition: state
+                    entity: input_text.b04_mac
+                    state_not: '0'
+                card:
+                  type: entities
+                  entities:
+                    - entity: sensor.b2500_04_ct_t
+                    - entity: sensor.b2500_04_c0
+                    - entity: sensor.b2500_04_c1
+                    - entity: sensor.b2500_04_m0
+                    - entity: sensor.b2500_04_m1
+                    - entity: sensor.b2500_04_m2
+                    - entity: sensor.b2500_04_m3
+                    - entity: sensor.b2500_04_sg
+                    - entity: sensor.b2500_04_sp
+                    - entity: sensor.b2500_04_st
+                    - entity: sensor.b2500_04_it
+                  show_header_toggle: false
+              - type: conditional
+                conditions:
+                  - condition: state
+                    entity: input_text.b05_mac
+                    state_not: '0'
+                card:
+                  type: entities
+                  entities:
+                    - entity: sensor.b2500_05_ct_t
+                    - entity: sensor.b2500_05_c0
+                    - entity: sensor.b2500_05_c1
+                    - entity: sensor.b2500_05_m0
+                    - entity: sensor.b2500_05_m1
+                    - entity: sensor.b2500_05_m2
+                    - entity: sensor.b2500_05_m3
+                    - entity: sensor.b2500_05_sg
+                    - entity: sensor.b2500_05_sp
+                    - entity: sensor.b2500_05_st
+                    - entity: sensor.b2500_05_it
+                  show_header_toggle: false
+              - type: conditional
+                conditions:
+                  - condition: state
+                    entity: input_text.b06_mac
+                    state_not: '0'
+                card:
+                  type: entities
+                  entities:
+                    - entity: sensor.b2500_06_ct_t
+                    - entity: sensor.b2500_06_c0
+                    - entity: sensor.b2500_06_c1
+                    - entity: sensor.b2500_06_m0
+                    - entity: sensor.b2500_06_m1
+                    - entity: sensor.b2500_06_m2
+                    - entity: sensor.b2500_06_m3
+                    - entity: sensor.b2500_06_sg
+                    - entity: sensor.b2500_06_sp
+                    - entity: sensor.b2500_06_st
+                    - entity: sensor.b2500_06_it
+                  show_header_toggle: false
+              - type: conditional
+                conditions:
+                  - condition: state
+                    entity: input_text.b07_mac
+                    state_not: '0'
+                card:
+                  type: entities
+                  entities:
+                    - entity: sensor.b2500_07_ct_t
+                    - entity: sensor.b2500_07_c0
+                    - entity: sensor.b2500_07_c1
+                    - entity: sensor.b2500_07_m0
+                    - entity: sensor.b2500_07_m1
+                    - entity: sensor.b2500_07_m2
+                    - entity: sensor.b2500_07_m3
+                    - entity: sensor.b2500_07_sg
+                    - entity: sensor.b2500_07_sp
+                    - entity: sensor.b2500_07_st
+                    - entity: sensor.b2500_07_it
+                  show_header_toggle: false
+              - type: conditional
+                conditions:
+                  - condition: state
+                    entity: input_text.b08_mac
+                    state_not: '0'
+                card:
+                  type: entities
+                  entities:
+                    - entity: sensor.b2500_08_ct_t
+                    - entity: sensor.b2500_08_c0
+                    - entity: sensor.b2500_08_c1
+                    - entity: sensor.b2500_08_m0
+                    - entity: sensor.b2500_08_m1
+                    - entity: sensor.b2500_08_m2
+                    - entity: sensor.b2500_08_m3
+                    - entity: sensor.b2500_08_sg
+                    - entity: sensor.b2500_08_sp
+                    - entity: sensor.b2500_08_st
+                    - entity: sensor.b2500_08_it
+                  show_header_toggle: false
+              - type: conditional
+                conditions:
+                  - condition: state
+                    entity: input_text.b09_mac
+                    state_not: '0'
+                card:
+                  type: entities
+                  entities:
+                    - entity: sensor.b2500_09_ct_t
+                    - entity: sensor.b2500_09_c0
+                    - entity: sensor.b2500_09_c1
+                    - entity: sensor.b2500_09_m0
+                    - entity: sensor.b2500_09_m1
+                    - entity: sensor.b2500_09_m2
+                    - entity: sensor.b2500_09_m3
+                    - entity: sensor.b2500_09_sg
+                    - entity: sensor.b2500_09_sp
+                    - entity: sensor.b2500_09_st
+                    - entity: sensor.b2500_09_it
+                  show_header_toggle: false
   - type: sections
     max_columns: 4
     title: Restart
