@@ -1413,6 +1413,125 @@ automation:
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
+    - if:
+        - condition: template
+          value_template: "{{ 'uv=' in payload }}"
+      then:
+        - data:
+            topic: homeassistant/sensor/b2500_07/uv/config
+            retain: true
+            payload: |
+              {% raw %} {
+                "name": "B07 UV",
+                "state_topic": "B2500PKG/B2500_07/CD01",
+                "value_template": "{{ value.split('uv=')[1].split(',')[0] }}",
+                "default_entity_id": "sensor.b2500_07_uv",
+                "unique_id": "b2500_07_uv",
+                "entity_category": "diagnostic"
+              } {% endraw %}
+          action: mqtt.publish
+    - if:
+        - condition: template
+          value_template: "{{ 'sm=' in payload }}"
+      then:
+        - data:
+            topic: homeassistant/sensor/b2500_07/sm/config
+            retain: true
+            payload: |
+              {% raw %} {
+                "name": "B07 SM",
+                "state_topic": "B2500PKG/B2500_07/CD01",
+                "value_template": "{{ value.split('sm=')[1].split(',')[0] }}",
+                "default_entity_id": "sensor.b2500_07_sm",
+                "unique_id": "b2500_07_sm",
+                "entity_category": "diagnostic"
+              } {% endraw %}
+          action: mqtt.publish
+    - if:
+        - condition: template
+          value_template: "{{ 'bn=' in payload }}"
+      then:
+        - data:
+            topic: homeassistant/sensor/b2500_07/bn/config
+            retain: true
+            payload: |
+              {% raw %} {
+                "name": "B07 BN",
+                "state_topic": "B2500PKG/B2500_07/CD01",
+                "value_template": "{{ value.split('bn=')[1].split(',')[0] }}",
+                "default_entity_id": "sensor.b2500_07_bn",
+                "unique_id": "b2500_07_bn",
+                "entity_category": "diagnostic"
+              } {% endraw %}
+          action: mqtt.publish
+    - if:
+        - condition: template
+          value_template: "{{ 'ct_t=' in payload }}"
+      then:
+        - data:
+            topic: homeassistant/sensor/b2500_07/ct_t/config
+            retain: true
+            payload: |
+              {% raw %} {
+                "name": "B07 Smartmeter Typ",
+                "state_topic": "B2500PKG/B2500_07/CD01",
+                "value_template": "{{ value.split('ct_t=')[1].split(',')[0].replace('1','CT001').replace('3','CT002').replace('4','Shelly Pro 3EM').replace('6','CT003').replace('7','Shelly EM gen3').replace('8','Shelly Pro EM50').replace('9','Eco Tracker') }}",
+                "default_entity_id": "sensor.b2500_07_ct_t",
+                "unique_id": "b2500_07_ct_t",
+                "entity_category": "diagnostic"
+              } {% endraw %}
+          action: mqtt.publish
+    - if:
+        - condition: template
+          value_template: "{{ 'tc_dis=' in payload }}"
+      then:
+        - data:
+            topic: homeassistant/sensor/b2500_07/tc_dis/config
+            retain: true
+            payload: |
+              {% raw %} {
+                "name": "B07 Surplus Modus",
+                "state_topic": "B2500PKG/B2500_07/CD01",
+                "value_template": "{{ value.split('tc_dis=')[1].split(',')[0].replace('0','Surplus Modus aktiv').replace('1','Surplus Modus deaktiviert') }}",
+                "default_entity_id": "sensor.b2500_07_tc_dis",
+                "unique_id": "b2500_07_tc_dis",
+                "entity_category": "diagnostic"
+              } {% endraw %}
+          action: mqtt.publish
+    - if:
+        - condition: template
+          value_template: "{{ 'ws=' in payload }}"
+      then:
+        - data:
+            topic: homeassistant/sensor/b2500_07/ws/config
+            retain: true
+            payload: |
+              {% raw %} {
+                "name": "B07 Wifi Signal",
+                "state_topic": "B2500PKG/B2500_07/CD01",
+                "value_template": "{{ value.split('ws=')[1].split(',')[0] }}",
+                "default_entity_id": "sensor.b2500_07_ws",
+                "unique_id": "b2500_07_ws",
+                "entity_category": "diagnostic"
+              } {% endraw %}
+          action: mqtt.publish
+    - if:
+        - condition: template
+          value_template: "{{ 'fktc=' in payload }}"
+      then:
+        - data:
+            topic: homeassistant/sensor/b2500_07/fktc/config
+            retain: true
+            payload: |
+              {% raw %} {
+                "name": "B07 FKTC",
+                "state_topic": "B2500PKG/B2500_07/CD01",
+                "value_template": "{{ value.split('fktc=')[1].split(',')[0] }}",
+                "default_entity_id": "sensor.b2500_07_fktc",
+                "unique_id": "b2500_07_fktc",
+                "entity_category": "diagnostic"
+              } {% endraw %}
+          action: mqtt.publish
     - action: automation.turn_off
       metadata: {}
       data:

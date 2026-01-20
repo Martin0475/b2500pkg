@@ -2,12 +2,13 @@ input_select:
   smartmeter:
     name: Smartmeter auswählen
     options: 
-      - "CT001"
-      - "Shelly Pro 3EM"
+      - "Eco Tracker"
       - "CT002"
-      - "CT003"
+      - "Shelly Pro 3EM"
       - "Shelly EM gen3"
       - "Shelly Pro EM50"
+      - "CT003"
+      - "CT001"
 
 input_button:
   b2500_smartmeter_setzen:
@@ -158,6 +159,22 @@ automation:
                   {% raw %}
                     cd=27,meter=6,mac=000000000000
                   {% endraw %}
+        - conditions:
+            - condition: state
+              entity_id: input_select.smartmeter
+              state: Eco Tracker
+          sequence:
+            - action: mqtt.publish
+              metadata: {}
+              data:
+                evaluate_payload: false
+                qos: 0
+                retain: false
+                topic: "{{ b2500_topic }}/{{ b2500_typ }}/App/{{ b2500_mac }}/ctrl"
+                payload: |-
+                  {% raw %}
+                    cd=27,meter=7,mac=000000000000
+                  {% endraw %}                  
     - delay:
         hours: 0
         minutes: 0
@@ -174,13 +191,5 @@ automation:
         hours: 0
         minutes: 0
         seconds: 3
-    - action: mqtt.publish
-      metadata: {}
-      data:
-        evaluate_payload: false
-        qos: 0
-        retain: false
-        topic: "{{ b2500_topic }}/{{ b2500_typ }}/App/{{ b2500_mac }}/ctrl"
-        payload: cd=10
   mode: queued
   max: 10
