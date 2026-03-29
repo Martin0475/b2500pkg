@@ -79,7 +79,7 @@ automation:
                 "unit_of_measurement": "V",
                 "value_template": "{{ (value.split('i2=')[1].split(',')[0] | float) /1000 }}",
                 "default_entity_id": "sensor.b2500_04_cd16i2",
-                "unique_id": "b2500_04_cd26i2",
+                "unique_id": "b2500_04_cd16i2",
                 "entity_category": "diagnostic"
               } {% endraw %}
           action: mqtt.publish
