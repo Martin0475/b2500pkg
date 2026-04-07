@@ -1,4 +1,5 @@
 automation:
+  id: b2500pkg_mqtt_publish
   alias: B2500PKG_MQTT_Publish
   description: ""
   triggers:
