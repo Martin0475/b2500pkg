@@ -6,8 +6,8 @@ views:
           - type: heading
             heading_style: title
             heading: >-
-              B2500 Package 2026-03-29 (Erweiterung Smartmeter: EcoTracker
-              hinzugefügt, Seiten auf 9 Speicher erweitert )
+              B2500 Package 2026-04-07 (Dashboard überarbeitet, Danke an
+              Klaus6672)
             grid_options:
               columns: 12
               rows: 1
@@ -1009,6 +1009,9 @@ views:
           - square: false
             type: grid
             cards:
+              - type: heading
+                heading: B01 Informationen
+                heading_style: subtitle
               - type: entities
                 entities:
                   - entity: sensor.b2500_01_vv
@@ -1065,6 +1068,9 @@ views:
           - square: false
             type: grid
             cards:
+              - type: heading
+                heading: B02 Informationen
+                heading_style: subtitle
               - type: entities
                 entities:
                   - entity: sensor.b2500_02_vv
@@ -1121,6 +1127,9 @@ views:
           - square: false
             type: grid
             cards:
+              - type: heading
+                heading: B03 Informationen
+                heading_style: subtitle
               - type: entities
                 entities:
                   - entity: sensor.b2500_03_vv
@@ -1177,6 +1186,9 @@ views:
           - square: false
             type: grid
             cards:
+              - type: heading
+                heading: B04 Informationen
+                heading_style: subtitle
               - type: entities
                 entities:
                   - entity: sensor.b2500_04_vv
@@ -1233,6 +1245,9 @@ views:
           - square: false
             type: grid
             cards:
+              - type: heading
+                heading: B05 Informationen
+                heading_style: subtitle
               - type: entities
                 entities:
                   - entity: sensor.b2500_05_vv
@@ -1289,6 +1304,9 @@ views:
           - square: false
             type: grid
             cards:
+              - type: heading
+                heading: B06 Informationen
+                heading_style: subtitle
               - type: entities
                 entities:
                   - entity: sensor.b2500_06_vv
@@ -1345,6 +1363,9 @@ views:
           - square: false
             type: grid
             cards:
+              - type: heading
+                heading: B07 Informationen
+                heading_style: subtitle
               - type: entities
                 entities:
                   - entity: sensor.b2500_07_vv
@@ -1401,6 +1422,9 @@ views:
           - square: false
             type: grid
             cards:
+              - type: heading
+                heading: B08 Informationen
+                heading_style: subtitle
               - type: entities
                 entities:
                   - entity: sensor.b2500_08_vv
@@ -1457,6 +1481,9 @@ views:
           - square: false
             type: grid
             cards:
+              - type: heading
+                heading: B09 Informationen
+                heading_style: subtitle
               - type: entities
                 entities:
                   - entity: sensor.b2500_09_vv
@@ -1766,31 +1793,8 @@ views:
       - type: grid
         cards:
           - type: heading
-            heading: Neuer Abschnitt
-          - type: entities
-            entities:
-              - entity: sensor.b01_min_spannung
-                secondary_info: last-updated
-              - entity: sensor.b2500_01_do
-            show_header_toggle: false
-          - type: entities
-            entities:
-              - entity: sensor.b02_min_spannung
-                secondary_info: last-updated
-              - entity: sensor.b2500_02_do
-            show_header_toggle: false
-          - type: entities
-            entities:
-              - entity: sensor.b03_min_spannung
-                secondary_info: last-updated
-              - entity: sensor.b2500_03_do
-            show_header_toggle: false
-          - type: entities
-            entities:
-              - entity: sensor.b04_min_spannung
-                secondary_info: last-updated
-              - entity: sensor.b2500_04_do
-            show_header_toggle: false
+            heading: Unterspannungsschutz Einstellungen
+            heading_style: title
           - type: entities
             entities:
               - entity: input_number.lvp_voltage_cutoff
@@ -1799,6 +1803,141 @@ views:
               - entity: automation.b2500pkg_unterspannungsschutz
                 secondary_info: last-triggered
             show_header_toggle: false
+      - type: grid
+        cards:
+          - type: heading
+            heading: B01 Unterspannungsschutz
+            heading_style: subtitle
+          - type: entities
+            entities:
+              - entity: sensor.b01_min_spannung
+                secondary_info: last-updated
+              - entity: sensor.b2500_01_do
+            show_header_toggle: false
+        visibility:
+          - condition: state
+            entity: input_text.b01_mac
+            state_not: '0'
+      - type: grid
+        cards:
+          - type: heading
+            heading: B02 Unterspannungsschutz
+            heading_style: subtitle
+          - type: entities
+            entities:
+              - entity: sensor.b02_min_spannung
+                secondary_info: last-updated
+              - entity: sensor.b2500_02_do
+            show_header_toggle: false
+        visibility:
+          - condition: state
+            entity: input_text.b02_mac
+            state_not: '0'
+      - type: grid
+        cards:
+          - type: heading
+            heading: B03 Unterspannungsschutz
+            heading_style: subtitle
+          - type: entities
+            entities:
+              - entity: sensor.b03_min_spannung
+                secondary_info: last-updated
+              - entity: sensor.b2500_03_do
+            show_header_toggle: false
+        visibility:
+          - condition: state
+            entity: input_text.b03_mac
+            state_not: '0'
+      - type: grid
+        cards:
+          - type: heading
+            heading: B04 Unterspannungsschutz
+            heading_style: subtitle
+          - type: entities
+            entities:
+              - entity: sensor.b04_min_spannung
+                secondary_info: last-updated
+              - entity: sensor.b2500_04_do
+            show_header_toggle: false
+        visibility:
+          - condition: state
+            entity: input_text.b04_mac
+            state_not: '0'
+      - type: grid
+        cards:
+          - type: heading
+            heading: B05 Unterspannungsschutz
+            heading_style: subtitle
+          - type: entities
+            entities:
+              - entity: sensor.b05_min_spannung
+                secondary_info: last-updated
+              - entity: sensor.b2500_05_do
+            show_header_toggle: false
+        visibility:
+          - condition: state
+            entity: input_text.b05_mac
+            state_not: '0'
+      - type: grid
+        cards:
+          - type: heading
+            heading: B06 Unterspannungsschutz
+            heading_style: subtitle
+          - type: entities
+            entities:
+              - entity: sensor.b06_min_spannung
+                secondary_info: last-updated
+              - entity: sensor.b2500_06_do
+            show_header_toggle: false
+        visibility:
+          - condition: state
+            entity: input_text.b06_mac
+            state_not: '0'
+      - type: grid
+        cards:
+          - type: heading
+            heading: B07 Unterspannungsschutz
+            heading_style: subtitle
+          - type: entities
+            entities:
+              - entity: sensor.b07_min_spannung
+                secondary_info: last-updated
+              - entity: sensor.b2500_07_do
+            show_header_toggle: false
+        visibility:
+          - condition: state
+            entity: input_text.b07_mac
+            state_not: '0'
+      - type: grid
+        cards:
+          - type: heading
+            heading: B08 Unterspannungsschutz
+            heading_style: subtitle
+          - type: entities
+            entities:
+              - entity: sensor.b08_min_spannung
+                secondary_info: last-updated
+              - entity: sensor.b2500_08_do
+            show_header_toggle: false
+        visibility:
+          - condition: state
+            entity: input_text.b08_mac
+            state_not: '0'
+      - type: grid
+        cards:
+          - type: heading
+            heading: B09 Unterspannungsschutz
+            heading_style: subtitle
+          - type: entities
+            entities:
+              - entity: sensor.b09_min_spannung
+                secondary_info: last-updated
+              - entity: sensor.b2500_09_do
+            show_header_toggle: false
+        visibility:
+          - condition: state
+            entity: input_text.b09_mac
+            state_not: '0'
   - type: sections
     max_columns: 4
     title: Überschusseinspeisung
@@ -2131,65 +2270,6 @@ views:
     cards: []
   - type: sections
     max_columns: 4
-    title: Leistung
-    path: leistung
-    sections:
-      - type: grid
-        cards:
-          - type: heading
-            heading: Infos
-            heading_style: title
-            tap_action:
-              action: none
-          - show_name: true
-            show_icon: true
-            show_state: true
-            type: glance
-            entities:
-              - entity: sensor.b2500_01_pt
-              - entity: sensor.b2500_02_pt
-              - entity: sensor.b2500_03_pt
-              - entity: sensor.b2500_04_pt
-              - entity: sensor.b2500_05_pt
-            state_color: true
-            title: 'Solarerzeugung '
-            columns: 4
-          - show_name: true
-            show_icon: true
-            show_state: true
-            type: glance
-            entities:
-              - entity: sensor.b2500_01_w1
-              - entity: sensor.b2500_01_w2
-              - entity: sensor.b2500_02_w1
-              - entity: sensor.b2500_02_w2
-              - entity: sensor.b2500_03_w1
-              - entity: sensor.b2500_03_w2
-              - entity: sensor.b2500_04_w1
-              - entity: sensor.b2500_04_w2
-              - entity: sensor.b2500_05_w1
-              - entity: sensor.b2500_05_w2
-            title: Momentanleistung
-            columns: 2
-            state_color: true
-          - show_name: true
-            show_icon: true
-            show_state: true
-            type: glance
-            entities:
-              - entity: sensor.b2500_01_g1
-              - entity: sensor.b2500_01_g2
-              - entity: sensor.b2500_02_g1
-              - entity: sensor.b2500_02_g2
-              - entity: sensor.b2500_03_g1
-              - entity: sensor.b2500_03_g2
-              - entity: sensor.b2500_04_g1
-              - entity: sensor.b2500_04_g2
-              - entity: sensor.b2500_05_g1
-              - entity: sensor.b2500_05_g2
-            columns: 2
-  - type: sections
-    max_columns: 4
     title: Spannungen
     path: spannungen
     sections:
@@ -2229,6 +2309,10 @@ views:
             min_y_axis: 0
             max_y_axis: 100
         column_span: 1
+        visibility:
+          - condition: state
+            entity: input_text.b01_mac
+            state_not: '0'
       - type: grid
         cards:
           - type: heading
@@ -2264,6 +2348,10 @@ views:
               - entity: sensor.b02_spannungsdifferenz
             min_y_axis: 0
             max_y_axis: 100
+        visibility:
+          - condition: state
+            entity: input_text.b02_mac
+            state_not: '0'
       - type: grid
         cards:
           - type: heading
@@ -2299,6 +2387,10 @@ views:
               - entity: sensor.b03_spannungsdifferenz
             min_y_axis: 0
             max_y_axis: 100
+        visibility:
+          - condition: state
+            entity: input_text.b03_mac
+            state_not: '0'
       - type: grid
         cards:
           - type: heading
@@ -2334,6 +2426,534 @@ views:
               - entity: sensor.b04_spannungsdifferenz
             min_y_axis: 0
             max_y_axis: 100
+        visibility:
+          - condition: state
+            entity: input_text.b04_mac
+            state_not: '0'
+      - type: grid
+        cards:
+          - type: heading
+            heading: B05
+            heading_style: title
+          - type: history-graph
+            entities:
+              - entity: sensor.b2500_05_zelle01
+              - entity: sensor.b2500_05_zelle02
+              - entity: sensor.b2500_05_zelle03
+              - entity: sensor.b2500_05_zelle04
+              - entity: sensor.b2500_05_zelle05
+              - entity: sensor.b2500_05_zelle06
+              - entity: sensor.b2500_05_zelle07
+              - entity: sensor.b2500_05_zelle08
+              - entity: sensor.b2500_05_zelle09
+              - entity: sensor.b2500_05_zelle10
+              - entity: sensor.b2500_05_zelle11
+              - entity: sensor.b2500_05_zelle12
+              - entity: sensor.b2500_05_zelle13
+              - entity: sensor.b2500_05_zelle14
+            title: B2500_05
+            fit_y_data: false
+            max_y_axis: 3600
+            min_y_axis: 2600
+          - type: history-graph
+            entities:
+              - entity: sensor.b2500_05_pe
+            min_y_axis: 0
+            max_y_axis: 100
+          - type: history-graph
+            entities:
+              - entity: sensor.b05_spannungsdifferenz
+            min_y_axis: 0
+            max_y_axis: 100
+        visibility:
+          - condition: state
+            entity: input_text.b05_mac
+            state_not: '0'
+      - type: grid
+        cards:
+          - type: heading
+            heading: B06
+            heading_style: title
+          - type: history-graph
+            entities:
+              - entity: sensor.b2500_06_zelle01
+              - entity: sensor.b2500_06_zelle02
+              - entity: sensor.b2500_06_zelle03
+              - entity: sensor.b2500_06_zelle04
+              - entity: sensor.b2500_06_zelle05
+              - entity: sensor.b2500_06_zelle06
+              - entity: sensor.b2500_06_zelle07
+              - entity: sensor.b2500_06_zelle08
+              - entity: sensor.b2500_06_zelle09
+              - entity: sensor.b2500_06_zelle10
+              - entity: sensor.b2500_06_zelle11
+              - entity: sensor.b2500_06_zelle12
+              - entity: sensor.b2500_06_zelle13
+              - entity: sensor.b2500_06_zelle14
+            title: B2500_06
+            fit_y_data: false
+            max_y_axis: 3600
+            min_y_axis: 2600
+          - type: history-graph
+            entities:
+              - entity: sensor.b2500_06_pe
+            min_y_axis: 0
+            max_y_axis: 100
+          - type: history-graph
+            entities:
+              - entity: sensor.b06_spannungsdifferenz
+            min_y_axis: 0
+            max_y_axis: 100
+        visibility:
+          - condition: state
+            entity: input_text.b06_mac
+            state_not: '0'
+      - type: grid
+        cards:
+          - type: heading
+            heading: B07
+            heading_style: title
+          - type: history-graph
+            entities:
+              - entity: sensor.b2500_07_zelle01
+              - entity: sensor.b2500_07_zelle02
+              - entity: sensor.b2500_07_zelle03
+              - entity: sensor.b2500_07_zelle04
+              - entity: sensor.b2500_07_zelle05
+              - entity: sensor.b2500_07_zelle06
+              - entity: sensor.b2500_07_zelle07
+              - entity: sensor.b2500_07_zelle08
+              - entity: sensor.b2500_07_zelle09
+              - entity: sensor.b2500_07_zelle10
+              - entity: sensor.b2500_07_zelle11
+              - entity: sensor.b2500_07_zelle12
+              - entity: sensor.b2500_07_zelle13
+              - entity: sensor.b2500_07_zelle14
+            title: B2500_07
+            fit_y_data: false
+            max_y_axis: 3600
+            min_y_axis: 2600
+          - type: history-graph
+            entities:
+              - entity: sensor.b2500_07_pe
+            min_y_axis: 0
+            max_y_axis: 100
+          - type: history-graph
+            entities:
+              - entity: sensor.b07_spannungsdifferenz
+            min_y_axis: 0
+            max_y_axis: 100
+        visibility:
+          - condition: state
+            entity: input_text.b07_mac
+            state_not: '0'
+      - type: grid
+        cards:
+          - type: heading
+            heading: B08
+            heading_style: title
+          - type: history-graph
+            entities:
+              - entity: sensor.b2500_08_zelle01
+              - entity: sensor.b2500_08_zelle02
+              - entity: sensor.b2500_08_zelle03
+              - entity: sensor.b2500_08_zelle04
+              - entity: sensor.b2500_08_zelle05
+              - entity: sensor.b2500_08_zelle06
+              - entity: sensor.b2500_08_zelle07
+              - entity: sensor.b2500_08_zelle08
+              - entity: sensor.b2500_08_zelle09
+              - entity: sensor.b2500_08_zelle10
+              - entity: sensor.b2500_08_zelle11
+              - entity: sensor.b2500_08_zelle12
+              - entity: sensor.b2500_08_zelle13
+              - entity: sensor.b2500_08_zelle14
+            title: B2500_08
+            fit_y_data: false
+            max_y_axis: 3600
+            min_y_axis: 2600
+          - type: history-graph
+            entities:
+              - entity: sensor.b2500_08_pe
+            min_y_axis: 0
+            max_y_axis: 100
+          - type: history-graph
+            entities:
+              - entity: sensor.b08_spannungsdifferenz
+            min_y_axis: 0
+            max_y_axis: 100
+        visibility:
+          - condition: state
+            entity: input_text.b08_mac
+            state_not: '0'
+      - type: grid
+        cards:
+          - type: heading
+            heading: B09
+            heading_style: title
+          - type: history-graph
+            entities:
+              - entity: sensor.b2500_09_zelle01
+              - entity: sensor.b2500_09_zelle02
+              - entity: sensor.b2500_09_zelle03
+              - entity: sensor.b2500_09_zelle04
+              - entity: sensor.b2500_09_zelle05
+              - entity: sensor.b2500_09_zelle06
+              - entity: sensor.b2500_09_zelle07
+              - entity: sensor.b2500_09_zelle08
+              - entity: sensor.b2500_09_zelle09
+              - entity: sensor.b2500_09_zelle10
+              - entity: sensor.b2500_09_zelle11
+              - entity: sensor.b2500_09_zelle12
+              - entity: sensor.b2500_09_zelle13
+              - entity: sensor.b2500_09_zelle14
+            title: B2500_09
+            fit_y_data: false
+            max_y_axis: 3600
+            min_y_axis: 2600
+          - type: history-graph
+            entities:
+              - entity: sensor.b2500_09_pe
+            min_y_axis: 0
+            max_y_axis: 100
+          - type: history-graph
+            entities:
+              - entity: sensor.b09_spannungsdifferenz
+            min_y_axis: 0
+            max_y_axis: 100
+        visibility:
+          - condition: state
+            entity: input_text.b09_mac
+            state_not: '0'
+  - type: sections
+    max_columns: 4
+    title: Leistung
+    path: leistung
+    sections:
+      - type: grid
+        cards:
+          - type: heading
+            heading: B01 Leistung
+            heading_style: title
+          - show_name: true
+            show_icon: true
+            show_state: true
+            type: glance
+            entities:
+              - entity: sensor.b2500_01_pt
+            state_color: true
+            title: Solarerzeugung
+            columns: 4
+          - show_name: true
+            show_icon: true
+            show_state: true
+            type: glance
+            entities:
+              - entity: sensor.b2500_01_w1
+              - entity: sensor.b2500_01_w2
+            title: Momentanleistung
+            columns: 2
+            state_color: true
+          - show_name: true
+            show_icon: true
+            show_state: true
+            type: glance
+            entities:
+              - entity: sensor.b2500_01_g1
+              - entity: sensor.b2500_01_g2
+            columns: 2
+        visibility:
+          - condition: state
+            entity: input_text.b01_mac
+            state_not: '0'
+      - type: grid
+        cards:
+          - type: heading
+            heading: B02 Leistung
+            heading_style: title
+          - show_name: true
+            show_icon: true
+            show_state: true
+            type: glance
+            entities:
+              - entity: sensor.b2500_02_pt
+            state_color: true
+            title: Solarerzeugung
+            columns: 4
+          - show_name: true
+            show_icon: true
+            show_state: true
+            type: glance
+            entities:
+              - entity: sensor.b2500_02_w1
+              - entity: sensor.b2500_02_w2
+            title: Momentanleistung
+            columns: 2
+            state_color: true
+          - show_name: true
+            show_icon: true
+            show_state: true
+            type: glance
+            entities:
+              - entity: sensor.b2500_02_g1
+              - entity: sensor.b2500_02_g2
+            columns: 2
+        visibility:
+          - condition: state
+            entity: input_text.b02_mac
+            state_not: '0'
+      - type: grid
+        cards:
+          - type: heading
+            heading: B03 Leistung
+            heading_style: title
+          - show_name: true
+            show_icon: true
+            show_state: true
+            type: glance
+            entities:
+              - entity: sensor.b2500_03_pt
+            state_color: true
+            title: Solarerzeugung
+            columns: 4
+          - show_name: true
+            show_icon: true
+            show_state: true
+            type: glance
+            entities:
+              - entity: sensor.b2500_03_w1
+              - entity: sensor.b2500_03_w2
+            title: Momentanleistung
+            columns: 2
+            state_color: true
+          - show_name: true
+            show_icon: true
+            show_state: true
+            type: glance
+            entities:
+              - entity: sensor.b2500_03_g1
+              - entity: sensor.b2500_03_g2
+            columns: 2
+        visibility:
+          - condition: state
+            entity: input_text.b03_mac
+            state_not: '0'
+      - type: grid
+        cards:
+          - type: heading
+            heading: B04 Leistung
+            heading_style: title
+          - show_name: true
+            show_icon: true
+            show_state: true
+            type: glance
+            entities:
+              - entity: sensor.b2500_04_pt
+            state_color: true
+            title: Solarerzeugung
+            columns: 4
+          - show_name: true
+            show_icon: true
+            show_state: true
+            type: glance
+            entities:
+              - entity: sensor.b2500_04_w1
+              - entity: sensor.b2500_04_w2
+            title: Momentanleistung
+            columns: 2
+            state_color: true
+          - show_name: true
+            show_icon: true
+            show_state: true
+            type: glance
+            entities:
+              - entity: sensor.b2500_04_g1
+              - entity: sensor.b2500_04_g2
+            columns: 2
+        visibility:
+          - condition: state
+            entity: input_text.b04_mac
+            state_not: '0'
+      - type: grid
+        cards:
+          - type: heading
+            heading: B05 Leistung
+            heading_style: title
+          - show_name: true
+            show_icon: true
+            show_state: true
+            type: glance
+            entities:
+              - entity: sensor.b2500_05_pt
+            state_color: true
+            title: Solarerzeugung
+            columns: 4
+          - show_name: true
+            show_icon: true
+            show_state: true
+            type: glance
+            entities:
+              - entity: sensor.b2500_05_w1
+              - entity: sensor.b2500_05_w2
+            title: Momentanleistung
+            columns: 2
+            state_color: true
+          - show_name: true
+            show_icon: true
+            show_state: true
+            type: glance
+            entities:
+              - entity: sensor.b2500_05_g1
+              - entity: sensor.b2500_05_g2
+            columns: 2
+        visibility:
+          - condition: state
+            entity: input_text.b05_mac
+            state_not: '0'
+      - type: grid
+        cards:
+          - type: heading
+            heading: B06 Leistung
+            heading_style: title
+          - show_name: true
+            show_icon: true
+            show_state: true
+            type: glance
+            entities:
+              - entity: sensor.b2500_06_pt
+            state_color: true
+            title: Solarerzeugung
+            columns: 4
+          - show_name: true
+            show_icon: true
+            show_state: true
+            type: glance
+            entities:
+              - entity: sensor.b2500_06_w1
+              - entity: sensor.b2500_06_w2
+            title: Momentanleistung
+            columns: 2
+            state_color: true
+          - show_name: true
+            show_icon: true
+            show_state: true
+            type: glance
+            entities:
+              - entity: sensor.b2500_06_g1
+              - entity: sensor.b2500_06_g2
+            columns: 2
+        visibility:
+          - condition: state
+            entity: input_text.b06_mac
+            state_not: '0'
+      - type: grid
+        cards:
+          - type: heading
+            heading: B07 Leistung
+            heading_style: title
+          - show_name: true
+            show_icon: true
+            show_state: true
+            type: glance
+            entities:
+              - entity: sensor.b2500_07_pt
+            state_color: true
+            title: Solarerzeugung
+            columns: 4
+          - show_name: true
+            show_icon: true
+            show_state: true
+            type: glance
+            entities:
+              - entity: sensor.b2500_07_w1
+              - entity: sensor.b2500_07_w2
+            title: Momentanleistung
+            columns: 2
+            state_color: true
+          - show_name: true
+            show_icon: true
+            show_state: true
+            type: glance
+            entities:
+              - entity: sensor.b2500_07_g1
+              - entity: sensor.b2500_07_g2
+            columns: 2
+        visibility:
+          - condition: state
+            entity: input_text.b07_mac
+            state_not: '0'
+      - type: grid
+        cards:
+          - type: heading
+            heading: B08 Leistung
+            heading_style: title
+          - show_name: true
+            show_icon: true
+            show_state: true
+            type: glance
+            entities:
+              - entity: sensor.b2500_08_pt
+            state_color: true
+            title: Solarerzeugung
+            columns: 4
+          - show_name: true
+            show_icon: true
+            show_state: true
+            type: glance
+            entities:
+              - entity: sensor.b2500_08_w1
+              - entity: sensor.b2500_08_w2
+            title: Momentanleistung
+            columns: 2
+            state_color: true
+          - show_name: true
+            show_icon: true
+            show_state: true
+            type: glance
+            entities:
+              - entity: sensor.b2500_08_g1
+              - entity: sensor.b2500_08_g2
+            columns: 2
+        visibility:
+          - condition: state
+            entity: input_text.b08_mac
+            state_not: '0'
+      - type: grid
+        cards:
+          - type: heading
+            heading: B09 Leistung
+            heading_style: title
+          - show_name: true
+            show_icon: true
+            show_state: true
+            type: glance
+            entities:
+              - entity: sensor.b2500_09_pt
+            state_color: true
+            title: Solarerzeugung
+            columns: 4
+          - show_name: true
+            show_icon: true
+            show_state: true
+            type: glance
+            entities:
+              - entity: sensor.b2500_09_w1
+              - entity: sensor.b2500_09_w2
+            title: Momentanleistung
+            columns: 2
+            state_color: true
+          - show_name: true
+            show_icon: true
+            show_state: true
+            type: glance
+            entities:
+              - entity: sensor.b2500_09_g1
+              - entity: sensor.b2500_09_g2
+            columns: 2
+        visibility:
+          - condition: state
+            entity: input_text.b09_mac
+            state_not: '0'
   - grid:
       columns: 5
       rows: 5
@@ -2380,6 +3000,9 @@ views:
       - square: false
         type: grid
         cards:
+          - type: heading
+            heading: B01 Info CD16
+            heading_style: title
           - type: horizontal-stack
             cards:
               - type: horizontal-stack
@@ -2449,6 +3072,9 @@ views:
       - square: false
         type: grid
         cards:
+          - type: heading
+            heading: B02 Info CD16
+            heading_style: title
           - type: horizontal-stack
             cards:
               - type: horizontal-stack
@@ -2518,6 +3144,9 @@ views:
       - square: false
         type: grid
         cards:
+          - type: heading
+            heading: B03 Info CD16
+            heading_style: title
           - type: horizontal-stack
             cards:
               - type: horizontal-stack
@@ -2570,7 +3199,7 @@ views:
                     name: OUT1
               - type: entities
                 entities:
-                  - entity: sensor.b2500_01_cd16i2
+                  - entity: sensor.b2500_03_cd16i2
                     name: OUT2
                   - entity: sensor.b2500_03_cd16c4
                     name: OUT2
@@ -2587,6 +3216,9 @@ views:
       - square: false
         type: grid
         cards:
+          - type: heading
+            heading: B04 Info CD16
+            heading_style: title
           - type: horizontal-stack
             cards:
               - type: horizontal-stack
@@ -2651,11 +3283,14 @@ views:
             entity: input_boolean.req_cd16
             state: 'on'
           - condition: state
-            entity: input_text.b04_mac_mac
+            entity: input_text.b04_mac
             state_not: '0'
       - square: false
         type: grid
         cards:
+          - type: heading
+            heading: B05 Info CD16
+            heading_style: title
           - type: horizontal-stack
             cards:
               - type: horizontal-stack
@@ -2725,6 +3360,9 @@ views:
       - square: false
         type: grid
         cards:
+          - type: heading
+            heading: B06 Info CD16
+            heading_style: title
           - type: horizontal-stack
             cards:
               - type: horizontal-stack
@@ -2794,6 +3432,9 @@ views:
       - square: false
         type: grid
         cards:
+          - type: heading
+            heading: B07 Info CD16
+            heading_style: title
           - type: horizontal-stack
             cards:
               - type: horizontal-stack
@@ -2863,6 +3504,9 @@ views:
       - square: false
         type: grid
         cards:
+          - type: heading
+            heading: B08 Info CD16
+            heading_style: title
           - type: horizontal-stack
             cards:
               - type: horizontal-stack
@@ -2932,6 +3576,9 @@ views:
       - square: false
         type: grid
         cards:
+          - type: heading
+            heading: B09 Info CD16
+            heading_style: title
           - type: horizontal-stack
             cards:
               - type: horizontal-stack
