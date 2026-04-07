@@ -349,7 +349,7 @@ script:
                 target: "{{ states('input_number.zeropower_target_value') | int }}"
                 curr_diff: >-
                   {{ ((states('sensor.zeropower_measure_load') | float(0) | int) -
-                  (target)) * 1.1 }}
+                  (target)) * 1.12 }}
                 p_master_candidate: "{{ power_master + curr_diff }}"
                 min_limit: "{{ states('input_number.zeropower_min_limit') | int }}"
                 master_max_limit: "{{ useable_batteries_list[0].max_limit if useable_batteries_list|length>0 else 0 }}"
@@ -558,8 +558,8 @@ script:
                           - delay:
                               hours: 0
                               minutes: 0
-                              seconds: 3
-                              milliseconds: 0
+                              seconds: 0
+                              milliseconds: 600
                           - data:
                               topic: "{{ current_topic }}"
                               payload: "cd=01"
