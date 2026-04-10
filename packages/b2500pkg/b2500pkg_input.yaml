@@ -9,21 +9,6 @@ input_select:
     options:
       - Alle_Speicher
 
-
-input_select:
-  speicherauswahl:
-    name: Speicherauswahl
-    options: 
-      - b2500_01
-      - b2500_02
-      - b2500_03
-      - b2500_04
-      - b2500_05
-      - b2500_06
-      - b2500_07
-      - b2500_08
-      - b2500_09
-  
   timerslot:
     name: Timer auswählen
     options:
