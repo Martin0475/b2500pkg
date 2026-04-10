@@ -5,9 +5,7 @@ views:
         cards:
           - type: heading
             heading_style: title
-            heading: >-
-              B2500 Package 2026-04-07 (Dashboard überarbeitet, Danke an
-              Klaus6672)
+            heading: B2500 Package 2026-04-11 (MQTT auf Worker Script umgestellt)
             grid_options:
               columns: 12
               rows: 1
@@ -25,6 +23,8 @@ views:
               action: toggle
           - type: entities
             entities:
+              - entity: sensor.b2500_status_zeile
+                secondary_info: none
               - entity: input_number.cd01_ratio
               - entity: input_number.req_delay
               - entity: input_number.req_delay2
@@ -888,6 +888,9 @@ views:
               rows: 2
     title: DOD
     cards: []
+    badges:
+      - type: entity
+        entity: sensor.b2500_status_zeile
   - type: sections
     max_columns: 4
     title: Lademodus
