@@ -160,6 +160,7 @@ template:
           {% set w1 = states('sensor.b2500_09_w1') | float(0) %}
           {% set w2 = states('sensor.b2500_09_w2') | float(0) %}
           {{ (w1 + w2) | round(2) }}
+          
 
 
 
@@ -176,20 +177,43 @@ template:
 
 
 
+  - sensor:
+      - name: "B2500 Status Zeile"
+        unique_id: b2500_status_zeile
+        state: >
+          {% set raw = states('input_text.b2500_all') %}
+          {% set result = namespace(items=[]) %}
 
+          {% if raw in ['unknown','unavailable','none',''] or not raw.startswith('[') %}
+            Keine Speicher
+          {% else %}
+            {% set speicher = raw | from_json %}
+            
+            {% for item in speicher %}
+              {% set num = item.split('_')[-1] %}
+              {% set entity = 'input_number.b2500_' ~ num ~ '_status' %}
+              {% set val = states(entity) %}
 
+              {% if val in ['unknown','unavailable','none',''] %}
+                {% set icon = "⚫" %}
+              {% else %}
+                {% set v = val | int(-99) %}
+                {% if v == -1 %}
+                  {% set icon = "🔴" %}
+                {% elif v == 0 %}
+                  {% set icon = "🟡" %}
+                {% elif v == 1 %}
+                  {% set icon = "🟢" %}
+                {% else %}
+                  {% set icon = "⚫" %}
+                {% endif %}
+              {% endif %}
 
+              {% set result.items = result.items + ['B' ~ num ~ ' ' ~ icon] %}
+            {% endfor %}
 
-
-
-
-
-
-
-
-
-
-
+            {{ result.items | join(' | ') if result.items else 'Keine Speicher' }}
+          {% endif %}
 
 
 

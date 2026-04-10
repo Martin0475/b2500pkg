@@ -1,4 +1,14 @@
 input_text:
+  b2500_all:
+    name: B2500 All
+    max: 255
+
+input_select:
+  speicherauswahl:
+    name: Speicherauswahl
+    options:
+      - Alle_Speicher
+
 
 input_select:
   speicherauswahl:
@@ -13,6 +23,7 @@ input_select:
       - b2500_07
       - b2500_08
       - b2500_09
+  
   timerslot:
     name: Timer auswählen
     options:
