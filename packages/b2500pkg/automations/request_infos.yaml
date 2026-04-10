@@ -81,17 +81,15 @@ automation:
                                 {{ states('input_text.b' ~ repeat.item ~ '_mac')
                                 != '0' }}
                           then:
-                            - action: mqtt.publish
-                              metadata: {}
+                            - action: script.turn_on
+                              target:
+                                entity_id: >
+                                  {{ 'script.b2500_' ~ repeat.item ~ '_worker' }}
                               data:
-                                qos: 0
-                                topic: >-
-                                  {{ states('input_text.b' ~ repeat.item ~
-                                  '_topic') }}/{{ states('input_text.b' ~
-                                  repeat.item ~ '_typ') }}/App/{{
-                                  states('input_text.b' ~ repeat.item ~ '_mac')
-                                  }}/ctrl
-                                payload: cd=01
+                                variables:
+                                  payload: "cd=01"
+                                  no_check: false                          
+
                             - delay: "{{ delay2_seconds }}"
                       for_each:
                         - "01"
@@ -118,17 +116,15 @@ automation:
                                     {{ states('input_text.b' ~ repeat.item ~
                                     '_mac') != '0' }}
                               then:
-                                - action: mqtt.publish
-                                  metadata: {}
+                                - action: script.turn_on
+                                  target:
+                                    entity_id: >
+                                      {{ 'script.b2500_' ~ repeat.item ~ '_worker' }}
                                   data:
-                                    qos: 0
-                                    topic: >-
-                                      {{ states('input_text.b' ~ repeat.item ~
-                                      '_topic') }}/{{ states('input_text.b' ~
-                                      repeat.item ~ '_typ') }}/App/{{
-                                      states('input_text.b' ~ repeat.item ~
-                                      '_mac') }}/ctrl
-                                    payload: cd=16
+                                    variables:
+                                      payload: "cd=16"
+                                      no_check: false
+                                      
                                 - delay: "{{ delay2_seconds }}"
                           for_each:
                             - "01"
@@ -153,17 +149,14 @@ automation:
                                 {{ states('input_text.b' ~ repeat.item ~ '_mac')
                                 != '0' }}
                           then:
-                            - action: mqtt.publish
-                              metadata: {}
+                            - action: script.turn_on
+                              target:
+                                entity_id: >
+                                  {{ 'script.b2500_' ~ repeat.item ~ '_worker' }}
                               data:
-                                qos: 0
-                                topic: >-
-                                  {{ states('input_text.b' ~ repeat.item ~
-                                  '_topic') }}/{{ states('input_text.b' ~
-                                  repeat.item ~ '_typ') }}/App/{{
-                                  states('input_text.b' ~ repeat.item ~ '_mac')
-                                  }}/ctrl
-                                payload: cd=13
+                                variables:
+                                  payload: "cd=13"
+                                  no_check: false
                             - delay: "{{ delay2_seconds }}"
                         - target:
                             entity_id: input_number.cd01_tracker

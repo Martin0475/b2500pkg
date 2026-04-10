@@ -7,22 +7,27 @@ automation:
       payload: w1=
       value_template: "{{ value.split(',')[2][0:3] }}"
       id: b2500_cd01
+
     - trigger: mqtt
       topic: +/+/device/+/ctrl
       payload: a0=
       value_template: "{{ value[0:3] }}"
       id: b2500_cd13
+
     - trigger: mqtt
       topic: +/+/device/+/ctrl
       payload: pe=
       value_template: "{{ value[0:3] }}"
       id: b2500_cd15
+
     - trigger: mqtt
       topic: +/+/device/+/ctrl
       payload: m1=
       value_template: "{{ value.split(',')[2][0:3] }}"
       id: b2500_cd16
+
   conditions: []
+
   actions:
     - variables:
         speicher_nummer: >-
@@ -37,7 +42,10 @@ automation:
            else 'B2500_07' if trigger.topic == states('input_text.b07_topic') + '/' + states('input_text.b07_typ') + '/device/' + states('input_text.b07_mac') + '/ctrl'
            else 'B2500_08' if trigger.topic == states('input_text.b08_topic') + '/' + states('input_text.b08_typ') + '/device/' + states('input_text.b08_mac') + '/ctrl'
            else 'B2500_09' if trigger.topic == states('input_text.b09_topic') + '/' + states('input_text.b09_typ') + '/device/' + states('input_text.b09_mac') + '/ctrl'
-           else 'unknown'}}
+           else 'unknown' }}
+
+        now_ts: "{{ now().timestamp() }}"
+
     - if:
         - condition: template
           value_template: "{{ speicher_nummer != 'unknown' }}"
@@ -55,6 +63,18 @@ automation:
                     retain: true
                     topic: B2500PKG/{{ speicher_nummer }}/CD01
                     payload: "{{ trigger.payload }},end01"
+                
+                - delay:
+                    seconds: 0
+                    milliseconds: 500
+                - action: mqtt.publish
+                  metadata: {}
+                  data:
+                    qos: 0
+                    retain: false
+                    topic: B2500PKG/{{ speicher_nummer }}/CD01/last_updated
+                    payload: "{{ now_ts }}"
+
             - conditions:
                 - condition: trigger
                   id:
@@ -67,6 +87,18 @@ automation:
                     retain: true
                     topic: B2500PKG/{{ speicher_nummer }}/CD13
                     payload: "{{ trigger.payload }},end13"
+
+                - delay:
+                    seconds: 1
+
+                - action: mqtt.publish
+                  metadata: {}
+                  data:
+                    qos: 0
+                    retain: false
+                    topic: B2500PKG/{{ speicher_nummer }}/CD13/last_updated
+                    payload: "{{ now_ts }}"
+
             - conditions:
                 - condition: trigger
                   id:
@@ -79,6 +111,18 @@ automation:
                     retain: true
                     topic: B2500PKG/{{ speicher_nummer }}/CD15
                     payload: "{{ trigger.payload }},end15"
+
+                - delay:
+                    seconds: 1
+
+                - action: mqtt.publish
+                  metadata: {}
+                  data:
+                    qos: 0
+                    retain: false
+                    topic: B2500PKG/{{ speicher_nummer }}/CD15/last_updated
+                    payload: "{{ now_ts }}"
+
             - conditions:
                 - condition: trigger
                   id:
@@ -91,5 +135,17 @@ automation:
                     retain: true
                     topic: B2500PKG/{{ speicher_nummer }}/CD16
                     payload: "{{ trigger.payload }},end16"
+
+                - delay:
+                    seconds: 1
+
+                - action: mqtt.publish
+                  metadata: {}
+                  data:
+                    qos: 0
+                    retain: false
+                    topic: B2500PKG/{{ speicher_nummer }}/CD16/last_updated
+                    payload: "{{ now_ts }}"
+
   mode: parallel
   max: 10

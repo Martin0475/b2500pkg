@@ -1,7 +1,6 @@
 automation:
   alias: B2500PKG Set DOD
-  description: |+
-  
+  description: ""
 
   triggers:
     - trigger: state
@@ -12,66 +11,31 @@ automation:
 
   actions:
     - variables:
-        b2500_mac: >-
-          {{ states('input_text.b01_mac') if states('input_select.speicherauswahl') == 'b2500_01' else
-             states('input_text.b02_mac') if states('input_select.speicherauswahl') == 'b2500_02' else
-             states('input_text.b03_mac') if states('input_select.speicherauswahl') == 'b2500_03' else
-             states('input_text.b04_mac') if states('input_select.speicherauswahl') == 'b2500_04' else
-             states('input_text.b05_mac') if states('input_select.speicherauswahl') == 'b2500_05' else
-             states('input_text.b06_mac') if states('input_select.speicherauswahl') == 'b2500_06' else
-             states('input_text.b07_mac') if states('input_select.speicherauswahl') == 'b2500_07' else
-             states('input_text.b08_mac') if states('input_select.speicherauswahl') == 'b2500_08' else
-             states('input_text.b09_mac') if states('input_select.speicherauswahl') == 'b2500_09' else
-             'unknown'
-          }}
-        b2500_typ: >-
-          {{ states('input_text.b01_typ') if states('input_select.speicherauswahl') == 'b2500_01' else
-             states('input_text.b02_typ') if states('input_select.speicherauswahl') == 'b2500_02' else
-             states('input_text.b03_typ') if states('input_select.speicherauswahl') == 'b2500_03' else
-             states('input_text.b04_typ') if states('input_select.speicherauswahl') == 'b2500_04' else
-             states('input_text.b05_typ') if states('input_select.speicherauswahl') == 'b2500_05' else
-             states('input_text.b06_typ') if states('input_select.speicherauswahl') == 'b2500_06' else
-             states('input_text.b07_typ') if states('input_select.speicherauswahl') == 'b2500_07' else
-             states('input_text.b08_typ') if states('input_select.speicherauswahl') == 'b2500_08' else
-             states('input_text.b09_typ') if states('input_select.speicherauswahl') == 'b2500_09' else
-             'unknown'
-          }}
-        b2500_topic: >-
-          {{ states('input_text.b01_topic') if states('input_select.speicherauswahl') == 'b2500_01' else
-             states('input_text.b02_topic') if states('input_select.speicherauswahl') == 'b2500_02' else
-             states('input_text.b03_topic') if states('input_select.speicherauswahl') == 'b2500_03' else
-             states('input_text.b04_topic') if states('input_select.speicherauswahl') == 'b2500_04' else
-             states('input_text.b05_topic') if states('input_select.speicherauswahl') == 'b2500_05' else
-             states('input_text.b06_topic') if states('input_select.speicherauswahl') == 'b2500_06' else
-             states('input_text.b07_topic') if states('input_select.speicherauswahl') == 'b2500_07' else
-             states('input_text.b08_topic') if states('input_select.speicherauswahl') == 'b2500_08' else
-             states('input_text.b09_topic') if states('input_select.speicherauswahl') == 'b2500_09' else
-             'unknown'
-          }}
-    - action: mqtt.publish
-      metadata: {}
-      data:
-        evaluate_payload: false
-        qos: 0
-        retain: false
-        topic: >-
-          {{ b2500_topic }}/{{ b2500_typ }}/App/{{ b2500_mac }}/ctrl
-        payload: cd=19,md={{ states('input_number.b2500_dod')|int }}
+        speicher: "{{ states('input_select.speicherauswahl') }}"
+        dod_payload: "cd=19,md={{ states('input_number.b2500_dod') | int }}"
+        all_speicher: "{{ states('input_text.b2500_all') | from_json }}"
+        targets: >
+          {% if speicher == 'Alle_Speicher' %}
+            {{ all_speicher }}
+          {% else %}
+            {{ [speicher] }}
+          {% endif %}
 
-    - delay:
-        hours: 0
-        minutes: 0
-        seconds: 3
+    - repeat:
+        for_each: "{{ targets }}"
+        sequence:
+          - action: script.turn_on
+            target:
+              entity_id: "script.{{ repeat.item }}_worker"
+            data:
+              variables:
+                payload: "{{ dod_payload }}"
+                followup_payload: "cd=01"
+                no_check: false
 
-    - action: mqtt.publish
-      metadata: {}
-      data:
-        evaluate_payload: false
-        qos: 0
-        retain: false
-        topic: >-
-          {{ b2500_topic }}/{{ b2500_typ }}/App/{{ b2500_mac }}/ctrl
-        payload: cd=01
+          - delay:
+              seconds: 1
+
   mode: queued
   max: 10
 

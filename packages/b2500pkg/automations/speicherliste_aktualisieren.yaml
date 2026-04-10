@@ -1,0 +1,64 @@
+automation:
+  - alias: B2500PKG_Speicherliste_aktualisieren
+    id: b2500_refresh_speicherauswahl
+    mode: single
+
+    trigger:
+      - platform: homeassistant
+        event: start
+
+      - platform: state
+        entity_id:
+          - input_text.b01_mac
+          - input_text.b02_mac
+          - input_text.b03_mac
+          - input_text.b04_mac
+          - input_text.b05_mac
+          - input_text.b06_mac
+          - input_text.b07_mac
+          - input_text.b08_mac
+          - input_text.b09_mac
+
+    variables:
+      valid_ids: >
+        {% set ns = namespace(items=[]) %}
+        {% for i in range(1, 10) %}
+          {% set nr = '%02d' % i %}
+          {% set dev = 'b2500_' ~ nr %}
+          {% set mac = states('input_text.b' ~ nr ~ '_mac') | lower | trim %}
+          {% if mac not in ['unknown', 'unavailable', '', '0', '00:00:00:00:00:00', none] %}
+            {% set ns.items = ns.items + [dev] %}
+          {% endif %}
+        {% endfor %}
+        {{ ns.items }}
+
+      select_options: >
+        {{ ['Alle_Speicher'] + valid_ids }}
+
+      current_selection: "{{ states('input_select.speicherauswahl') }}"
+
+      new_selection: >
+        {% if current_selection in select_options %}
+          {{ current_selection }}
+        {% else %}
+          Alle_Speicher
+        {% endif %}
+
+    action:
+      - service: input_text.set_value
+        target:
+          entity_id: input_text.b2500_all
+        data:
+          value: "{{ valid_ids | to_json }}"
+
+      - service: input_select.set_options
+        target:
+          entity_id: input_select.speicherauswahl
+        data:
+          options: "{{ select_options }}"
+
+      - service: input_select.select_option
+        target:
+          entity_id: input_select.speicherauswahl
+        data:
+          option: "{{ new_selection }}"
