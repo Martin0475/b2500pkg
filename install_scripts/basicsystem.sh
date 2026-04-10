@@ -66,6 +66,8 @@ rm -f /config/packages/b2500pkg/automations/test_config.yaml
 rm -f /config/packages/b2500pkg/automations/zeropower.yaml
 rm -f /config/packages/b2500pkg/automations/send_restart.yaml
 rm -f /config/packages/b2500pkg/automations/low_voltage_protection.yaml
+rm -f /config/packages/b2500pkg/automations/worker_script.yaml
+rm -f /config/packages/b2500pkg/automations/speicherliste_aktualisieren.yaml
 
 rm -f /config/packages/b2500pkg/b2500pkg_input.yaml
 rm -f /config/b2500pkg_templates.yaml
@@ -141,6 +143,8 @@ wget -q -O /config/packages/b2500pkg/automations/test_config.yaml https://raw.gi
 wget -q -O /config/packages/b2500pkg/automations/zeropower.yaml https://raw.githubusercontent.com/Martin0475/b2500pkg/main/packages/b2500pkg/automations/zeropower.yaml
 wget -q -O /config/packages/b2500pkg/automations/send_restart.yaml https://raw.githubusercontent.com/Martin0475/b2500pkg/main/packages/b2500pkg/automations/send_restart.yaml
 wget -q -O /config/packages/b2500pkg/automations/low_voltage_protection.yaml https://raw.githubusercontent.com/Martin0475/b2500pkg/main/packages/b2500pkg/automations/low_voltage_protection.yaml
+wget -q -O /config/packages/b2500pkg/automations/worker_script.yaml https://raw.githubusercontent.com/Martin0475/b2500pkg/main/packages/b2500pkg/automations/worker_script.yaml
+wget -q -O /config/packages/b2500pkg/automations/speicherliste_aktualisieren.yaml https://raw.githubusercontent.com/Martin0475/b2500pkg/main/packages/b2500pkg/automations/speicherliste_aktualisieren.yaml
 
 wget -q -O /config/packages/b2500pkg/b2500pkg_input.yaml https://raw.githubusercontent.com/Martin0475/b2500pkg/main/packages/b2500pkg/b2500pkg_input.yaml
 wget -q -O /config/packages/b2500pkg/b2500pkg_templates.yaml https://raw.githubusercontent.com/Martin0475/b2500pkg/main/packages/b2500pkg/b2500pkg_templates.yaml
