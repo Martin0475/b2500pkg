@@ -12,7 +12,8 @@ automation:
   actions:
     - variables:
         speicher: "{{ states('input_select.speicherauswahl') }}"
-        dod_payload: "cd=19,md={{ states('input_number.b2500_dod') | int }}"
+        dod_value: "{{ states('input_number.b2500_dod') | int }}"
+        dod_payload: "cd=19,md={{ dod_value }}"
         all_speicher: "{{ states('input_text.b2500_all') | from_json }}"
         targets: >
           {% if speicher == 'Alle_Speicher' %}
@@ -32,6 +33,8 @@ automation:
                 payload: "{{ dod_payload }}"
                 followup_payload: "cd=01"
                 no_check: false
+                expected_field: "do"
+                expected_value: "{{ dod_value }}"
 
           - delay:
               seconds: 1

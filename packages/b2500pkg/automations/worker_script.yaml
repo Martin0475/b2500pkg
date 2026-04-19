@@ -2,7 +2,7 @@ input_number:
   b2500_01_status:
     name: B2500_01 Status
     min: -1
-    max: 1
+    max: 3
     step: 1
     mode: box
     initial: 0
@@ -10,7 +10,7 @@ input_number:
   b2500_02_status:
     name: B2500_02 Status
     min: -1
-    max: 1
+    max: 3
     step: 1
     mode: box
     initial: 0
@@ -18,7 +18,7 @@ input_number:
   b2500_03_status:
     name: B2500_03 Status
     min: -1
-    max: 1
+    max: 3
     step: 1
     mode: box
     initial: 0
@@ -26,7 +26,7 @@ input_number:
   b2500_04_status:
     name: B2500_04 Status
     min: -1
-    max: 1
+    max: 3
     step: 1
     mode: box
     initial: 0
@@ -34,7 +34,7 @@ input_number:
   b2500_05_status:
     name: B2500_05 Status
     min: -1
-    max: 1
+    max: 3
     step: 1
     mode: box
     initial: 0
@@ -42,7 +42,7 @@ input_number:
   b2500_06_status:
     name: B2500_06 Status
     min: -1
-    max: 1
+    max: 3
     step: 1
     mode: box
     initial: 0
@@ -50,7 +50,7 @@ input_number:
   b2500_07_status:
     name: B2500_07 Status
     min: -1
-    max: 1
+    max: 3
     step: 1
     mode: box
     initial: 0
@@ -58,7 +58,7 @@ input_number:
   b2500_08_status:
     name: B2500_08 Status
     min: -1
-    max: 1
+    max: 3
     step: 1
     mode: box
     initial: 0
@@ -66,7 +66,7 @@ input_number:
   b2500_09_status:
     name: B2500_09 Status
     min: -1
-    max: 1
+    max: 3
     step: 1
     mode: box
     initial: 0
@@ -92,7 +92,12 @@ script:
         default: false
         selector:
           boolean:
-      reply_topic:
+      expected_value:
+        required: false
+        default: ""
+        selector:
+          text:
+      expected_field:
         required: false
         default: ""
         selector:
@@ -102,141 +107,166 @@ script:
       - variables:
           mqtt_topic: "{{ states('input_text.b01_topic') }}/{{ states('input_text.b01_typ') }}/App/{{ states('input_text.b01_mac') }}/ctrl"
           mqtt_mac: "{{ states('input_text.b01_mac') }}"
-          payload_clean: "{{ payload | default('', true) | trim }}"
-          followup_payload_clean: "{{ followup_payload | default('', true) | trim }}"
+          payload_clean: "{{ payload | default('', true) | string | trim }}"
+          followup_payload_clean: "{{ followup_payload | default('', true) | string | trim }}"
           no_check_clean: "{{ no_check | default(false) }}"
-          reply_topic_clean: "{{ reply_topic | default('', true) | trim }}"
-          reply_command: "{{ followup_payload_clean if followup_payload_clean != '' else payload_clean }}"
+          expected_value_clean: "{{ expected_value | default('', true) | string | trim }}"
+          expected_field_clean: "{{ expected_field | default('', true) | string | trim | lower }}"
+          wait_command: "{{ followup_payload_clean if followup_payload_clean != '' else payload_clean }}"
+          wait_topic: >-
+            {% if wait_command == 'cd=01' %}
+              B2500PKG/B2500_01/CD01/last_updated
+            {% elif wait_command == 'cd=13' %}
+              B2500PKG/B2500_01/CD13/last_updated
+            {% elif wait_command == 'cd=15' %}
+              B2500PKG/B2500_01/CD15/last_updated
+            {% elif wait_command == 'cd=16' %}
+              B2500PKG/B2500_01/CD16/last_updated
+            {% else %}
+              B2500PKG/B2500_01/CD01/last_updated
+            {% endif %}
+          sensor_entity: "{{ 'sensor.b2500_01_' ~ expected_field_clean if expected_field_clean != '' else '' }}"
+          text_fields: ['e1','e2','e3','e4','e5','f1','f2','f3','f4','f5']
 
       - if:
           - condition: template
-            value_template: "{{ payload_clean == '' }}"
+            value_template: '{{ payload_clean == "" }}'
         then:
           - stop: "Kein payload → Abbruch"
 
       - if:
           - condition: template
-            value_template: "{{ mqtt_mac in ['', 'unknown', 'unavailable', 'none', None] }}"
+            value_template: '{{ mqtt_mac in ["", "unknown", "unavailable", "none", None] }}'
         then:
           - stop: "MAC ungültig → Abbruch"
 
       - if:
           - condition: template
-            value_template: "{{ no_check_clean == true }}"
+            value_template: '{{ expected_value_clean != "" and expected_field_clean == "" }}'
         then:
+          - stop: "expected_field fehlt obwohl expected_value gesetzt ist → Abbruch"
+
+      - service: mqtt.publish
+        data:
+          topic: "{{ mqtt_topic }}"
+          payload: "{{ payload_clean }}"
+          qos: 1
+
+      - if:
+          - condition: template
+            value_template: '{{ followup_payload_clean != "" }}'
+        then:
+          - delay:
+              seconds: 3
+          - service: mqtt.publish
+            data:
+              topic: "{{ mqtt_topic }}"
+              payload: "{{ followup_payload_clean }}"
+              qos: 1
+
+      - if:
+          - condition: template
+            value_template: '{{ no_check_clean == true }}'
+        then:
+          - stop: "no_check aktiv → Ende nach dem Senden"
+
+      - service: input_number.set_value
+        target:
+          entity_id: input_number.b2500_01_status
+        data:
+          value: 1
+
+      - wait_for_trigger:
+          - trigger: mqtt
+            topic: "{{ wait_topic }}"
+        timeout: "00:00:10"
+        continue_on_timeout: true
+
+      - variables:
+          actual_state_first: "{{ states(sensor_entity) if sensor_entity != '' else '' }}"
+          first_ok: >-
+            {% if wait.trigger is none %}
+              false
+            {% elif expected_value_clean == '' %}
+              true
+            {% elif sensor_entity == '' or actual_state_first in ['unknown', 'unavailable', 'none', None] %}
+              false
+            {% elif expected_field_clean in text_fields %}
+              {{ actual_state_first | string == expected_value_clean | string }}
+            {% else %}
+              {{ actual_state_first | float(999999999) == expected_value_clean | float(999999998) }}
+            {% endif %}
+
+      - if:
+          - condition: template
+            value_template: '{{ first_ok }}'
+        then:
+          - service: input_number.set_value
+            target:
+              entity_id: input_number.b2500_01_status
+            data:
+              value: 3
+        else:
+          - service: input_number.set_value
+            target:
+              entity_id: input_number.b2500_01_status
+            data:
+              value: 2
+
           - service: mqtt.publish
             data:
               topic: "{{ mqtt_topic }}"
               payload: "{{ payload_clean }}"
               qos: 1
-        else:
-          - if:
-              - condition: template
-                value_template: "{{ reply_topic_clean == '' }}"
-            then:
-              - variables:
-                  reply_topic_detected: >-
-                    {% if reply_command == 'cd=01' %}
-                      B2500PKG/B2500_01/CD01/last_updated
-                    {% elif reply_command == 'cd=13' %}
-                      B2500PKG/B2500_01/CD13/last_updated
-                    {% elif reply_command == 'cd=15' %}
-                      B2500PKG/B2500_01/CD15/last_updated
-                    {% elif reply_command == 'cd=16' %}
-                      B2500PKG/B2500_01/CD16/last_updated
-                    {% else %}
-                    {% endif %}
-            else:
-              - variables:
-                  reply_topic_detected: "{{ reply_topic_clean }}"
 
           - if:
               - condition: template
-                value_template: "{{ reply_topic_detected == '' }}"
+                value_template: '{{ followup_payload_clean != "" }}'
             then:
-              - stop: "Kein reply_topic erkannt → Abbruch"
-
-          - if:
-              - condition: template
-                value_template: "{{ followup_payload_clean == '' }}"
-            then:
-              - service: input_number.set_value
-                target:
-                  entity_id: input_number.b2500_01_status
-                data:
-                  value: 0
-
-              - service: mqtt.publish
-                data:
-                  topic: "{{ mqtt_topic }}"
-                  payload: "{{ payload_clean }}"
-                  qos: 1
-
-              - wait_for_trigger:
-                  - trigger: mqtt
-                    topic: "{{ reply_topic_detected }}"
-                timeout: 10
-                continue_on_timeout: true
-
-              - if:
-                  - condition: template
-                    value_template: "{{ wait.trigger is not none }}"
-                then:
-                  - service: input_number.set_value
-                    target:
-                      entity_id: input_number.b2500_01_status
-                    data:
-                      value: 1
-                else:
-                  - service: input_number.set_value
-                    target:
-                      entity_id: input_number.b2500_01_status
-                    data:
-                      value: -1
-
-            else:
-              - service: input_number.set_value
-                target:
-                  entity_id: input_number.b2500_01_status
-                data:
-                  value: 0
-
-              - service: mqtt.publish
-                data:
-                  topic: "{{ mqtt_topic }}"
-                  payload: "{{ payload_clean }}"
-                  qos: 1
-
               - delay:
                   seconds: 3
-
               - service: mqtt.publish
                 data:
                   topic: "{{ mqtt_topic }}"
                   payload: "{{ followup_payload_clean }}"
                   qos: 1
 
-              - wait_for_trigger:
-                  - trigger: mqtt
-                    topic: "{{ reply_topic_detected }}"
-                timeout: 10
-                continue_on_timeout: true
+          - wait_for_trigger:
+              - trigger: mqtt
+                topic: "{{ wait_topic }}"
+            timeout: "00:00:10"
+            continue_on_timeout: true
 
-              - if:
-                  - condition: template
-                    value_template: "{{ wait.trigger is not none }}"
-                then:
-                  - service: input_number.set_value
-                    target:
-                      entity_id: input_number.b2500_01_status
-                    data:
-                      value: 1
-                else:
-                  - service: input_number.set_value
-                    target:
-                      entity_id: input_number.b2500_01_status
-                    data:
-                      value: -1
+          - variables:
+              actual_state_second: "{{ states(sensor_entity) if sensor_entity != '' else '' }}"
+              second_ok: >-
+                {% if wait.trigger is none %}
+                  false
+                {% elif expected_value_clean == '' %}
+                  true
+                {% elif sensor_entity == '' or actual_state_second in ['unknown', 'unavailable', 'none', None] %}
+                  false
+                {% elif expected_field_clean in text_fields %}
+                  {{ actual_state_second | string == expected_value_clean | string }}
+                {% else %}
+                  {{ actual_state_second | float(999999999) == expected_value_clean | float(999999998) }}
+                {% endif %}
+
+          - if:
+              - condition: template
+                value_template: '{{ second_ok }}'
+            then:
+              - service: input_number.set_value
+                target:
+                  entity_id: input_number.b2500_01_status
+                data:
+                  value: 3
+            else:
+              - service: input_number.set_value
+                target:
+                  entity_id: input_number.b2500_01_status
+                data:
+                  value: -1
 
   b2500_02_worker:
     alias: B2500PKG_B02_Worker
@@ -258,7 +288,12 @@ script:
         default: false
         selector:
           boolean:
-      reply_topic:
+      expected_value:
+        required: false
+        default: ""
+        selector:
+          text:
+      expected_field:
         required: false
         default: ""
         selector:
@@ -268,141 +303,166 @@ script:
       - variables:
           mqtt_topic: "{{ states('input_text.b02_topic') }}/{{ states('input_text.b02_typ') }}/App/{{ states('input_text.b02_mac') }}/ctrl"
           mqtt_mac: "{{ states('input_text.b02_mac') }}"
-          payload_clean: "{{ payload | default('', true) | trim }}"
-          followup_payload_clean: "{{ followup_payload | default('', true) | trim }}"
+          payload_clean: "{{ payload | default('', true) | string | trim }}"
+          followup_payload_clean: "{{ followup_payload | default('', true) | string | trim }}"
           no_check_clean: "{{ no_check | default(false) }}"
-          reply_topic_clean: "{{ reply_topic | default('', true) | trim }}"
-          reply_command: "{{ followup_payload_clean if followup_payload_clean != '' else payload_clean }}"
+          expected_value_clean: "{{ expected_value | default('', true) | string | trim }}"
+          expected_field_clean: "{{ expected_field | default('', true) | string | trim | lower }}"
+          wait_command: "{{ followup_payload_clean if followup_payload_clean != '' else payload_clean }}"
+          wait_topic: >-
+            {% if wait_command == 'cd=01' %}
+              B2500PKG/B2500_02/CD01/last_updated
+            {% elif wait_command == 'cd=13' %}
+              B2500PKG/B2500_02/CD13/last_updated
+            {% elif wait_command == 'cd=15' %}
+              B2500PKG/B2500_02/CD15/last_updated
+            {% elif wait_command == 'cd=16' %}
+              B2500PKG/B2500_02/CD16/last_updated
+            {% else %}
+              B2500PKG/B2500_02/CD01/last_updated
+            {% endif %}
+          sensor_entity: "{{ 'sensor.b2500_02_' ~ expected_field_clean if expected_field_clean != '' else '' }}"
+          text_fields: ['e1','e2','e3','e4','e5','f1','f2','f3','f4','f5']
 
       - if:
           - condition: template
-            value_template: "{{ payload_clean == '' }}"
+            value_template: '{{ payload_clean == "" }}'
         then:
           - stop: "Kein payload → Abbruch"
 
       - if:
           - condition: template
-            value_template: "{{ mqtt_mac in ['', 'unknown', 'unavailable', 'none', None] }}"
+            value_template: '{{ mqtt_mac in ["", "unknown", "unavailable", "none", None] }}'
         then:
           - stop: "MAC ungültig → Abbruch"
 
       - if:
           - condition: template
-            value_template: "{{ no_check_clean == true }}"
+            value_template: '{{ expected_value_clean != "" and expected_field_clean == "" }}'
         then:
+          - stop: "expected_field fehlt obwohl expected_value gesetzt ist → Abbruch"
+
+      - service: mqtt.publish
+        data:
+          topic: "{{ mqtt_topic }}"
+          payload: "{{ payload_clean }}"
+          qos: 1
+
+      - if:
+          - condition: template
+            value_template: '{{ followup_payload_clean != "" }}'
+        then:
+          - delay:
+              seconds: 3
+          - service: mqtt.publish
+            data:
+              topic: "{{ mqtt_topic }}"
+              payload: "{{ followup_payload_clean }}"
+              qos: 1
+
+      - if:
+          - condition: template
+            value_template: '{{ no_check_clean == true }}'
+        then:
+          - stop: "no_check aktiv → Ende nach dem Senden"
+
+      - service: input_number.set_value
+        target:
+          entity_id: input_number.b2500_02_status
+        data:
+          value: 1
+
+      - wait_for_trigger:
+          - trigger: mqtt
+            topic: "{{ wait_topic }}"
+        timeout: "00:00:10"
+        continue_on_timeout: true
+
+      - variables:
+          actual_state_first: "{{ states(sensor_entity) if sensor_entity != '' else '' }}"
+          first_ok: >-
+            {% if wait.trigger is none %}
+              false
+            {% elif expected_value_clean == '' %}
+              true
+            {% elif sensor_entity == '' or actual_state_first in ['unknown', 'unavailable', 'none', None] %}
+              false
+            {% elif expected_field_clean in text_fields %}
+              {{ actual_state_first | string == expected_value_clean | string }}
+            {% else %}
+              {{ actual_state_first | float(999999999) == expected_value_clean | float(999999998) }}
+            {% endif %}
+
+      - if:
+          - condition: template
+            value_template: '{{ first_ok }}'
+        then:
+          - service: input_number.set_value
+            target:
+              entity_id: input_number.b2500_02_status
+            data:
+              value: 3
+        else:
+          - service: input_number.set_value
+            target:
+              entity_id: input_number.b2500_02_status
+            data:
+              value: 2
+
           - service: mqtt.publish
             data:
               topic: "{{ mqtt_topic }}"
               payload: "{{ payload_clean }}"
               qos: 1
-        else:
-          - if:
-              - condition: template
-                value_template: "{{ reply_topic_clean == '' }}"
-            then:
-              - variables:
-                  reply_topic_detected: >-
-                    {% if reply_command == 'cd=01' %}
-                      B2500PKG/B2500_02/CD01/last_updated
-                    {% elif reply_command == 'cd=13' %}
-                      B2500PKG/B2500_02/CD13/last_updated
-                    {% elif reply_command == 'cd=15' %}
-                      B2500PKG/B2500_02/CD15/last_updated
-                    {% elif reply_command == 'cd=16' %}
-                      B2500PKG/B2500_02/CD16/last_updated
-                    {% else %}
-                    {% endif %}
-            else:
-              - variables:
-                  reply_topic_detected: "{{ reply_topic_clean }}"
 
           - if:
               - condition: template
-                value_template: "{{ reply_topic_detected == '' }}"
+                value_template: '{{ followup_payload_clean != "" }}'
             then:
-              - stop: "Kein reply_topic erkannt → Abbruch"
-
-          - if:
-              - condition: template
-                value_template: "{{ followup_payload_clean == '' }}"
-            then:
-              - service: input_number.set_value
-                target:
-                  entity_id: input_number.b2500_02_status
-                data:
-                  value: 0
-
-              - service: mqtt.publish
-                data:
-                  topic: "{{ mqtt_topic }}"
-                  payload: "{{ payload_clean }}"
-                  qos: 1
-
-              - wait_for_trigger:
-                  - trigger: mqtt
-                    topic: "{{ reply_topic_detected }}"
-                timeout: 10
-                continue_on_timeout: true
-
-              - if:
-                  - condition: template
-                    value_template: "{{ wait.trigger is not none }}"
-                then:
-                  - service: input_number.set_value
-                    target:
-                      entity_id: input_number.b2500_02_status
-                    data:
-                      value: 1
-                else:
-                  - service: input_number.set_value
-                    target:
-                      entity_id: input_number.b2500_02_status
-                    data:
-                      value: -1
-
-            else:
-              - service: input_number.set_value
-                target:
-                  entity_id: input_number.b2500_02_status
-                data:
-                  value: 0
-
-              - service: mqtt.publish
-                data:
-                  topic: "{{ mqtt_topic }}"
-                  payload: "{{ payload_clean }}"
-                  qos: 1
-
               - delay:
                   seconds: 3
-
               - service: mqtt.publish
                 data:
                   topic: "{{ mqtt_topic }}"
                   payload: "{{ followup_payload_clean }}"
                   qos: 1
 
-              - wait_for_trigger:
-                  - trigger: mqtt
-                    topic: "{{ reply_topic_detected }}"
-                timeout: 10
-                continue_on_timeout: true
+          - wait_for_trigger:
+              - trigger: mqtt
+                topic: "{{ wait_topic }}"
+            timeout: "00:00:10"
+            continue_on_timeout: true
 
-              - if:
-                  - condition: template
-                    value_template: "{{ wait.trigger is not none }}"
-                then:
-                  - service: input_number.set_value
-                    target:
-                      entity_id: input_number.b2500_02_status
-                    data:
-                      value: 1
-                else:
-                  - service: input_number.set_value
-                    target:
-                      entity_id: input_number.b2500_02_status
-                    data:
-                      value: -1
+          - variables:
+              actual_state_second: "{{ states(sensor_entity) if sensor_entity != '' else '' }}"
+              second_ok: >-
+                {% if wait.trigger is none %}
+                  false
+                {% elif expected_value_clean == '' %}
+                  true
+                {% elif sensor_entity == '' or actual_state_second in ['unknown', 'unavailable', 'none', None] %}
+                  false
+                {% elif expected_field_clean in text_fields %}
+                  {{ actual_state_second | string == expected_value_clean | string }}
+                {% else %}
+                  {{ actual_state_second | float(999999999) == expected_value_clean | float(999999998) }}
+                {% endif %}
+
+          - if:
+              - condition: template
+                value_template: '{{ second_ok }}'
+            then:
+              - service: input_number.set_value
+                target:
+                  entity_id: input_number.b2500_02_status
+                data:
+                  value: 3
+            else:
+              - service: input_number.set_value
+                target:
+                  entity_id: input_number.b2500_02_status
+                data:
+                  value: -1
 
   b2500_03_worker:
     alias: B2500PKG_B03_Worker
@@ -424,7 +484,12 @@ script:
         default: false
         selector:
           boolean:
-      reply_topic:
+      expected_value:
+        required: false
+        default: ""
+        selector:
+          text:
+      expected_field:
         required: false
         default: ""
         selector:
@@ -434,141 +499,166 @@ script:
       - variables:
           mqtt_topic: "{{ states('input_text.b03_topic') }}/{{ states('input_text.b03_typ') }}/App/{{ states('input_text.b03_mac') }}/ctrl"
           mqtt_mac: "{{ states('input_text.b03_mac') }}"
-          payload_clean: "{{ payload | default('', true) | trim }}"
-          followup_payload_clean: "{{ followup_payload | default('', true) | trim }}"
+          payload_clean: "{{ payload | default('', true) | string | trim }}"
+          followup_payload_clean: "{{ followup_payload | default('', true) | string | trim }}"
           no_check_clean: "{{ no_check | default(false) }}"
-          reply_topic_clean: "{{ reply_topic | default('', true) | trim }}"
-          reply_command: "{{ followup_payload_clean if followup_payload_clean != '' else payload_clean }}"
+          expected_value_clean: "{{ expected_value | default('', true) | string | trim }}"
+          expected_field_clean: "{{ expected_field | default('', true) | string | trim | lower }}"
+          wait_command: "{{ followup_payload_clean if followup_payload_clean != '' else payload_clean }}"
+          wait_topic: >-
+            {% if wait_command == 'cd=01' %}
+              B2500PKG/B2500_03/CD01/last_updated
+            {% elif wait_command == 'cd=13' %}
+              B2500PKG/B2500_03/CD13/last_updated
+            {% elif wait_command == 'cd=15' %}
+              B2500PKG/B2500_03/CD15/last_updated
+            {% elif wait_command == 'cd=16' %}
+              B2500PKG/B2500_03/CD16/last_updated
+            {% else %}
+              B2500PKG/B2500_03/CD01/last_updated
+            {% endif %}
+          sensor_entity: "{{ 'sensor.b2500_03_' ~ expected_field_clean if expected_field_clean != '' else '' }}"
+          text_fields: ['e1','e2','e3','e4','e5','f1','f2','f3','f4','f5']
 
       - if:
           - condition: template
-            value_template: "{{ payload_clean == '' }}"
+            value_template: '{{ payload_clean == "" }}'
         then:
           - stop: "Kein payload → Abbruch"
 
       - if:
           - condition: template
-            value_template: "{{ mqtt_mac in ['', 'unknown', 'unavailable', 'none', None] }}"
+            value_template: '{{ mqtt_mac in ["", "unknown", "unavailable", "none", None] }}'
         then:
           - stop: "MAC ungültig → Abbruch"
 
       - if:
           - condition: template
-            value_template: "{{ no_check_clean == true }}"
+            value_template: '{{ expected_value_clean != "" and expected_field_clean == "" }}'
         then:
+          - stop: "expected_field fehlt obwohl expected_value gesetzt ist → Abbruch"
+
+      - service: mqtt.publish
+        data:
+          topic: "{{ mqtt_topic }}"
+          payload: "{{ payload_clean }}"
+          qos: 1
+
+      - if:
+          - condition: template
+            value_template: '{{ followup_payload_clean != "" }}'
+        then:
+          - delay:
+              seconds: 3
+          - service: mqtt.publish
+            data:
+              topic: "{{ mqtt_topic }}"
+              payload: "{{ followup_payload_clean }}"
+              qos: 1
+
+      - if:
+          - condition: template
+            value_template: '{{ no_check_clean == true }}'
+        then:
+          - stop: "no_check aktiv → Ende nach dem Senden"
+
+      - service: input_number.set_value
+        target:
+          entity_id: input_number.b2500_03_status
+        data:
+          value: 1
+
+      - wait_for_trigger:
+          - trigger: mqtt
+            topic: "{{ wait_topic }}"
+        timeout: "00:00:10"
+        continue_on_timeout: true
+
+      - variables:
+          actual_state_first: "{{ states(sensor_entity) if sensor_entity != '' else '' }}"
+          first_ok: >-
+            {% if wait.trigger is none %}
+              false
+            {% elif expected_value_clean == '' %}
+              true
+            {% elif sensor_entity == '' or actual_state_first in ['unknown', 'unavailable', 'none', None] %}
+              false
+            {% elif expected_field_clean in text_fields %}
+              {{ actual_state_first | string == expected_value_clean | string }}
+            {% else %}
+              {{ actual_state_first | float(999999999) == expected_value_clean | float(999999998) }}
+            {% endif %}
+
+      - if:
+          - condition: template
+            value_template: '{{ first_ok }}'
+        then:
+          - service: input_number.set_value
+            target:
+              entity_id: input_number.b2500_03_status
+            data:
+              value: 3
+        else:
+          - service: input_number.set_value
+            target:
+              entity_id: input_number.b2500_03_status
+            data:
+              value: 2
+
           - service: mqtt.publish
             data:
               topic: "{{ mqtt_topic }}"
               payload: "{{ payload_clean }}"
               qos: 1
-        else:
-          - if:
-              - condition: template
-                value_template: "{{ reply_topic_clean == '' }}"
-            then:
-              - variables:
-                  reply_topic_detected: >-
-                    {% if reply_command == 'cd=01' %}
-                      B2500PKG/B2500_03/CD01/last_updated
-                    {% elif reply_command == 'cd=13' %}
-                      B2500PKG/B2500_03/CD13/last_updated
-                    {% elif reply_command == 'cd=15' %}
-                      B2500PKG/B2500_03/CD15/last_updated
-                    {% elif reply_command == 'cd=16' %}
-                      B2500PKG/B2500_03/CD16/last_updated
-                    {% else %}
-                    {% endif %}
-            else:
-              - variables:
-                  reply_topic_detected: "{{ reply_topic_clean }}"
 
           - if:
               - condition: template
-                value_template: "{{ reply_topic_detected == '' }}"
+                value_template: '{{ followup_payload_clean != "" }}'
             then:
-              - stop: "Kein reply_topic erkannt → Abbruch"
-
-          - if:
-              - condition: template
-                value_template: "{{ followup_payload_clean == '' }}"
-            then:
-              - service: input_number.set_value
-                target:
-                  entity_id: input_number.b2500_03_status
-                data:
-                  value: 0
-
-              - service: mqtt.publish
-                data:
-                  topic: "{{ mqtt_topic }}"
-                  payload: "{{ payload_clean }}"
-                  qos: 1
-
-              - wait_for_trigger:
-                  - trigger: mqtt
-                    topic: "{{ reply_topic_detected }}"
-                timeout: 10
-                continue_on_timeout: true
-
-              - if:
-                  - condition: template
-                    value_template: "{{ wait.trigger is not none }}"
-                then:
-                  - service: input_number.set_value
-                    target:
-                      entity_id: input_number.b2500_03_status
-                    data:
-                      value: 1
-                else:
-                  - service: input_number.set_value
-                    target:
-                      entity_id: input_number.b2500_03_status
-                    data:
-                      value: -1
-
-            else:
-              - service: input_number.set_value
-                target:
-                  entity_id: input_number.b2500_03_status
-                data:
-                  value: 0
-
-              - service: mqtt.publish
-                data:
-                  topic: "{{ mqtt_topic }}"
-                  payload: "{{ payload_clean }}"
-                  qos: 1
-
               - delay:
                   seconds: 3
-
               - service: mqtt.publish
                 data:
                   topic: "{{ mqtt_topic }}"
                   payload: "{{ followup_payload_clean }}"
                   qos: 1
 
-              - wait_for_trigger:
-                  - trigger: mqtt
-                    topic: "{{ reply_topic_detected }}"
-                timeout: 10
-                continue_on_timeout: true
+          - wait_for_trigger:
+              - trigger: mqtt
+                topic: "{{ wait_topic }}"
+            timeout: "00:00:10"
+            continue_on_timeout: true
 
-              - if:
-                  - condition: template
-                    value_template: "{{ wait.trigger is not none }}"
-                then:
-                  - service: input_number.set_value
-                    target:
-                      entity_id: input_number.b2500_03_status
-                    data:
-                      value: 1
-                else:
-                  - service: input_number.set_value
-                    target:
-                      entity_id: input_number.b2500_03_status
-                    data:
-                      value: -1
+          - variables:
+              actual_state_second: "{{ states(sensor_entity) if sensor_entity != '' else '' }}"
+              second_ok: >-
+                {% if wait.trigger is none %}
+                  false
+                {% elif expected_value_clean == '' %}
+                  true
+                {% elif sensor_entity == '' or actual_state_second in ['unknown', 'unavailable', 'none', None] %}
+                  false
+                {% elif expected_field_clean in text_fields %}
+                  {{ actual_state_second | string == expected_value_clean | string }}
+                {% else %}
+                  {{ actual_state_second | float(999999999) == expected_value_clean | float(999999998) }}
+                {% endif %}
+
+          - if:
+              - condition: template
+                value_template: '{{ second_ok }}'
+            then:
+              - service: input_number.set_value
+                target:
+                  entity_id: input_number.b2500_03_status
+                data:
+                  value: 3
+            else:
+              - service: input_number.set_value
+                target:
+                  entity_id: input_number.b2500_03_status
+                data:
+                  value: -1
 
   b2500_04_worker:
     alias: B2500PKG_B04_Worker
@@ -590,7 +680,12 @@ script:
         default: false
         selector:
           boolean:
-      reply_topic:
+      expected_value:
+        required: false
+        default: ""
+        selector:
+          text:
+      expected_field:
         required: false
         default: ""
         selector:
@@ -600,141 +695,166 @@ script:
       - variables:
           mqtt_topic: "{{ states('input_text.b04_topic') }}/{{ states('input_text.b04_typ') }}/App/{{ states('input_text.b04_mac') }}/ctrl"
           mqtt_mac: "{{ states('input_text.b04_mac') }}"
-          payload_clean: "{{ payload | default('', true) | trim }}"
-          followup_payload_clean: "{{ followup_payload | default('', true) | trim }}"
+          payload_clean: "{{ payload | default('', true) | string | trim }}"
+          followup_payload_clean: "{{ followup_payload | default('', true) | string | trim }}"
           no_check_clean: "{{ no_check | default(false) }}"
-          reply_topic_clean: "{{ reply_topic | default('', true) | trim }}"
-          reply_command: "{{ followup_payload_clean if followup_payload_clean != '' else payload_clean }}"
+          expected_value_clean: "{{ expected_value | default('', true) | string | trim }}"
+          expected_field_clean: "{{ expected_field | default('', true) | string | trim | lower }}"
+          wait_command: "{{ followup_payload_clean if followup_payload_clean != '' else payload_clean }}"
+          wait_topic: >-
+            {% if wait_command == 'cd=01' %}
+              B2500PKG/B2500_04/CD01/last_updated
+            {% elif wait_command == 'cd=13' %}
+              B2500PKG/B2500_04/CD13/last_updated
+            {% elif wait_command == 'cd=15' %}
+              B2500PKG/B2500_04/CD15/last_updated
+            {% elif wait_command == 'cd=16' %}
+              B2500PKG/B2500_04/CD16/last_updated
+            {% else %}
+              B2500PKG/B2500_04/CD01/last_updated
+            {% endif %}
+          sensor_entity: "{{ 'sensor.b2500_04_' ~ expected_field_clean if expected_field_clean != '' else '' }}"
+          text_fields: ['e1','e2','e3','e4','e5','f1','f2','f3','f4','f5']
 
       - if:
           - condition: template
-            value_template: "{{ payload_clean == '' }}"
+            value_template: '{{ payload_clean == "" }}'
         then:
           - stop: "Kein payload → Abbruch"
 
       - if:
           - condition: template
-            value_template: "{{ mqtt_mac in ['', 'unknown', 'unavailable', 'none', None] }}"
+            value_template: '{{ mqtt_mac in ["", "unknown", "unavailable", "none", None] }}'
         then:
           - stop: "MAC ungültig → Abbruch"
 
       - if:
           - condition: template
-            value_template: "{{ no_check_clean == true }}"
+            value_template: '{{ expected_value_clean != "" and expected_field_clean == "" }}'
         then:
+          - stop: "expected_field fehlt obwohl expected_value gesetzt ist → Abbruch"
+
+      - service: mqtt.publish
+        data:
+          topic: "{{ mqtt_topic }}"
+          payload: "{{ payload_clean }}"
+          qos: 1
+
+      - if:
+          - condition: template
+            value_template: '{{ followup_payload_clean != "" }}'
+        then:
+          - delay:
+              seconds: 3
+          - service: mqtt.publish
+            data:
+              topic: "{{ mqtt_topic }}"
+              payload: "{{ followup_payload_clean }}"
+              qos: 1
+
+      - if:
+          - condition: template
+            value_template: '{{ no_check_clean == true }}'
+        then:
+          - stop: "no_check aktiv → Ende nach dem Senden"
+
+      - service: input_number.set_value
+        target:
+          entity_id: input_number.b2500_04_status
+        data:
+          value: 1
+
+      - wait_for_trigger:
+          - trigger: mqtt
+            topic: "{{ wait_topic }}"
+        timeout: "00:00:10"
+        continue_on_timeout: true
+
+      - variables:
+          actual_state_first: "{{ states(sensor_entity) if sensor_entity != '' else '' }}"
+          first_ok: >-
+            {% if wait.trigger is none %}
+              false
+            {% elif expected_value_clean == '' %}
+              true
+            {% elif sensor_entity == '' or actual_state_first in ['unknown', 'unavailable', 'none', None] %}
+              false
+            {% elif expected_field_clean in text_fields %}
+              {{ actual_state_first | string == expected_value_clean | string }}
+            {% else %}
+              {{ actual_state_first | float(999999999) == expected_value_clean | float(999999998) }}
+            {% endif %}
+
+      - if:
+          - condition: template
+            value_template: '{{ first_ok }}'
+        then:
+          - service: input_number.set_value
+            target:
+              entity_id: input_number.b2500_04_status
+            data:
+              value: 3
+        else:
+          - service: input_number.set_value
+            target:
+              entity_id: input_number.b2500_04_status
+            data:
+              value: 2
+
           - service: mqtt.publish
             data:
               topic: "{{ mqtt_topic }}"
               payload: "{{ payload_clean }}"
               qos: 1
-        else:
-          - if:
-              - condition: template
-                value_template: "{{ reply_topic_clean == '' }}"
-            then:
-              - variables:
-                  reply_topic_detected: >-
-                    {% if reply_command == 'cd=01' %}
-                      B2500PKG/B2500_04/CD01/last_updated
-                    {% elif reply_command == 'cd=13' %}
-                      B2500PKG/B2500_04/CD13/last_updated
-                    {% elif reply_command == 'cd=15' %}
-                      B2500PKG/B2500_04/CD15/last_updated
-                    {% elif reply_command == 'cd=16' %}
-                      B2500PKG/B2500_04/CD16/last_updated
-                    {% else %}
-                    {% endif %}
-            else:
-              - variables:
-                  reply_topic_detected: "{{ reply_topic_clean }}"
 
           - if:
               - condition: template
-                value_template: "{{ reply_topic_detected == '' }}"
+                value_template: '{{ followup_payload_clean != "" }}'
             then:
-              - stop: "Kein reply_topic erkannt → Abbruch"
-
-          - if:
-              - condition: template
-                value_template: "{{ followup_payload_clean == '' }}"
-            then:
-              - service: input_number.set_value
-                target:
-                  entity_id: input_number.b2500_04_status
-                data:
-                  value: 0
-
-              - service: mqtt.publish
-                data:
-                  topic: "{{ mqtt_topic }}"
-                  payload: "{{ payload_clean }}"
-                  qos: 1
-
-              - wait_for_trigger:
-                  - trigger: mqtt
-                    topic: "{{ reply_topic_detected }}"
-                timeout: 10
-                continue_on_timeout: true
-
-              - if:
-                  - condition: template
-                    value_template: "{{ wait.trigger is not none }}"
-                then:
-                  - service: input_number.set_value
-                    target:
-                      entity_id: input_number.b2500_04_status
-                    data:
-                      value: 1
-                else:
-                  - service: input_number.set_value
-                    target:
-                      entity_id: input_number.b2500_04_status
-                    data:
-                      value: -1
-
-            else:
-              - service: input_number.set_value
-                target:
-                  entity_id: input_number.b2500_04_status
-                data:
-                  value: 0
-
-              - service: mqtt.publish
-                data:
-                  topic: "{{ mqtt_topic }}"
-                  payload: "{{ payload_clean }}"
-                  qos: 1
-
               - delay:
                   seconds: 3
-
               - service: mqtt.publish
                 data:
                   topic: "{{ mqtt_topic }}"
                   payload: "{{ followup_payload_clean }}"
                   qos: 1
 
-              - wait_for_trigger:
-                  - trigger: mqtt
-                    topic: "{{ reply_topic_detected }}"
-                timeout: 10
-                continue_on_timeout: true
+          - wait_for_trigger:
+              - trigger: mqtt
+                topic: "{{ wait_topic }}"
+            timeout: "00:00:10"
+            continue_on_timeout: true
 
-              - if:
-                  - condition: template
-                    value_template: "{{ wait.trigger is not none }}"
-                then:
-                  - service: input_number.set_value
-                    target:
-                      entity_id: input_number.b2500_04_status
-                    data:
-                      value: 1
-                else:
-                  - service: input_number.set_value
-                    target:
-                      entity_id: input_number.b2500_04_status
-                    data:
-                      value: -1
+          - variables:
+              actual_state_second: "{{ states(sensor_entity) if sensor_entity != '' else '' }}"
+              second_ok: >-
+                {% if wait.trigger is none %}
+                  false
+                {% elif expected_value_clean == '' %}
+                  true
+                {% elif sensor_entity == '' or actual_state_second in ['unknown', 'unavailable', 'none', None] %}
+                  false
+                {% elif expected_field_clean in text_fields %}
+                  {{ actual_state_second | string == expected_value_clean | string }}
+                {% else %}
+                  {{ actual_state_second | float(999999999) == expected_value_clean | float(999999998) }}
+                {% endif %}
+
+          - if:
+              - condition: template
+                value_template: '{{ second_ok }}'
+            then:
+              - service: input_number.set_value
+                target:
+                  entity_id: input_number.b2500_04_status
+                data:
+                  value: 3
+            else:
+              - service: input_number.set_value
+                target:
+                  entity_id: input_number.b2500_04_status
+                data:
+                  value: -1
 
   b2500_05_worker:
     alias: B2500PKG_B05_Worker
@@ -756,7 +876,12 @@ script:
         default: false
         selector:
           boolean:
-      reply_topic:
+      expected_value:
+        required: false
+        default: ""
+        selector:
+          text:
+      expected_field:
         required: false
         default: ""
         selector:
@@ -766,141 +891,166 @@ script:
       - variables:
           mqtt_topic: "{{ states('input_text.b05_topic') }}/{{ states('input_text.b05_typ') }}/App/{{ states('input_text.b05_mac') }}/ctrl"
           mqtt_mac: "{{ states('input_text.b05_mac') }}"
-          payload_clean: "{{ payload | default('', true) | trim }}"
-          followup_payload_clean: "{{ followup_payload | default('', true) | trim }}"
+          payload_clean: "{{ payload | default('', true) | string | trim }}"
+          followup_payload_clean: "{{ followup_payload | default('', true) | string | trim }}"
           no_check_clean: "{{ no_check | default(false) }}"
-          reply_topic_clean: "{{ reply_topic | default('', true) | trim }}"
-          reply_command: "{{ followup_payload_clean if followup_payload_clean != '' else payload_clean }}"
+          expected_value_clean: "{{ expected_value | default('', true) | string | trim }}"
+          expected_field_clean: "{{ expected_field | default('', true) | string | trim | lower }}"
+          wait_command: "{{ followup_payload_clean if followup_payload_clean != '' else payload_clean }}"
+          wait_topic: >-
+            {% if wait_command == 'cd=01' %}
+              B2500PKG/B2500_05/CD01/last_updated
+            {% elif wait_command == 'cd=13' %}
+              B2500PKG/B2500_05/CD13/last_updated
+            {% elif wait_command == 'cd=15' %}
+              B2500PKG/B2500_05/CD15/last_updated
+            {% elif wait_command == 'cd=16' %}
+              B2500PKG/B2500_05/CD16/last_updated
+            {% else %}
+              B2500PKG/B2500_05/CD01/last_updated
+            {% endif %}
+          sensor_entity: "{{ 'sensor.b2500_05_' ~ expected_field_clean if expected_field_clean != '' else '' }}"
+          text_fields: ['e1','e2','e3','e4','e5','f1','f2','f3','f4','f5']
 
       - if:
           - condition: template
-            value_template: "{{ payload_clean == '' }}"
+            value_template: '{{ payload_clean == "" }}'
         then:
           - stop: "Kein payload → Abbruch"
 
       - if:
           - condition: template
-            value_template: "{{ mqtt_mac in ['', 'unknown', 'unavailable', 'none', None] }}"
+            value_template: '{{ mqtt_mac in ["", "unknown", "unavailable", "none", None] }}'
         then:
           - stop: "MAC ungültig → Abbruch"
 
       - if:
           - condition: template
-            value_template: "{{ no_check_clean == true }}"
+            value_template: '{{ expected_value_clean != "" and expected_field_clean == "" }}'
         then:
+          - stop: "expected_field fehlt obwohl expected_value gesetzt ist → Abbruch"
+
+      - service: mqtt.publish
+        data:
+          topic: "{{ mqtt_topic }}"
+          payload: "{{ payload_clean }}"
+          qos: 1
+
+      - if:
+          - condition: template
+            value_template: '{{ followup_payload_clean != "" }}'
+        then:
+          - delay:
+              seconds: 3
+          - service: mqtt.publish
+            data:
+              topic: "{{ mqtt_topic }}"
+              payload: "{{ followup_payload_clean }}"
+              qos: 1
+
+      - if:
+          - condition: template
+            value_template: '{{ no_check_clean == true }}'
+        then:
+          - stop: "no_check aktiv → Ende nach dem Senden"
+
+      - service: input_number.set_value
+        target:
+          entity_id: input_number.b2500_05_status
+        data:
+          value: 1
+
+      - wait_for_trigger:
+          - trigger: mqtt
+            topic: "{{ wait_topic }}"
+        timeout: "00:00:10"
+        continue_on_timeout: true
+
+      - variables:
+          actual_state_first: "{{ states(sensor_entity) if sensor_entity != '' else '' }}"
+          first_ok: >-
+            {% if wait.trigger is none %}
+              false
+            {% elif expected_value_clean == '' %}
+              true
+            {% elif sensor_entity == '' or actual_state_first in ['unknown', 'unavailable', 'none', None] %}
+              false
+            {% elif expected_field_clean in text_fields %}
+              {{ actual_state_first | string == expected_value_clean | string }}
+            {% else %}
+              {{ actual_state_first | float(999999999) == expected_value_clean | float(999999998) }}
+            {% endif %}
+
+      - if:
+          - condition: template
+            value_template: '{{ first_ok }}'
+        then:
+          - service: input_number.set_value
+            target:
+              entity_id: input_number.b2500_05_status
+            data:
+              value: 3
+        else:
+          - service: input_number.set_value
+            target:
+              entity_id: input_number.b2500_05_status
+            data:
+              value: 2
+
           - service: mqtt.publish
             data:
               topic: "{{ mqtt_topic }}"
               payload: "{{ payload_clean }}"
               qos: 1
-        else:
-          - if:
-              - condition: template
-                value_template: "{{ reply_topic_clean == '' }}"
-            then:
-              - variables:
-                  reply_topic_detected: >-
-                    {% if reply_command == 'cd=01' %}
-                      B2500PKG/B2500_05/CD01/last_updated
-                    {% elif reply_command == 'cd=13' %}
-                      B2500PKG/B2500_05/CD13/last_updated
-                    {% elif reply_command == 'cd=15' %}
-                      B2500PKG/B2500_05/CD15/last_updated
-                    {% elif reply_command == 'cd=16' %}
-                      B2500PKG/B2500_05/CD16/last_updated
-                    {% else %}
-                    {% endif %}
-            else:
-              - variables:
-                  reply_topic_detected: "{{ reply_topic_clean }}"
 
           - if:
               - condition: template
-                value_template: "{{ reply_topic_detected == '' }}"
+                value_template: '{{ followup_payload_clean != "" }}'
             then:
-              - stop: "Kein reply_topic erkannt → Abbruch"
-
-          - if:
-              - condition: template
-                value_template: "{{ followup_payload_clean == '' }}"
-            then:
-              - service: input_number.set_value
-                target:
-                  entity_id: input_number.b2500_05_status
-                data:
-                  value: 0
-
-              - service: mqtt.publish
-                data:
-                  topic: "{{ mqtt_topic }}"
-                  payload: "{{ payload_clean }}"
-                  qos: 1
-
-              - wait_for_trigger:
-                  - trigger: mqtt
-                    topic: "{{ reply_topic_detected }}"
-                timeout: 10
-                continue_on_timeout: true
-
-              - if:
-                  - condition: template
-                    value_template: "{{ wait.trigger is not none }}"
-                then:
-                  - service: input_number.set_value
-                    target:
-                      entity_id: input_number.b2500_05_status
-                    data:
-                      value: 1
-                else:
-                  - service: input_number.set_value
-                    target:
-                      entity_id: input_number.b2500_05_status
-                    data:
-                      value: -1
-
-            else:
-              - service: input_number.set_value
-                target:
-                  entity_id: input_number.b2500_05_status
-                data:
-                  value: 0
-
-              - service: mqtt.publish
-                data:
-                  topic: "{{ mqtt_topic }}"
-                  payload: "{{ payload_clean }}"
-                  qos: 1
-
               - delay:
                   seconds: 3
-
               - service: mqtt.publish
                 data:
                   topic: "{{ mqtt_topic }}"
                   payload: "{{ followup_payload_clean }}"
                   qos: 1
 
-              - wait_for_trigger:
-                  - trigger: mqtt
-                    topic: "{{ reply_topic_detected }}"
-                timeout: 10
-                continue_on_timeout: true
+          - wait_for_trigger:
+              - trigger: mqtt
+                topic: "{{ wait_topic }}"
+            timeout: "00:00:10"
+            continue_on_timeout: true
 
-              - if:
-                  - condition: template
-                    value_template: "{{ wait.trigger is not none }}"
-                then:
-                  - service: input_number.set_value
-                    target:
-                      entity_id: input_number.b2500_05_status
-                    data:
-                      value: 1
-                else:
-                  - service: input_number.set_value
-                    target:
-                      entity_id: input_number.b2500_05_status
-                    data:
-                      value: -1
+          - variables:
+              actual_state_second: "{{ states(sensor_entity) if sensor_entity != '' else '' }}"
+              second_ok: >-
+                {% if wait.trigger is none %}
+                  false
+                {% elif expected_value_clean == '' %}
+                  true
+                {% elif sensor_entity == '' or actual_state_second in ['unknown', 'unavailable', 'none', None] %}
+                  false
+                {% elif expected_field_clean in text_fields %}
+                  {{ actual_state_second | string == expected_value_clean | string }}
+                {% else %}
+                  {{ actual_state_second | float(999999999) == expected_value_clean | float(999999998) }}
+                {% endif %}
+
+          - if:
+              - condition: template
+                value_template: '{{ second_ok }}'
+            then:
+              - service: input_number.set_value
+                target:
+                  entity_id: input_number.b2500_05_status
+                data:
+                  value: 3
+            else:
+              - service: input_number.set_value
+                target:
+                  entity_id: input_number.b2500_05_status
+                data:
+                  value: -1
 
   b2500_06_worker:
     alias: B2500PKG_B06_Worker
@@ -922,7 +1072,12 @@ script:
         default: false
         selector:
           boolean:
-      reply_topic:
+      expected_value:
+        required: false
+        default: ""
+        selector:
+          text:
+      expected_field:
         required: false
         default: ""
         selector:
@@ -932,141 +1087,166 @@ script:
       - variables:
           mqtt_topic: "{{ states('input_text.b06_topic') }}/{{ states('input_text.b06_typ') }}/App/{{ states('input_text.b06_mac') }}/ctrl"
           mqtt_mac: "{{ states('input_text.b06_mac') }}"
-          payload_clean: "{{ payload | default('', true) | trim }}"
-          followup_payload_clean: "{{ followup_payload | default('', true) | trim }}"
+          payload_clean: "{{ payload | default('', true) | string | trim }}"
+          followup_payload_clean: "{{ followup_payload | default('', true) | string | trim }}"
           no_check_clean: "{{ no_check | default(false) }}"
-          reply_topic_clean: "{{ reply_topic | default('', true) | trim }}"
-          reply_command: "{{ followup_payload_clean if followup_payload_clean != '' else payload_clean }}"
+          expected_value_clean: "{{ expected_value | default('', true) | string | trim }}"
+          expected_field_clean: "{{ expected_field | default('', true) | string | trim | lower }}"
+          wait_command: "{{ followup_payload_clean if followup_payload_clean != '' else payload_clean }}"
+          wait_topic: >-
+            {% if wait_command == 'cd=01' %}
+              B2500PKG/B2500_06/CD01/last_updated
+            {% elif wait_command == 'cd=13' %}
+              B2500PKG/B2500_06/CD13/last_updated
+            {% elif wait_command == 'cd=15' %}
+              B2500PKG/B2500_06/CD15/last_updated
+            {% elif wait_command == 'cd=16' %}
+              B2500PKG/B2500_06/CD16/last_updated
+            {% else %}
+              B2500PKG/B2500_06/CD01/last_updated
+            {% endif %}
+          sensor_entity: "{{ 'sensor.b2500_06_' ~ expected_field_clean if expected_field_clean != '' else '' }}"
+          text_fields: ['e1','e2','e3','e4','e5','f1','f2','f3','f4','f5']
 
       - if:
           - condition: template
-            value_template: "{{ payload_clean == '' }}"
+            value_template: '{{ payload_clean == "" }}'
         then:
           - stop: "Kein payload → Abbruch"
 
       - if:
           - condition: template
-            value_template: "{{ mqtt_mac in ['', 'unknown', 'unavailable', 'none', None] }}"
+            value_template: '{{ mqtt_mac in ["", "unknown", "unavailable", "none", None] }}'
         then:
           - stop: "MAC ungültig → Abbruch"
 
       - if:
           - condition: template
-            value_template: "{{ no_check_clean == true }}"
+            value_template: '{{ expected_value_clean != "" and expected_field_clean == "" }}'
         then:
+          - stop: "expected_field fehlt obwohl expected_value gesetzt ist → Abbruch"
+
+      - service: mqtt.publish
+        data:
+          topic: "{{ mqtt_topic }}"
+          payload: "{{ payload_clean }}"
+          qos: 1
+
+      - if:
+          - condition: template
+            value_template: '{{ followup_payload_clean != "" }}'
+        then:
+          - delay:
+              seconds: 3
+          - service: mqtt.publish
+            data:
+              topic: "{{ mqtt_topic }}"
+              payload: "{{ followup_payload_clean }}"
+              qos: 1
+
+      - if:
+          - condition: template
+            value_template: '{{ no_check_clean == true }}'
+        then:
+          - stop: "no_check aktiv → Ende nach dem Senden"
+
+      - service: input_number.set_value
+        target:
+          entity_id: input_number.b2500_06_status
+        data:
+          value: 1
+
+      - wait_for_trigger:
+          - trigger: mqtt
+            topic: "{{ wait_topic }}"
+        timeout: "00:00:10"
+        continue_on_timeout: true
+
+      - variables:
+          actual_state_first: "{{ states(sensor_entity) if sensor_entity != '' else '' }}"
+          first_ok: >-
+            {% if wait.trigger is none %}
+              false
+            {% elif expected_value_clean == '' %}
+              true
+            {% elif sensor_entity == '' or actual_state_first in ['unknown', 'unavailable', 'none', None] %}
+              false
+            {% elif expected_field_clean in text_fields %}
+              {{ actual_state_first | string == expected_value_clean | string }}
+            {% else %}
+              {{ actual_state_first | float(999999999) == expected_value_clean | float(999999998) }}
+            {% endif %}
+
+      - if:
+          - condition: template
+            value_template: '{{ first_ok }}'
+        then:
+          - service: input_number.set_value
+            target:
+              entity_id: input_number.b2500_06_status
+            data:
+              value: 3
+        else:
+          - service: input_number.set_value
+            target:
+              entity_id: input_number.b2500_06_status
+            data:
+              value: 2
+
           - service: mqtt.publish
             data:
               topic: "{{ mqtt_topic }}"
               payload: "{{ payload_clean }}"
               qos: 1
-        else:
-          - if:
-              - condition: template
-                value_template: "{{ reply_topic_clean == '' }}"
-            then:
-              - variables:
-                  reply_topic_detected: >-
-                    {% if reply_command == 'cd=01' %}
-                      B2500PKG/B2500_06/CD01/last_updated
-                    {% elif reply_command == 'cd=13' %}
-                      B2500PKG/B2500_06/CD13/last_updated
-                    {% elif reply_command == 'cd=15' %}
-                      B2500PKG/B2500_06/CD15/last_updated
-                    {% elif reply_command == 'cd=16' %}
-                      B2500PKG/B2500_06/CD16/last_updated
-                    {% else %}
-                    {% endif %}
-            else:
-              - variables:
-                  reply_topic_detected: "{{ reply_topic_clean }}"
 
           - if:
               - condition: template
-                value_template: "{{ reply_topic_detected == '' }}"
+                value_template: '{{ followup_payload_clean != "" }}'
             then:
-              - stop: "Kein reply_topic erkannt → Abbruch"
-
-          - if:
-              - condition: template
-                value_template: "{{ followup_payload_clean == '' }}"
-            then:
-              - service: input_number.set_value
-                target:
-                  entity_id: input_number.b2500_06_status
-                data:
-                  value: 0
-
-              - service: mqtt.publish
-                data:
-                  topic: "{{ mqtt_topic }}"
-                  payload: "{{ payload_clean }}"
-                  qos: 1
-
-              - wait_for_trigger:
-                  - trigger: mqtt
-                    topic: "{{ reply_topic_detected }}"
-                timeout: 10
-                continue_on_timeout: true
-
-              - if:
-                  - condition: template
-                    value_template: "{{ wait.trigger is not none }}"
-                then:
-                  - service: input_number.set_value
-                    target:
-                      entity_id: input_number.b2500_06_status
-                    data:
-                      value: 1
-                else:
-                  - service: input_number.set_value
-                    target:
-                      entity_id: input_number.b2500_06_status
-                    data:
-                      value: -1
-
-            else:
-              - service: input_number.set_value
-                target:
-                  entity_id: input_number.b2500_06_status
-                data:
-                  value: 0
-
-              - service: mqtt.publish
-                data:
-                  topic: "{{ mqtt_topic }}"
-                  payload: "{{ payload_clean }}"
-                  qos: 1
-
               - delay:
                   seconds: 3
-
               - service: mqtt.publish
                 data:
                   topic: "{{ mqtt_topic }}"
                   payload: "{{ followup_payload_clean }}"
                   qos: 1
 
-              - wait_for_trigger:
-                  - trigger: mqtt
-                    topic: "{{ reply_topic_detected }}"
-                timeout: 10
-                continue_on_timeout: true
+          - wait_for_trigger:
+              - trigger: mqtt
+                topic: "{{ wait_topic }}"
+            timeout: "00:00:10"
+            continue_on_timeout: true
 
-              - if:
-                  - condition: template
-                    value_template: "{{ wait.trigger is not none }}"
-                then:
-                  - service: input_number.set_value
-                    target:
-                      entity_id: input_number.b2500_06_status
-                    data:
-                      value: 1
-                else:
-                  - service: input_number.set_value
-                    target:
-                      entity_id: input_number.b2500_06_status
-                    data:
-                      value: -1
+          - variables:
+              actual_state_second: "{{ states(sensor_entity) if sensor_entity != '' else '' }}"
+              second_ok: >-
+                {% if wait.trigger is none %}
+                  false
+                {% elif expected_value_clean == '' %}
+                  true
+                {% elif sensor_entity == '' or actual_state_second in ['unknown', 'unavailable', 'none', None] %}
+                  false
+                {% elif expected_field_clean in text_fields %}
+                  {{ actual_state_second | string == expected_value_clean | string }}
+                {% else %}
+                  {{ actual_state_second | float(999999999) == expected_value_clean | float(999999998) }}
+                {% endif %}
+
+          - if:
+              - condition: template
+                value_template: '{{ second_ok }}'
+            then:
+              - service: input_number.set_value
+                target:
+                  entity_id: input_number.b2500_06_status
+                data:
+                  value: 3
+            else:
+              - service: input_number.set_value
+                target:
+                  entity_id: input_number.b2500_06_status
+                data:
+                  value: -1
 
   b2500_07_worker:
     alias: B2500PKG_B07_Worker
@@ -1088,7 +1268,12 @@ script:
         default: false
         selector:
           boolean:
-      reply_topic:
+      expected_value:
+        required: false
+        default: ""
+        selector:
+          text:
+      expected_field:
         required: false
         default: ""
         selector:
@@ -1098,141 +1283,166 @@ script:
       - variables:
           mqtt_topic: "{{ states('input_text.b07_topic') }}/{{ states('input_text.b07_typ') }}/App/{{ states('input_text.b07_mac') }}/ctrl"
           mqtt_mac: "{{ states('input_text.b07_mac') }}"
-          payload_clean: "{{ payload | default('', true) | trim }}"
-          followup_payload_clean: "{{ followup_payload | default('', true) | trim }}"
+          payload_clean: "{{ payload | default('', true) | string | trim }}"
+          followup_payload_clean: "{{ followup_payload | default('', true) | string | trim }}"
           no_check_clean: "{{ no_check | default(false) }}"
-          reply_topic_clean: "{{ reply_topic | default('', true) | trim }}"
-          reply_command: "{{ followup_payload_clean if followup_payload_clean != '' else payload_clean }}"
+          expected_value_clean: "{{ expected_value | default('', true) | string | trim }}"
+          expected_field_clean: "{{ expected_field | default('', true) | string | trim | lower }}"
+          wait_command: "{{ followup_payload_clean if followup_payload_clean != '' else payload_clean }}"
+          wait_topic: >-
+            {% if wait_command == 'cd=01' %}
+              B2500PKG/B2500_07/CD01/last_updated
+            {% elif wait_command == 'cd=13' %}
+              B2500PKG/B2500_07/CD13/last_updated
+            {% elif wait_command == 'cd=15' %}
+              B2500PKG/B2500_07/CD15/last_updated
+            {% elif wait_command == 'cd=16' %}
+              B2500PKG/B2500_07/CD16/last_updated
+            {% else %}
+              B2500PKG/B2500_07/CD01/last_updated
+            {% endif %}
+          sensor_entity: "{{ 'sensor.b2500_07_' ~ expected_field_clean if expected_field_clean != '' else '' }}"
+          text_fields: ['e1','e2','e3','e4','e5','f1','f2','f3','f4','f5']
 
       - if:
           - condition: template
-            value_template: "{{ payload_clean == '' }}"
+            value_template: '{{ payload_clean == "" }}'
         then:
           - stop: "Kein payload → Abbruch"
 
       - if:
           - condition: template
-            value_template: "{{ mqtt_mac in ['', 'unknown', 'unavailable', 'none', None] }}"
+            value_template: '{{ mqtt_mac in ["", "unknown", "unavailable", "none", None] }}'
         then:
           - stop: "MAC ungültig → Abbruch"
 
       - if:
           - condition: template
-            value_template: "{{ no_check_clean == true }}"
+            value_template: '{{ expected_value_clean != "" and expected_field_clean == "" }}'
         then:
+          - stop: "expected_field fehlt obwohl expected_value gesetzt ist → Abbruch"
+
+      - service: mqtt.publish
+        data:
+          topic: "{{ mqtt_topic }}"
+          payload: "{{ payload_clean }}"
+          qos: 1
+
+      - if:
+          - condition: template
+            value_template: '{{ followup_payload_clean != "" }}'
+        then:
+          - delay:
+              seconds: 3
+          - service: mqtt.publish
+            data:
+              topic: "{{ mqtt_topic }}"
+              payload: "{{ followup_payload_clean }}"
+              qos: 1
+
+      - if:
+          - condition: template
+            value_template: '{{ no_check_clean == true }}'
+        then:
+          - stop: "no_check aktiv → Ende nach dem Senden"
+
+      - service: input_number.set_value
+        target:
+          entity_id: input_number.b2500_07_status
+        data:
+          value: 1
+
+      - wait_for_trigger:
+          - trigger: mqtt
+            topic: "{{ wait_topic }}"
+        timeout: "00:00:10"
+        continue_on_timeout: true
+
+      - variables:
+          actual_state_first: "{{ states(sensor_entity) if sensor_entity != '' else '' }}"
+          first_ok: >-
+            {% if wait.trigger is none %}
+              false
+            {% elif expected_value_clean == '' %}
+              true
+            {% elif sensor_entity == '' or actual_state_first in ['unknown', 'unavailable', 'none', None] %}
+              false
+            {% elif expected_field_clean in text_fields %}
+              {{ actual_state_first | string == expected_value_clean | string }}
+            {% else %}
+              {{ actual_state_first | float(999999999) == expected_value_clean | float(999999998) }}
+            {% endif %}
+
+      - if:
+          - condition: template
+            value_template: '{{ first_ok }}'
+        then:
+          - service: input_number.set_value
+            target:
+              entity_id: input_number.b2500_07_status
+            data:
+              value: 3
+        else:
+          - service: input_number.set_value
+            target:
+              entity_id: input_number.b2500_07_status
+            data:
+              value: 2
+
           - service: mqtt.publish
             data:
               topic: "{{ mqtt_topic }}"
               payload: "{{ payload_clean }}"
               qos: 1
-        else:
-          - if:
-              - condition: template
-                value_template: "{{ reply_topic_clean == '' }}"
-            then:
-              - variables:
-                  reply_topic_detected: >-
-                    {% if reply_command == 'cd=01' %}
-                      B2500PKG/B2500_07/CD01/last_updated
-                    {% elif reply_command == 'cd=13' %}
-                      B2500PKG/B2500_07/CD13/last_updated
-                    {% elif reply_command == 'cd=15' %}
-                      B2500PKG/B2500_07/CD15/last_updated
-                    {% elif reply_command == 'cd=16' %}
-                      B2500PKG/B2500_07/CD16/last_updated
-                    {% else %}
-                    {% endif %}
-            else:
-              - variables:
-                  reply_topic_detected: "{{ reply_topic_clean }}"
 
           - if:
               - condition: template
-                value_template: "{{ reply_topic_detected == '' }}"
+                value_template: '{{ followup_payload_clean != "" }}'
             then:
-              - stop: "Kein reply_topic erkannt → Abbruch"
-
-          - if:
-              - condition: template
-                value_template: "{{ followup_payload_clean == '' }}"
-            then:
-              - service: input_number.set_value
-                target:
-                  entity_id: input_number.b2500_07_status
-                data:
-                  value: 0
-
-              - service: mqtt.publish
-                data:
-                  topic: "{{ mqtt_topic }}"
-                  payload: "{{ payload_clean }}"
-                  qos: 1
-
-              - wait_for_trigger:
-                  - trigger: mqtt
-                    topic: "{{ reply_topic_detected }}"
-                timeout: 10
-                continue_on_timeout: true
-
-              - if:
-                  - condition: template
-                    value_template: "{{ wait.trigger is not none }}"
-                then:
-                  - service: input_number.set_value
-                    target:
-                      entity_id: input_number.b2500_07_status
-                    data:
-                      value: 1
-                else:
-                  - service: input_number.set_value
-                    target:
-                      entity_id: input_number.b2500_07_status
-                    data:
-                      value: -1
-
-            else:
-              - service: input_number.set_value
-                target:
-                  entity_id: input_number.b2500_07_status
-                data:
-                  value: 0
-
-              - service: mqtt.publish
-                data:
-                  topic: "{{ mqtt_topic }}"
-                  payload: "{{ payload_clean }}"
-                  qos: 1
-
               - delay:
                   seconds: 3
-
               - service: mqtt.publish
                 data:
                   topic: "{{ mqtt_topic }}"
                   payload: "{{ followup_payload_clean }}"
                   qos: 1
 
-              - wait_for_trigger:
-                  - trigger: mqtt
-                    topic: "{{ reply_topic_detected }}"
-                timeout: 10
-                continue_on_timeout: true
+          - wait_for_trigger:
+              - trigger: mqtt
+                topic: "{{ wait_topic }}"
+            timeout: "00:00:10"
+            continue_on_timeout: true
 
-              - if:
-                  - condition: template
-                    value_template: "{{ wait.trigger is not none }}"
-                then:
-                  - service: input_number.set_value
-                    target:
-                      entity_id: input_number.b2500_07_status
-                    data:
-                      value: 1
-                else:
-                  - service: input_number.set_value
-                    target:
-                      entity_id: input_number.b2500_07_status
-                    data:
-                      value: -1
+          - variables:
+              actual_state_second: "{{ states(sensor_entity) if sensor_entity != '' else '' }}"
+              second_ok: >-
+                {% if wait.trigger is none %}
+                  false
+                {% elif expected_value_clean == '' %}
+                  true
+                {% elif sensor_entity == '' or actual_state_second in ['unknown', 'unavailable', 'none', None] %}
+                  false
+                {% elif expected_field_clean in text_fields %}
+                  {{ actual_state_second | string == expected_value_clean | string }}
+                {% else %}
+                  {{ actual_state_second | float(999999999) == expected_value_clean | float(999999998) }}
+                {% endif %}
+
+          - if:
+              - condition: template
+                value_template: '{{ second_ok }}'
+            then:
+              - service: input_number.set_value
+                target:
+                  entity_id: input_number.b2500_07_status
+                data:
+                  value: 3
+            else:
+              - service: input_number.set_value
+                target:
+                  entity_id: input_number.b2500_07_status
+                data:
+                  value: -1
 
   b2500_08_worker:
     alias: B2500PKG_B08_Worker
@@ -1254,7 +1464,12 @@ script:
         default: false
         selector:
           boolean:
-      reply_topic:
+      expected_value:
+        required: false
+        default: ""
+        selector:
+          text:
+      expected_field:
         required: false
         default: ""
         selector:
@@ -1264,141 +1479,166 @@ script:
       - variables:
           mqtt_topic: "{{ states('input_text.b08_topic') }}/{{ states('input_text.b08_typ') }}/App/{{ states('input_text.b08_mac') }}/ctrl"
           mqtt_mac: "{{ states('input_text.b08_mac') }}"
-          payload_clean: "{{ payload | default('', true) | trim }}"
-          followup_payload_clean: "{{ followup_payload | default('', true) | trim }}"
+          payload_clean: "{{ payload | default('', true) | string | trim }}"
+          followup_payload_clean: "{{ followup_payload | default('', true) | string | trim }}"
           no_check_clean: "{{ no_check | default(false) }}"
-          reply_topic_clean: "{{ reply_topic | default('', true) | trim }}"
-          reply_command: "{{ followup_payload_clean if followup_payload_clean != '' else payload_clean }}"
+          expected_value_clean: "{{ expected_value | default('', true) | string | trim }}"
+          expected_field_clean: "{{ expected_field | default('', true) | string | trim | lower }}"
+          wait_command: "{{ followup_payload_clean if followup_payload_clean != '' else payload_clean }}"
+          wait_topic: >-
+            {% if wait_command == 'cd=01' %}
+              B2500PKG/B2500_08/CD01/last_updated
+            {% elif wait_command == 'cd=13' %}
+              B2500PKG/B2500_08/CD13/last_updated
+            {% elif wait_command == 'cd=15' %}
+              B2500PKG/B2500_08/CD15/last_updated
+            {% elif wait_command == 'cd=16' %}
+              B2500PKG/B2500_08/CD16/last_updated
+            {% else %}
+              B2500PKG/B2500_08/CD01/last_updated
+            {% endif %}
+          sensor_entity: "{{ 'sensor.b2500_08_' ~ expected_field_clean if expected_field_clean != '' else '' }}"
+          text_fields: ['e1','e2','e3','e4','e5','f1','f2','f3','f4','f5']
 
       - if:
           - condition: template
-            value_template: "{{ payload_clean == '' }}"
+            value_template: '{{ payload_clean == "" }}'
         then:
           - stop: "Kein payload → Abbruch"
 
       - if:
           - condition: template
-            value_template: "{{ mqtt_mac in ['', 'unknown', 'unavailable', 'none', None] }}"
+            value_template: '{{ mqtt_mac in ["", "unknown", "unavailable", "none", None] }}'
         then:
           - stop: "MAC ungültig → Abbruch"
 
       - if:
           - condition: template
-            value_template: "{{ no_check_clean == true }}"
+            value_template: '{{ expected_value_clean != "" and expected_field_clean == "" }}'
         then:
+          - stop: "expected_field fehlt obwohl expected_value gesetzt ist → Abbruch"
+
+      - service: mqtt.publish
+        data:
+          topic: "{{ mqtt_topic }}"
+          payload: "{{ payload_clean }}"
+          qos: 1
+
+      - if:
+          - condition: template
+            value_template: '{{ followup_payload_clean != "" }}'
+        then:
+          - delay:
+              seconds: 3
+          - service: mqtt.publish
+            data:
+              topic: "{{ mqtt_topic }}"
+              payload: "{{ followup_payload_clean }}"
+              qos: 1
+
+      - if:
+          - condition: template
+            value_template: '{{ no_check_clean == true }}'
+        then:
+          - stop: "no_check aktiv → Ende nach dem Senden"
+
+      - service: input_number.set_value
+        target:
+          entity_id: input_number.b2500_08_status
+        data:
+          value: 1
+
+      - wait_for_trigger:
+          - trigger: mqtt
+            topic: "{{ wait_topic }}"
+        timeout: "00:00:10"
+        continue_on_timeout: true
+
+      - variables:
+          actual_state_first: "{{ states(sensor_entity) if sensor_entity != '' else '' }}"
+          first_ok: >-
+            {% if wait.trigger is none %}
+              false
+            {% elif expected_value_clean == '' %}
+              true
+            {% elif sensor_entity == '' or actual_state_first in ['unknown', 'unavailable', 'none', None] %}
+              false
+            {% elif expected_field_clean in text_fields %}
+              {{ actual_state_first | string == expected_value_clean | string }}
+            {% else %}
+              {{ actual_state_first | float(999999999) == expected_value_clean | float(999999998) }}
+            {% endif %}
+
+      - if:
+          - condition: template
+            value_template: '{{ first_ok }}'
+        then:
+          - service: input_number.set_value
+            target:
+              entity_id: input_number.b2500_08_status
+            data:
+              value: 3
+        else:
+          - service: input_number.set_value
+            target:
+              entity_id: input_number.b2500_08_status
+            data:
+              value: 2
+
           - service: mqtt.publish
             data:
               topic: "{{ mqtt_topic }}"
               payload: "{{ payload_clean }}"
               qos: 1
-        else:
-          - if:
-              - condition: template
-                value_template: "{{ reply_topic_clean == '' }}"
-            then:
-              - variables:
-                  reply_topic_detected: >-
-                    {% if reply_command == 'cd=01' %}
-                      B2500PKG/B2500_08/CD01/last_updated
-                    {% elif reply_command == 'cd=13' %}
-                      B2500PKG/B2500_08/CD13/last_updated
-                    {% elif reply_command == 'cd=15' %}
-                      B2500PKG/B2500_08/CD15/last_updated
-                    {% elif reply_command == 'cd=16' %}
-                      B2500PKG/B2500_08/CD16/last_updated
-                    {% else %}
-                    {% endif %}
-            else:
-              - variables:
-                  reply_topic_detected: "{{ reply_topic_clean }}"
 
           - if:
               - condition: template
-                value_template: "{{ reply_topic_detected == '' }}"
+                value_template: '{{ followup_payload_clean != "" }}'
             then:
-              - stop: "Kein reply_topic erkannt → Abbruch"
-
-          - if:
-              - condition: template
-                value_template: "{{ followup_payload_clean == '' }}"
-            then:
-              - service: input_number.set_value
-                target:
-                  entity_id: input_number.b2500_08_status
-                data:
-                  value: 0
-
-              - service: mqtt.publish
-                data:
-                  topic: "{{ mqtt_topic }}"
-                  payload: "{{ payload_clean }}"
-                  qos: 1
-
-              - wait_for_trigger:
-                  - trigger: mqtt
-                    topic: "{{ reply_topic_detected }}"
-                timeout: 10
-                continue_on_timeout: true
-
-              - if:
-                  - condition: template
-                    value_template: "{{ wait.trigger is not none }}"
-                then:
-                  - service: input_number.set_value
-                    target:
-                      entity_id: input_number.b2500_08_status
-                    data:
-                      value: 1
-                else:
-                  - service: input_number.set_value
-                    target:
-                      entity_id: input_number.b2500_08_status
-                    data:
-                      value: -1
-
-            else:
-              - service: input_number.set_value
-                target:
-                  entity_id: input_number.b2500_08_status
-                data:
-                  value: 0
-
-              - service: mqtt.publish
-                data:
-                  topic: "{{ mqtt_topic }}"
-                  payload: "{{ payload_clean }}"
-                  qos: 1
-
               - delay:
                   seconds: 3
-
               - service: mqtt.publish
                 data:
                   topic: "{{ mqtt_topic }}"
                   payload: "{{ followup_payload_clean }}"
                   qos: 1
 
-              - wait_for_trigger:
-                  - trigger: mqtt
-                    topic: "{{ reply_topic_detected }}"
-                timeout: 10
-                continue_on_timeout: true
+          - wait_for_trigger:
+              - trigger: mqtt
+                topic: "{{ wait_topic }}"
+            timeout: "00:00:10"
+            continue_on_timeout: true
 
-              - if:
-                  - condition: template
-                    value_template: "{{ wait.trigger is not none }}"
-                then:
-                  - service: input_number.set_value
-                    target:
-                      entity_id: input_number.b2500_08_status
-                    data:
-                      value: 1
-                else:
-                  - service: input_number.set_value
-                    target:
-                      entity_id: input_number.b2500_08_status
-                    data:
-                      value: -1
+          - variables:
+              actual_state_second: "{{ states(sensor_entity) if sensor_entity != '' else '' }}"
+              second_ok: >-
+                {% if wait.trigger is none %}
+                  false
+                {% elif expected_value_clean == '' %}
+                  true
+                {% elif sensor_entity == '' or actual_state_second in ['unknown', 'unavailable', 'none', None] %}
+                  false
+                {% elif expected_field_clean in text_fields %}
+                  {{ actual_state_second | string == expected_value_clean | string }}
+                {% else %}
+                  {{ actual_state_second | float(999999999) == expected_value_clean | float(999999998) }}
+                {% endif %}
+
+          - if:
+              - condition: template
+                value_template: '{{ second_ok }}'
+            then:
+              - service: input_number.set_value
+                target:
+                  entity_id: input_number.b2500_08_status
+                data:
+                  value: 3
+            else:
+              - service: input_number.set_value
+                target:
+                  entity_id: input_number.b2500_08_status
+                data:
+                  value: -1
 
   b2500_09_worker:
     alias: B2500PKG_B09_Worker
@@ -1420,7 +1660,12 @@ script:
         default: false
         selector:
           boolean:
-      reply_topic:
+      expected_value:
+        required: false
+        default: ""
+        selector:
+          text:
+      expected_field:
         required: false
         default: ""
         selector:
@@ -1430,138 +1675,163 @@ script:
       - variables:
           mqtt_topic: "{{ states('input_text.b09_topic') }}/{{ states('input_text.b09_typ') }}/App/{{ states('input_text.b09_mac') }}/ctrl"
           mqtt_mac: "{{ states('input_text.b09_mac') }}"
-          payload_clean: "{{ payload | default('', true) | trim }}"
-          followup_payload_clean: "{{ followup_payload | default('', true) | trim }}"
+          payload_clean: "{{ payload | default('', true) | string | trim }}"
+          followup_payload_clean: "{{ followup_payload | default('', true) | string | trim }}"
           no_check_clean: "{{ no_check | default(false) }}"
-          reply_topic_clean: "{{ reply_topic | default('', true) | trim }}"
-          reply_command: "{{ followup_payload_clean if followup_payload_clean != '' else payload_clean }}"
+          expected_value_clean: "{{ expected_value | default('', true) | string | trim }}"
+          expected_field_clean: "{{ expected_field | default('', true) | string | trim | lower }}"
+          wait_command: "{{ followup_payload_clean if followup_payload_clean != '' else payload_clean }}"
+          wait_topic: >-
+            {% if wait_command == 'cd=01' %}
+              B2500PKG/B2500_09/CD01/last_updated
+            {% elif wait_command == 'cd=13' %}
+              B2500PKG/B2500_09/CD13/last_updated
+            {% elif wait_command == 'cd=15' %}
+              B2500PKG/B2500_09/CD15/last_updated
+            {% elif wait_command == 'cd=16' %}
+              B2500PKG/B2500_09/CD16/last_updated
+            {% else %}
+              B2500PKG/B2500_09/CD01/last_updated
+            {% endif %}
+          sensor_entity: "{{ 'sensor.b2500_09_' ~ expected_field_clean if expected_field_clean != '' else '' }}"
+          text_fields: ['e1','e2','e3','e4','e5','f1','f2','f3','f4','f5']
 
       - if:
           - condition: template
-            value_template: "{{ payload_clean == '' }}"
+            value_template: '{{ payload_clean == "" }}'
         then:
           - stop: "Kein payload → Abbruch"
 
       - if:
           - condition: template
-            value_template: "{{ mqtt_mac in ['', 'unknown', 'unavailable', 'none', None] }}"
+            value_template: '{{ mqtt_mac in ["", "unknown", "unavailable", "none", None] }}'
         then:
           - stop: "MAC ungültig → Abbruch"
 
       - if:
           - condition: template
-            value_template: "{{ no_check_clean == true }}"
+            value_template: '{{ expected_value_clean != "" and expected_field_clean == "" }}'
         then:
+          - stop: "expected_field fehlt obwohl expected_value gesetzt ist → Abbruch"
+
+      - service: mqtt.publish
+        data:
+          topic: "{{ mqtt_topic }}"
+          payload: "{{ payload_clean }}"
+          qos: 1
+
+      - if:
+          - condition: template
+            value_template: '{{ followup_payload_clean != "" }}'
+        then:
+          - delay:
+              seconds: 3
+          - service: mqtt.publish
+            data:
+              topic: "{{ mqtt_topic }}"
+              payload: "{{ followup_payload_clean }}"
+              qos: 1
+
+      - if:
+          - condition: template
+            value_template: '{{ no_check_clean == true }}'
+        then:
+          - stop: "no_check aktiv → Ende nach dem Senden"
+
+      - service: input_number.set_value
+        target:
+          entity_id: input_number.b2500_09_status
+        data:
+          value: 1
+
+      - wait_for_trigger:
+          - trigger: mqtt
+            topic: "{{ wait_topic }}"
+        timeout: "00:00:10"
+        continue_on_timeout: true
+
+      - variables:
+          actual_state_first: "{{ states(sensor_entity) if sensor_entity != '' else '' }}"
+          first_ok: >-
+            {% if wait.trigger is none %}
+              false
+            {% elif expected_value_clean == '' %}
+              true
+            {% elif sensor_entity == '' or actual_state_first in ['unknown', 'unavailable', 'none', None] %}
+              false
+            {% elif expected_field_clean in text_fields %}
+              {{ actual_state_first | string == expected_value_clean | string }}
+            {% else %}
+              {{ actual_state_first | float(999999999) == expected_value_clean | float(999999998) }}
+            {% endif %}
+
+      - if:
+          - condition: template
+            value_template: '{{ first_ok }}'
+        then:
+          - service: input_number.set_value
+            target:
+              entity_id: input_number.b2500_09_status
+            data:
+              value: 3
+        else:
+          - service: input_number.set_value
+            target:
+              entity_id: input_number.b2500_09_status
+            data:
+              value: 2
+
           - service: mqtt.publish
             data:
               topic: "{{ mqtt_topic }}"
               payload: "{{ payload_clean }}"
               qos: 1
-        else:
-          - if:
-              - condition: template
-                value_template: "{{ reply_topic_clean == '' }}"
-            then:
-              - variables:
-                  reply_topic_detected: >-
-                    {% if reply_command == 'cd=01' %}
-                      B2500PKG/B2500_09/CD01/last_updated
-                    {% elif reply_command == 'cd=13' %}
-                      B2500PKG/B2500_09/CD13/last_updated
-                    {% elif reply_command == 'cd=15' %}
-                      B2500PKG/B2500_09/CD15/last_updated
-                    {% elif reply_command == 'cd=16' %}
-                      B2500PKG/B2500_09/CD16/last_updated
-                    {% else %}
-                    {% endif %}
-            else:
-              - variables:
-                  reply_topic_detected: "{{ reply_topic_clean }}"
 
           - if:
               - condition: template
-                value_template: "{{ reply_topic_detected == '' }}"
+                value_template: '{{ followup_payload_clean != "" }}'
             then:
-              - stop: "Kein reply_topic erkannt → Abbruch"
-
-          - if:
-              - condition: template
-                value_template: "{{ followup_payload_clean == '' }}"
-            then:
-              - service: input_number.set_value
-                target:
-                  entity_id: input_number.b2500_09_status
-                data:
-                  value: 0
-
-              - service: mqtt.publish
-                data:
-                  topic: "{{ mqtt_topic }}"
-                  payload: "{{ payload_clean }}"
-                  qos: 1
-
-              - wait_for_trigger:
-                  - trigger: mqtt
-                    topic: "{{ reply_topic_detected }}"
-                timeout: 10
-                continue_on_timeout: true
-
-              - if:
-                  - condition: template
-                    value_template: "{{ wait.trigger is not none }}"
-                then:
-                  - service: input_number.set_value
-                    target:
-                      entity_id: input_number.b2500_09_status
-                    data:
-                      value: 1
-                else:
-                  - service: input_number.set_value
-                    target:
-                      entity_id: input_number.b2500_09_status
-                    data:
-                      value: -1
-
-            else:
-              - service: input_number.set_value
-                target:
-                  entity_id: input_number.b2500_09_status
-                data:
-                  value: 0
-
-              - service: mqtt.publish
-                data:
-                  topic: "{{ mqtt_topic }}"
-                  payload: "{{ payload_clean }}"
-                  qos: 1
-
               - delay:
                   seconds: 3
-
               - service: mqtt.publish
                 data:
                   topic: "{{ mqtt_topic }}"
                   payload: "{{ followup_payload_clean }}"
                   qos: 1
 
-              - wait_for_trigger:
-                  - trigger: mqtt
-                    topic: "{{ reply_topic_detected }}"
-                timeout: 10
-                continue_on_timeout: true
+          - wait_for_trigger:
+              - trigger: mqtt
+                topic: "{{ wait_topic }}"
+            timeout: "00:00:10"
+            continue_on_timeout: true
 
-              - if:
-                  - condition: template
-                    value_template: "{{ wait.trigger is not none }}"
-                then:
-                  - service: input_number.set_value
-                    target:
-                      entity_id: input_number.b2500_09_status
-                    data:
-                      value: 1
-                else:
-                  - service: input_number.set_value
-                    target:
-                      entity_id: input_number.b2500_09_status
-                    data:
-                      value: -1
+          - variables:
+              actual_state_second: "{{ states(sensor_entity) if sensor_entity != '' else '' }}"
+              second_ok: >-
+                {% if wait.trigger is none %}
+                  false
+                {% elif expected_value_clean == '' %}
+                  true
+                {% elif sensor_entity == '' or actual_state_second in ['unknown', 'unavailable', 'none', None] %}
+                  false
+                {% elif expected_field_clean in text_fields %}
+                  {{ actual_state_second | string == expected_value_clean | string }}
+                {% else %}
+                  {{ actual_state_second | float(999999999) == expected_value_clean | float(999999998) }}
+                {% endif %}
+
+          - if:
+              - condition: template
+                value_template: '{{ second_ok }}'
+            then:
+              - service: input_number.set_value
+                target:
+                  entity_id: input_number.b2500_09_status
+                data:
+                  value: 3
+            else:
+              - service: input_number.set_value
+                target:
+                  entity_id: input_number.b2500_09_status
+                data:
+                  value: -1
