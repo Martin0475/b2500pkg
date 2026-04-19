@@ -201,8 +201,12 @@ template:
                 {% if v == -1 %}
                   {% set icon = "🔴" %}
                 {% elif v == 0 %}
-                  {% set icon = "🟡" %}
+                  {% set icon = "⚫" %}
                 {% elif v == 1 %}
+                  {% set icon = "🟡" %}
+                {% elif v == 2 %}
+                  {% set icon = "🟠" %}
+                {% elif v == 3 %}
                   {% set icon = "🟢" %}
                 {% else %}
                   {% set icon = "⚫" %}
@@ -214,7 +218,6 @@ template:
 
             {{ result.items | join(' | ') if result.items else 'Keine Speicher' }}
           {% endif %}
-
 
 
 
