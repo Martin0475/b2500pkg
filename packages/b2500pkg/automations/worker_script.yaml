@@ -102,6 +102,16 @@ script:
         default: ""
         selector:
           text:
+      expected_value_2:
+        required: false
+        default: ""
+        selector:
+          text:
+      expected_field_2:
+        required: false
+        default: ""
+        selector:
+          text:
 
     sequence:
       - variables:
@@ -112,6 +122,8 @@ script:
           no_check_clean: "{{ no_check | default(false) }}"
           expected_value_clean: "{{ expected_value | default('', true) | string | trim }}"
           expected_field_clean: "{{ expected_field | default('', true) | string | trim | lower }}"
+          expected_value_2_clean: "{{ expected_value_2 | default('', true) | string | trim }}"
+          expected_field_2_clean: "{{ expected_field_2 | default('', true) | string | trim | lower }}"
           wait_command: "{{ followup_payload_clean if followup_payload_clean != '' else payload_clean }}"
           wait_topic: >-
             {% if wait_command == 'cd=01' %}
@@ -126,6 +138,7 @@ script:
               B2500PKG/B2500_01/CD01/last_updated
             {% endif %}
           sensor_entity: "{{ 'sensor.b2500_01_' ~ expected_field_clean if expected_field_clean != '' else '' }}"
+          sensor_entity_2: "{{ 'sensor.b2500_01_' ~ expected_field_2_clean if expected_field_2_clean != '' else '' }}"
           text_fields: ['e1','e2','e3','e4','e5','f1','f2','f3','f4','f5']
 
       - if:
@@ -145,6 +158,12 @@ script:
             value_template: '{{ expected_value_clean != "" and expected_field_clean == "" }}'
         then:
           - stop: "expected_field fehlt obwohl expected_value gesetzt ist → Abbruch"
+
+      - if:
+          - condition: template
+            value_template: '{{ expected_value_2_clean != "" and expected_field_2_clean == "" }}'
+        then:
+          - stop: "expected_field_2 fehlt obwohl expected_value_2 gesetzt ist → Abbruch"
 
       - service: mqtt.publish
         data:
@@ -184,7 +203,8 @@ script:
 
       - variables:
           actual_state_first: "{{ states(sensor_entity) if sensor_entity != '' else '' }}"
-          first_ok: >-
+          actual_state_first_2: "{{ states(sensor_entity_2) if sensor_entity_2 != '' else '' }}"
+          first_ok_1: >-
             {% if wait.trigger is none %}
               false
             {% elif expected_value_clean == '' %}
@@ -196,6 +216,19 @@ script:
             {% else %}
               {{ actual_state_first | float(999999999) == expected_value_clean | float(999999998) }}
             {% endif %}
+          first_ok_2: >-
+            {% if wait.trigger is none %}
+              false
+            {% elif expected_value_2_clean == '' %}
+              true
+            {% elif sensor_entity_2 == '' or actual_state_first_2 in ['unknown', 'unavailable', 'none', None] %}
+              false
+            {% elif expected_field_2_clean in text_fields %}
+              {{ actual_state_first_2 | string == expected_value_2_clean | string }}
+            {% else %}
+              {{ actual_state_first_2 | float(999999999) == expected_value_2_clean | float(999999998) }}
+            {% endif %}
+          first_ok: "{{ first_ok_1 and first_ok_2 }}"
 
       - if:
           - condition: template
@@ -239,7 +272,8 @@ script:
 
           - variables:
               actual_state_second: "{{ states(sensor_entity) if sensor_entity != '' else '' }}"
-              second_ok: >-
+              actual_state_second_2: "{{ states(sensor_entity_2) if sensor_entity_2 != '' else '' }}"
+              second_ok_1: >-
                 {% if wait.trigger is none %}
                   false
                 {% elif expected_value_clean == '' %}
@@ -251,6 +285,19 @@ script:
                 {% else %}
                   {{ actual_state_second | float(999999999) == expected_value_clean | float(999999998) }}
                 {% endif %}
+              second_ok_2: >-
+                {% if wait.trigger is none %}
+                  false
+                {% elif expected_value_2_clean == '' %}
+                  true
+                {% elif sensor_entity_2 == '' or actual_state_second_2 in ['unknown', 'unavailable', 'none', None] %}
+                  false
+                {% elif expected_field_2_clean in text_fields %}
+                  {{ actual_state_second_2 | string == expected_value_2_clean | string }}
+                {% else %}
+                  {{ actual_state_second_2 | float(999999999) == expected_value_2_clean | float(999999998) }}
+                {% endif %}
+              second_ok: "{{ second_ok_1 and second_ok_2 }}"
 
           - if:
               - condition: template
@@ -298,6 +345,16 @@ script:
         default: ""
         selector:
           text:
+      expected_value_2:
+        required: false
+        default: ""
+        selector:
+          text:
+      expected_field_2:
+        required: false
+        default: ""
+        selector:
+          text:
 
     sequence:
       - variables:
@@ -308,6 +365,8 @@ script:
           no_check_clean: "{{ no_check | default(false) }}"
           expected_value_clean: "{{ expected_value | default('', true) | string | trim }}"
           expected_field_clean: "{{ expected_field | default('', true) | string | trim | lower }}"
+          expected_value_2_clean: "{{ expected_value_2 | default('', true) | string | trim }}"
+          expected_field_2_clean: "{{ expected_field_2 | default('', true) | string | trim | lower }}"
           wait_command: "{{ followup_payload_clean if followup_payload_clean != '' else payload_clean }}"
           wait_topic: >-
             {% if wait_command == 'cd=01' %}
@@ -322,6 +381,7 @@ script:
               B2500PKG/B2500_02/CD01/last_updated
             {% endif %}
           sensor_entity: "{{ 'sensor.b2500_02_' ~ expected_field_clean if expected_field_clean != '' else '' }}"
+          sensor_entity_2: "{{ 'sensor.b2500_02_' ~ expected_field_2_clean if expected_field_2_clean != '' else '' }}"
           text_fields: ['e1','e2','e3','e4','e5','f1','f2','f3','f4','f5']
 
       - if:
@@ -341,6 +401,12 @@ script:
             value_template: '{{ expected_value_clean != "" and expected_field_clean == "" }}'
         then:
           - stop: "expected_field fehlt obwohl expected_value gesetzt ist → Abbruch"
+
+      - if:
+          - condition: template
+            value_template: '{{ expected_value_2_clean != "" and expected_field_2_clean == "" }}'
+        then:
+          - stop: "expected_field_2 fehlt obwohl expected_value_2 gesetzt ist → Abbruch"
 
       - service: mqtt.publish
         data:
@@ -380,7 +446,8 @@ script:
 
       - variables:
           actual_state_first: "{{ states(sensor_entity) if sensor_entity != '' else '' }}"
-          first_ok: >-
+          actual_state_first_2: "{{ states(sensor_entity_2) if sensor_entity_2 != '' else '' }}"
+          first_ok_1: >-
             {% if wait.trigger is none %}
               false
             {% elif expected_value_clean == '' %}
@@ -392,6 +459,19 @@ script:
             {% else %}
               {{ actual_state_first | float(999999999) == expected_value_clean | float(999999998) }}
             {% endif %}
+          first_ok_2: >-
+            {% if wait.trigger is none %}
+              false
+            {% elif expected_value_2_clean == '' %}
+              true
+            {% elif sensor_entity_2 == '' or actual_state_first_2 in ['unknown', 'unavailable', 'none', None] %}
+              false
+            {% elif expected_field_2_clean in text_fields %}
+              {{ actual_state_first_2 | string == expected_value_2_clean | string }}
+            {% else %}
+              {{ actual_state_first_2 | float(999999999) == expected_value_2_clean | float(999999998) }}
+            {% endif %}
+          first_ok: "{{ first_ok_1 and first_ok_2 }}"
 
       - if:
           - condition: template
@@ -435,7 +515,8 @@ script:
 
           - variables:
               actual_state_second: "{{ states(sensor_entity) if sensor_entity != '' else '' }}"
-              second_ok: >-
+              actual_state_second_2: "{{ states(sensor_entity_2) if sensor_entity_2 != '' else '' }}"
+              second_ok_1: >-
                 {% if wait.trigger is none %}
                   false
                 {% elif expected_value_clean == '' %}
@@ -447,6 +528,19 @@ script:
                 {% else %}
                   {{ actual_state_second | float(999999999) == expected_value_clean | float(999999998) }}
                 {% endif %}
+              second_ok_2: >-
+                {% if wait.trigger is none %}
+                  false
+                {% elif expected_value_2_clean == '' %}
+                  true
+                {% elif sensor_entity_2 == '' or actual_state_second_2 in ['unknown', 'unavailable', 'none', None] %}
+                  false
+                {% elif expected_field_2_clean in text_fields %}
+                  {{ actual_state_second_2 | string == expected_value_2_clean | string }}
+                {% else %}
+                  {{ actual_state_second_2 | float(999999999) == expected_value_2_clean | float(999999998) }}
+                {% endif %}
+              second_ok: "{{ second_ok_1 and second_ok_2 }}"
 
           - if:
               - condition: template
@@ -494,6 +588,16 @@ script:
         default: ""
         selector:
           text:
+      expected_value_2:
+        required: false
+        default: ""
+        selector:
+          text:
+      expected_field_2:
+        required: false
+        default: ""
+        selector:
+          text:
 
     sequence:
       - variables:
@@ -504,6 +608,8 @@ script:
           no_check_clean: "{{ no_check | default(false) }}"
           expected_value_clean: "{{ expected_value | default('', true) | string | trim }}"
           expected_field_clean: "{{ expected_field | default('', true) | string | trim | lower }}"
+          expected_value_2_clean: "{{ expected_value_2 | default('', true) | string | trim }}"
+          expected_field_2_clean: "{{ expected_field_2 | default('', true) | string | trim | lower }}"
           wait_command: "{{ followup_payload_clean if followup_payload_clean != '' else payload_clean }}"
           wait_topic: >-
             {% if wait_command == 'cd=01' %}
@@ -518,6 +624,7 @@ script:
               B2500PKG/B2500_03/CD01/last_updated
             {% endif %}
           sensor_entity: "{{ 'sensor.b2500_03_' ~ expected_field_clean if expected_field_clean != '' else '' }}"
+          sensor_entity_2: "{{ 'sensor.b2500_03_' ~ expected_field_2_clean if expected_field_2_clean != '' else '' }}"
           text_fields: ['e1','e2','e3','e4','e5','f1','f2','f3','f4','f5']
 
       - if:
@@ -537,6 +644,12 @@ script:
             value_template: '{{ expected_value_clean != "" and expected_field_clean == "" }}'
         then:
           - stop: "expected_field fehlt obwohl expected_value gesetzt ist → Abbruch"
+
+      - if:
+          - condition: template
+            value_template: '{{ expected_value_2_clean != "" and expected_field_2_clean == "" }}'
+        then:
+          - stop: "expected_field_2 fehlt obwohl expected_value_2 gesetzt ist → Abbruch"
 
       - service: mqtt.publish
         data:
@@ -576,7 +689,8 @@ script:
 
       - variables:
           actual_state_first: "{{ states(sensor_entity) if sensor_entity != '' else '' }}"
-          first_ok: >-
+          actual_state_first_2: "{{ states(sensor_entity_2) if sensor_entity_2 != '' else '' }}"
+          first_ok_1: >-
             {% if wait.trigger is none %}
               false
             {% elif expected_value_clean == '' %}
@@ -588,6 +702,19 @@ script:
             {% else %}
               {{ actual_state_first | float(999999999) == expected_value_clean | float(999999998) }}
             {% endif %}
+          first_ok_2: >-
+            {% if wait.trigger is none %}
+              false
+            {% elif expected_value_2_clean == '' %}
+              true
+            {% elif sensor_entity_2 == '' or actual_state_first_2 in ['unknown', 'unavailable', 'none', None] %}
+              false
+            {% elif expected_field_2_clean in text_fields %}
+              {{ actual_state_first_2 | string == expected_value_2_clean | string }}
+            {% else %}
+              {{ actual_state_first_2 | float(999999999) == expected_value_2_clean | float(999999998) }}
+            {% endif %}
+          first_ok: "{{ first_ok_1 and first_ok_2 }}"
 
       - if:
           - condition: template
@@ -631,7 +758,8 @@ script:
 
           - variables:
               actual_state_second: "{{ states(sensor_entity) if sensor_entity != '' else '' }}"
-              second_ok: >-
+              actual_state_second_2: "{{ states(sensor_entity_2) if sensor_entity_2 != '' else '' }}"
+              second_ok_1: >-
                 {% if wait.trigger is none %}
                   false
                 {% elif expected_value_clean == '' %}
@@ -643,6 +771,19 @@ script:
                 {% else %}
                   {{ actual_state_second | float(999999999) == expected_value_clean | float(999999998) }}
                 {% endif %}
+              second_ok_2: >-
+                {% if wait.trigger is none %}
+                  false
+                {% elif expected_value_2_clean == '' %}
+                  true
+                {% elif sensor_entity_2 == '' or actual_state_second_2 in ['unknown', 'unavailable', 'none', None] %}
+                  false
+                {% elif expected_field_2_clean in text_fields %}
+                  {{ actual_state_second_2 | string == expected_value_2_clean | string }}
+                {% else %}
+                  {{ actual_state_second_2 | float(999999999) == expected_value_2_clean | float(999999998) }}
+                {% endif %}
+              second_ok: "{{ second_ok_1 and second_ok_2 }}"
 
           - if:
               - condition: template
@@ -690,6 +831,16 @@ script:
         default: ""
         selector:
           text:
+      expected_value_2:
+        required: false
+        default: ""
+        selector:
+          text:
+      expected_field_2:
+        required: false
+        default: ""
+        selector:
+          text:
 
     sequence:
       - variables:
@@ -700,6 +851,8 @@ script:
           no_check_clean: "{{ no_check | default(false) }}"
           expected_value_clean: "{{ expected_value | default('', true) | string | trim }}"
           expected_field_clean: "{{ expected_field | default('', true) | string | trim | lower }}"
+          expected_value_2_clean: "{{ expected_value_2 | default('', true) | string | trim }}"
+          expected_field_2_clean: "{{ expected_field_2 | default('', true) | string | trim | lower }}"
           wait_command: "{{ followup_payload_clean if followup_payload_clean != '' else payload_clean }}"
           wait_topic: >-
             {% if wait_command == 'cd=01' %}
@@ -714,6 +867,7 @@ script:
               B2500PKG/B2500_04/CD01/last_updated
             {% endif %}
           sensor_entity: "{{ 'sensor.b2500_04_' ~ expected_field_clean if expected_field_clean != '' else '' }}"
+          sensor_entity_2: "{{ 'sensor.b2500_04_' ~ expected_field_2_clean if expected_field_2_clean != '' else '' }}"
           text_fields: ['e1','e2','e3','e4','e5','f1','f2','f3','f4','f5']
 
       - if:
@@ -733,6 +887,12 @@ script:
             value_template: '{{ expected_value_clean != "" and expected_field_clean == "" }}'
         then:
           - stop: "expected_field fehlt obwohl expected_value gesetzt ist → Abbruch"
+
+      - if:
+          - condition: template
+            value_template: '{{ expected_value_2_clean != "" and expected_field_2_clean == "" }}'
+        then:
+          - stop: "expected_field_2 fehlt obwohl expected_value_2 gesetzt ist → Abbruch"
 
       - service: mqtt.publish
         data:
@@ -772,7 +932,8 @@ script:
 
       - variables:
           actual_state_first: "{{ states(sensor_entity) if sensor_entity != '' else '' }}"
-          first_ok: >-
+          actual_state_first_2: "{{ states(sensor_entity_2) if sensor_entity_2 != '' else '' }}"
+          first_ok_1: >-
             {% if wait.trigger is none %}
               false
             {% elif expected_value_clean == '' %}
@@ -784,6 +945,19 @@ script:
             {% else %}
               {{ actual_state_first | float(999999999) == expected_value_clean | float(999999998) }}
             {% endif %}
+          first_ok_2: >-
+            {% if wait.trigger is none %}
+              false
+            {% elif expected_value_2_clean == '' %}
+              true
+            {% elif sensor_entity_2 == '' or actual_state_first_2 in ['unknown', 'unavailable', 'none', None] %}
+              false
+            {% elif expected_field_2_clean in text_fields %}
+              {{ actual_state_first_2 | string == expected_value_2_clean | string }}
+            {% else %}
+              {{ actual_state_first_2 | float(999999999) == expected_value_2_clean | float(999999998) }}
+            {% endif %}
+          first_ok: "{{ first_ok_1 and first_ok_2 }}"
 
       - if:
           - condition: template
@@ -827,7 +1001,8 @@ script:
 
           - variables:
               actual_state_second: "{{ states(sensor_entity) if sensor_entity != '' else '' }}"
-              second_ok: >-
+              actual_state_second_2: "{{ states(sensor_entity_2) if sensor_entity_2 != '' else '' }}"
+              second_ok_1: >-
                 {% if wait.trigger is none %}
                   false
                 {% elif expected_value_clean == '' %}
@@ -839,6 +1014,19 @@ script:
                 {% else %}
                   {{ actual_state_second | float(999999999) == expected_value_clean | float(999999998) }}
                 {% endif %}
+              second_ok_2: >-
+                {% if wait.trigger is none %}
+                  false
+                {% elif expected_value_2_clean == '' %}
+                  true
+                {% elif sensor_entity_2 == '' or actual_state_second_2 in ['unknown', 'unavailable', 'none', None] %}
+                  false
+                {% elif expected_field_2_clean in text_fields %}
+                  {{ actual_state_second_2 | string == expected_value_2_clean | string }}
+                {% else %}
+                  {{ actual_state_second_2 | float(999999999) == expected_value_2_clean | float(999999998) }}
+                {% endif %}
+              second_ok: "{{ second_ok_1 and second_ok_2 }}"
 
           - if:
               - condition: template
@@ -886,6 +1074,16 @@ script:
         default: ""
         selector:
           text:
+      expected_value_2:
+        required: false
+        default: ""
+        selector:
+          text:
+      expected_field_2:
+        required: false
+        default: ""
+        selector:
+          text:
 
     sequence:
       - variables:
@@ -896,6 +1094,8 @@ script:
           no_check_clean: "{{ no_check | default(false) }}"
           expected_value_clean: "{{ expected_value | default('', true) | string | trim }}"
           expected_field_clean: "{{ expected_field | default('', true) | string | trim | lower }}"
+          expected_value_2_clean: "{{ expected_value_2 | default('', true) | string | trim }}"
+          expected_field_2_clean: "{{ expected_field_2 | default('', true) | string | trim | lower }}"
           wait_command: "{{ followup_payload_clean if followup_payload_clean != '' else payload_clean }}"
           wait_topic: >-
             {% if wait_command == 'cd=01' %}
@@ -910,6 +1110,7 @@ script:
               B2500PKG/B2500_05/CD01/last_updated
             {% endif %}
           sensor_entity: "{{ 'sensor.b2500_05_' ~ expected_field_clean if expected_field_clean != '' else '' }}"
+          sensor_entity_2: "{{ 'sensor.b2500_05_' ~ expected_field_2_clean if expected_field_2_clean != '' else '' }}"
           text_fields: ['e1','e2','e3','e4','e5','f1','f2','f3','f4','f5']
 
       - if:
@@ -929,6 +1130,12 @@ script:
             value_template: '{{ expected_value_clean != "" and expected_field_clean == "" }}'
         then:
           - stop: "expected_field fehlt obwohl expected_value gesetzt ist → Abbruch"
+
+      - if:
+          - condition: template
+            value_template: '{{ expected_value_2_clean != "" and expected_field_2_clean == "" }}'
+        then:
+          - stop: "expected_field_2 fehlt obwohl expected_value_2 gesetzt ist → Abbruch"
 
       - service: mqtt.publish
         data:
@@ -968,7 +1175,8 @@ script:
 
       - variables:
           actual_state_first: "{{ states(sensor_entity) if sensor_entity != '' else '' }}"
-          first_ok: >-
+          actual_state_first_2: "{{ states(sensor_entity_2) if sensor_entity_2 != '' else '' }}"
+          first_ok_1: >-
             {% if wait.trigger is none %}
               false
             {% elif expected_value_clean == '' %}
@@ -980,6 +1188,19 @@ script:
             {% else %}
               {{ actual_state_first | float(999999999) == expected_value_clean | float(999999998) }}
             {% endif %}
+          first_ok_2: >-
+            {% if wait.trigger is none %}
+              false
+            {% elif expected_value_2_clean == '' %}
+              true
+            {% elif sensor_entity_2 == '' or actual_state_first_2 in ['unknown', 'unavailable', 'none', None] %}
+              false
+            {% elif expected_field_2_clean in text_fields %}
+              {{ actual_state_first_2 | string == expected_value_2_clean | string }}
+            {% else %}
+              {{ actual_state_first_2 | float(999999999) == expected_value_2_clean | float(999999998) }}
+            {% endif %}
+          first_ok: "{{ first_ok_1 and first_ok_2 }}"
 
       - if:
           - condition: template
@@ -1023,7 +1244,8 @@ script:
 
           - variables:
               actual_state_second: "{{ states(sensor_entity) if sensor_entity != '' else '' }}"
-              second_ok: >-
+              actual_state_second_2: "{{ states(sensor_entity_2) if sensor_entity_2 != '' else '' }}"
+              second_ok_1: >-
                 {% if wait.trigger is none %}
                   false
                 {% elif expected_value_clean == '' %}
@@ -1035,6 +1257,19 @@ script:
                 {% else %}
                   {{ actual_state_second | float(999999999) == expected_value_clean | float(999999998) }}
                 {% endif %}
+              second_ok_2: >-
+                {% if wait.trigger is none %}
+                  false
+                {% elif expected_value_2_clean == '' %}
+                  true
+                {% elif sensor_entity_2 == '' or actual_state_second_2 in ['unknown', 'unavailable', 'none', None] %}
+                  false
+                {% elif expected_field_2_clean in text_fields %}
+                  {{ actual_state_second_2 | string == expected_value_2_clean | string }}
+                {% else %}
+                  {{ actual_state_second_2 | float(999999999) == expected_value_2_clean | float(999999998) }}
+                {% endif %}
+              second_ok: "{{ second_ok_1 and second_ok_2 }}"
 
           - if:
               - condition: template
@@ -1082,6 +1317,16 @@ script:
         default: ""
         selector:
           text:
+      expected_value_2:
+        required: false
+        default: ""
+        selector:
+          text:
+      expected_field_2:
+        required: false
+        default: ""
+        selector:
+          text:
 
     sequence:
       - variables:
@@ -1092,6 +1337,8 @@ script:
           no_check_clean: "{{ no_check | default(false) }}"
           expected_value_clean: "{{ expected_value | default('', true) | string | trim }}"
           expected_field_clean: "{{ expected_field | default('', true) | string | trim | lower }}"
+          expected_value_2_clean: "{{ expected_value_2 | default('', true) | string | trim }}"
+          expected_field_2_clean: "{{ expected_field_2 | default('', true) | string | trim | lower }}"
           wait_command: "{{ followup_payload_clean if followup_payload_clean != '' else payload_clean }}"
           wait_topic: >-
             {% if wait_command == 'cd=01' %}
@@ -1106,6 +1353,7 @@ script:
               B2500PKG/B2500_06/CD01/last_updated
             {% endif %}
           sensor_entity: "{{ 'sensor.b2500_06_' ~ expected_field_clean if expected_field_clean != '' else '' }}"
+          sensor_entity_2: "{{ 'sensor.b2500_06_' ~ expected_field_2_clean if expected_field_2_clean != '' else '' }}"
           text_fields: ['e1','e2','e3','e4','e5','f1','f2','f3','f4','f5']
 
       - if:
@@ -1125,6 +1373,12 @@ script:
             value_template: '{{ expected_value_clean != "" and expected_field_clean == "" }}'
         then:
           - stop: "expected_field fehlt obwohl expected_value gesetzt ist → Abbruch"
+
+      - if:
+          - condition: template
+            value_template: '{{ expected_value_2_clean != "" and expected_field_2_clean == "" }}'
+        then:
+          - stop: "expected_field_2 fehlt obwohl expected_value_2 gesetzt ist → Abbruch"
 
       - service: mqtt.publish
         data:
@@ -1164,7 +1418,8 @@ script:
 
       - variables:
           actual_state_first: "{{ states(sensor_entity) if sensor_entity != '' else '' }}"
-          first_ok: >-
+          actual_state_first_2: "{{ states(sensor_entity_2) if sensor_entity_2 != '' else '' }}"
+          first_ok_1: >-
             {% if wait.trigger is none %}
               false
             {% elif expected_value_clean == '' %}
@@ -1176,6 +1431,19 @@ script:
             {% else %}
               {{ actual_state_first | float(999999999) == expected_value_clean | float(999999998) }}
             {% endif %}
+          first_ok_2: >-
+            {% if wait.trigger is none %}
+              false
+            {% elif expected_value_2_clean == '' %}
+              true
+            {% elif sensor_entity_2 == '' or actual_state_first_2 in ['unknown', 'unavailable', 'none', None] %}
+              false
+            {% elif expected_field_2_clean in text_fields %}
+              {{ actual_state_first_2 | string == expected_value_2_clean | string }}
+            {% else %}
+              {{ actual_state_first_2 | float(999999999) == expected_value_2_clean | float(999999998) }}
+            {% endif %}
+          first_ok: "{{ first_ok_1 and first_ok_2 }}"
 
       - if:
           - condition: template
@@ -1219,7 +1487,8 @@ script:
 
           - variables:
               actual_state_second: "{{ states(sensor_entity) if sensor_entity != '' else '' }}"
-              second_ok: >-
+              actual_state_second_2: "{{ states(sensor_entity_2) if sensor_entity_2 != '' else '' }}"
+              second_ok_1: >-
                 {% if wait.trigger is none %}
                   false
                 {% elif expected_value_clean == '' %}
@@ -1231,6 +1500,19 @@ script:
                 {% else %}
                   {{ actual_state_second | float(999999999) == expected_value_clean | float(999999998) }}
                 {% endif %}
+              second_ok_2: >-
+                {% if wait.trigger is none %}
+                  false
+                {% elif expected_value_2_clean == '' %}
+                  true
+                {% elif sensor_entity_2 == '' or actual_state_second_2 in ['unknown', 'unavailable', 'none', None] %}
+                  false
+                {% elif expected_field_2_clean in text_fields %}
+                  {{ actual_state_second_2 | string == expected_value_2_clean | string }}
+                {% else %}
+                  {{ actual_state_second_2 | float(999999999) == expected_value_2_clean | float(999999998) }}
+                {% endif %}
+              second_ok: "{{ second_ok_1 and second_ok_2 }}"
 
           - if:
               - condition: template
@@ -1278,6 +1560,16 @@ script:
         default: ""
         selector:
           text:
+      expected_value_2:
+        required: false
+        default: ""
+        selector:
+          text:
+      expected_field_2:
+        required: false
+        default: ""
+        selector:
+          text:
 
     sequence:
       - variables:
@@ -1288,6 +1580,8 @@ script:
           no_check_clean: "{{ no_check | default(false) }}"
           expected_value_clean: "{{ expected_value | default('', true) | string | trim }}"
           expected_field_clean: "{{ expected_field | default('', true) | string | trim | lower }}"
+          expected_value_2_clean: "{{ expected_value_2 | default('', true) | string | trim }}"
+          expected_field_2_clean: "{{ expected_field_2 | default('', true) | string | trim | lower }}"
           wait_command: "{{ followup_payload_clean if followup_payload_clean != '' else payload_clean }}"
           wait_topic: >-
             {% if wait_command == 'cd=01' %}
@@ -1302,6 +1596,7 @@ script:
               B2500PKG/B2500_07/CD01/last_updated
             {% endif %}
           sensor_entity: "{{ 'sensor.b2500_07_' ~ expected_field_clean if expected_field_clean != '' else '' }}"
+          sensor_entity_2: "{{ 'sensor.b2500_07_' ~ expected_field_2_clean if expected_field_2_clean != '' else '' }}"
           text_fields: ['e1','e2','e3','e4','e5','f1','f2','f3','f4','f5']
 
       - if:
@@ -1321,6 +1616,12 @@ script:
             value_template: '{{ expected_value_clean != "" and expected_field_clean == "" }}'
         then:
           - stop: "expected_field fehlt obwohl expected_value gesetzt ist → Abbruch"
+
+      - if:
+          - condition: template
+            value_template: '{{ expected_value_2_clean != "" and expected_field_2_clean == "" }}'
+        then:
+          - stop: "expected_field_2 fehlt obwohl expected_value_2 gesetzt ist → Abbruch"
 
       - service: mqtt.publish
         data:
@@ -1360,7 +1661,8 @@ script:
 
       - variables:
           actual_state_first: "{{ states(sensor_entity) if sensor_entity != '' else '' }}"
-          first_ok: >-
+          actual_state_first_2: "{{ states(sensor_entity_2) if sensor_entity_2 != '' else '' }}"
+          first_ok_1: >-
             {% if wait.trigger is none %}
               false
             {% elif expected_value_clean == '' %}
@@ -1372,6 +1674,19 @@ script:
             {% else %}
               {{ actual_state_first | float(999999999) == expected_value_clean | float(999999998) }}
             {% endif %}
+          first_ok_2: >-
+            {% if wait.trigger is none %}
+              false
+            {% elif expected_value_2_clean == '' %}
+              true
+            {% elif sensor_entity_2 == '' or actual_state_first_2 in ['unknown', 'unavailable', 'none', None] %}
+              false
+            {% elif expected_field_2_clean in text_fields %}
+              {{ actual_state_first_2 | string == expected_value_2_clean | string }}
+            {% else %}
+              {{ actual_state_first_2 | float(999999999) == expected_value_2_clean | float(999999998) }}
+            {% endif %}
+          first_ok: "{{ first_ok_1 and first_ok_2 }}"
 
       - if:
           - condition: template
@@ -1415,7 +1730,8 @@ script:
 
           - variables:
               actual_state_second: "{{ states(sensor_entity) if sensor_entity != '' else '' }}"
-              second_ok: >-
+              actual_state_second_2: "{{ states(sensor_entity_2) if sensor_entity_2 != '' else '' }}"
+              second_ok_1: >-
                 {% if wait.trigger is none %}
                   false
                 {% elif expected_value_clean == '' %}
@@ -1427,6 +1743,19 @@ script:
                 {% else %}
                   {{ actual_state_second | float(999999999) == expected_value_clean | float(999999998) }}
                 {% endif %}
+              second_ok_2: >-
+                {% if wait.trigger is none %}
+                  false
+                {% elif expected_value_2_clean == '' %}
+                  true
+                {% elif sensor_entity_2 == '' or actual_state_second_2 in ['unknown', 'unavailable', 'none', None] %}
+                  false
+                {% elif expected_field_2_clean in text_fields %}
+                  {{ actual_state_second_2 | string == expected_value_2_clean | string }}
+                {% else %}
+                  {{ actual_state_second_2 | float(999999999) == expected_value_2_clean | float(999999998) }}
+                {% endif %}
+              second_ok: "{{ second_ok_1 and second_ok_2 }}"
 
           - if:
               - condition: template
@@ -1474,6 +1803,16 @@ script:
         default: ""
         selector:
           text:
+      expected_value_2:
+        required: false
+        default: ""
+        selector:
+          text:
+      expected_field_2:
+        required: false
+        default: ""
+        selector:
+          text:
 
     sequence:
       - variables:
@@ -1484,6 +1823,8 @@ script:
           no_check_clean: "{{ no_check | default(false) }}"
           expected_value_clean: "{{ expected_value | default('', true) | string | trim }}"
           expected_field_clean: "{{ expected_field | default('', true) | string | trim | lower }}"
+          expected_value_2_clean: "{{ expected_value_2 | default('', true) | string | trim }}"
+          expected_field_2_clean: "{{ expected_field_2 | default('', true) | string | trim | lower }}"
           wait_command: "{{ followup_payload_clean if followup_payload_clean != '' else payload_clean }}"
           wait_topic: >-
             {% if wait_command == 'cd=01' %}
@@ -1498,6 +1839,7 @@ script:
               B2500PKG/B2500_08/CD01/last_updated
             {% endif %}
           sensor_entity: "{{ 'sensor.b2500_08_' ~ expected_field_clean if expected_field_clean != '' else '' }}"
+          sensor_entity_2: "{{ 'sensor.b2500_08_' ~ expected_field_2_clean if expected_field_2_clean != '' else '' }}"
           text_fields: ['e1','e2','e3','e4','e5','f1','f2','f3','f4','f5']
 
       - if:
@@ -1517,6 +1859,12 @@ script:
             value_template: '{{ expected_value_clean != "" and expected_field_clean == "" }}'
         then:
           - stop: "expected_field fehlt obwohl expected_value gesetzt ist → Abbruch"
+
+      - if:
+          - condition: template
+            value_template: '{{ expected_value_2_clean != "" and expected_field_2_clean == "" }}'
+        then:
+          - stop: "expected_field_2 fehlt obwohl expected_value_2 gesetzt ist → Abbruch"
 
       - service: mqtt.publish
         data:
@@ -1556,7 +1904,8 @@ script:
 
       - variables:
           actual_state_first: "{{ states(sensor_entity) if sensor_entity != '' else '' }}"
-          first_ok: >-
+          actual_state_first_2: "{{ states(sensor_entity_2) if sensor_entity_2 != '' else '' }}"
+          first_ok_1: >-
             {% if wait.trigger is none %}
               false
             {% elif expected_value_clean == '' %}
@@ -1568,6 +1917,19 @@ script:
             {% else %}
               {{ actual_state_first | float(999999999) == expected_value_clean | float(999999998) }}
             {% endif %}
+          first_ok_2: >-
+            {% if wait.trigger is none %}
+              false
+            {% elif expected_value_2_clean == '' %}
+              true
+            {% elif sensor_entity_2 == '' or actual_state_first_2 in ['unknown', 'unavailable', 'none', None] %}
+              false
+            {% elif expected_field_2_clean in text_fields %}
+              {{ actual_state_first_2 | string == expected_value_2_clean | string }}
+            {% else %}
+              {{ actual_state_first_2 | float(999999999) == expected_value_2_clean | float(999999998) }}
+            {% endif %}
+          first_ok: "{{ first_ok_1 and first_ok_2 }}"
 
       - if:
           - condition: template
@@ -1611,7 +1973,8 @@ script:
 
           - variables:
               actual_state_second: "{{ states(sensor_entity) if sensor_entity != '' else '' }}"
-              second_ok: >-
+              actual_state_second_2: "{{ states(sensor_entity_2) if sensor_entity_2 != '' else '' }}"
+              second_ok_1: >-
                 {% if wait.trigger is none %}
                   false
                 {% elif expected_value_clean == '' %}
@@ -1623,6 +1986,19 @@ script:
                 {% else %}
                   {{ actual_state_second | float(999999999) == expected_value_clean | float(999999998) }}
                 {% endif %}
+              second_ok_2: >-
+                {% if wait.trigger is none %}
+                  false
+                {% elif expected_value_2_clean == '' %}
+                  true
+                {% elif sensor_entity_2 == '' or actual_state_second_2 in ['unknown', 'unavailable', 'none', None] %}
+                  false
+                {% elif expected_field_2_clean in text_fields %}
+                  {{ actual_state_second_2 | string == expected_value_2_clean | string }}
+                {% else %}
+                  {{ actual_state_second_2 | float(999999999) == expected_value_2_clean | float(999999998) }}
+                {% endif %}
+              second_ok: "{{ second_ok_1 and second_ok_2 }}"
 
           - if:
               - condition: template
@@ -1670,6 +2046,16 @@ script:
         default: ""
         selector:
           text:
+      expected_value_2:
+        required: false
+        default: ""
+        selector:
+          text:
+      expected_field_2:
+        required: false
+        default: ""
+        selector:
+          text:
 
     sequence:
       - variables:
@@ -1680,6 +2066,8 @@ script:
           no_check_clean: "{{ no_check | default(false) }}"
           expected_value_clean: "{{ expected_value | default('', true) | string | trim }}"
           expected_field_clean: "{{ expected_field | default('', true) | string | trim | lower }}"
+          expected_value_2_clean: "{{ expected_value_2 | default('', true) | string | trim }}"
+          expected_field_2_clean: "{{ expected_field_2 | default('', true) | string | trim | lower }}"
           wait_command: "{{ followup_payload_clean if followup_payload_clean != '' else payload_clean }}"
           wait_topic: >-
             {% if wait_command == 'cd=01' %}
@@ -1694,6 +2082,7 @@ script:
               B2500PKG/B2500_09/CD01/last_updated
             {% endif %}
           sensor_entity: "{{ 'sensor.b2500_09_' ~ expected_field_clean if expected_field_clean != '' else '' }}"
+          sensor_entity_2: "{{ 'sensor.b2500_09_' ~ expected_field_2_clean if expected_field_2_clean != '' else '' }}"
           text_fields: ['e1','e2','e3','e4','e5','f1','f2','f3','f4','f5']
 
       - if:
@@ -1713,6 +2102,12 @@ script:
             value_template: '{{ expected_value_clean != "" and expected_field_clean == "" }}'
         then:
           - stop: "expected_field fehlt obwohl expected_value gesetzt ist → Abbruch"
+
+      - if:
+          - condition: template
+            value_template: '{{ expected_value_2_clean != "" and expected_field_2_clean == "" }}'
+        then:
+          - stop: "expected_field_2 fehlt obwohl expected_value_2 gesetzt ist → Abbruch"
 
       - service: mqtt.publish
         data:
@@ -1752,7 +2147,8 @@ script:
 
       - variables:
           actual_state_first: "{{ states(sensor_entity) if sensor_entity != '' else '' }}"
-          first_ok: >-
+          actual_state_first_2: "{{ states(sensor_entity_2) if sensor_entity_2 != '' else '' }}"
+          first_ok_1: >-
             {% if wait.trigger is none %}
               false
             {% elif expected_value_clean == '' %}
@@ -1764,6 +2160,19 @@ script:
             {% else %}
               {{ actual_state_first | float(999999999) == expected_value_clean | float(999999998) }}
             {% endif %}
+          first_ok_2: >-
+            {% if wait.trigger is none %}
+              false
+            {% elif expected_value_2_clean == '' %}
+              true
+            {% elif sensor_entity_2 == '' or actual_state_first_2 in ['unknown', 'unavailable', 'none', None] %}
+              false
+            {% elif expected_field_2_clean in text_fields %}
+              {{ actual_state_first_2 | string == expected_value_2_clean | string }}
+            {% else %}
+              {{ actual_state_first_2 | float(999999999) == expected_value_2_clean | float(999999998) }}
+            {% endif %}
+          first_ok: "{{ first_ok_1 and first_ok_2 }}"
 
       - if:
           - condition: template
@@ -1807,7 +2216,8 @@ script:
 
           - variables:
               actual_state_second: "{{ states(sensor_entity) if sensor_entity != '' else '' }}"
-              second_ok: >-
+              actual_state_second_2: "{{ states(sensor_entity_2) if sensor_entity_2 != '' else '' }}"
+              second_ok_1: >-
                 {% if wait.trigger is none %}
                   false
                 {% elif expected_value_clean == '' %}
@@ -1819,6 +2229,19 @@ script:
                 {% else %}
                   {{ actual_state_second | float(999999999) == expected_value_clean | float(999999998) }}
                 {% endif %}
+              second_ok_2: >-
+                {% if wait.trigger is none %}
+                  false
+                {% elif expected_value_2_clean == '' %}
+                  true
+                {% elif sensor_entity_2 == '' or actual_state_second_2 in ['unknown', 'unavailable', 'none', None] %}
+                  false
+                {% elif expected_field_2_clean in text_fields %}
+                  {{ actual_state_second_2 | string == expected_value_2_clean | string }}
+                {% else %}
+                  {{ actual_state_second_2 | float(999999999) == expected_value_2_clean | float(999999998) }}
+                {% endif %}
+              second_ok: "{{ second_ok_1 and second_ok_2 }}"
 
           - if:
               - condition: template
