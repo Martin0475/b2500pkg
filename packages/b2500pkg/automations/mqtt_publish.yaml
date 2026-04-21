@@ -11,35 +11,40 @@ automation:
         sequence:
           - if:
               - condition: template
-                value_template: "{{ states('input_text.b' ~ repeat.item ~ '_mac') != '0' }}"
+                value_template: "{{ states('input_text.b' ~ repeat.item ~ '_mac') not in ['0','unknown','unavailable',''] }}"
             then:
               - variables:
                   voltage_mv: >-
-                    {{ float(states('sensor.b2500_' ~ repeat.item ~ '_zelle01')) +
-                    float(states('sensor.b2500_' ~ repeat.item ~ '_zelle02')) +
-                    float(states('sensor.b2500_' ~ repeat.item ~ '_zelle03')) +
-                    float(states('sensor.b2500_' ~ repeat.item ~ '_zelle04')) +
-                    float(states('sensor.b2500_' ~ repeat.item ~ '_zelle05')) +
-                    float(states('sensor.b2500_' ~ repeat.item ~ '_zelle06')) +
-                    float(states('sensor.b2500_' ~ repeat.item ~ '_zelle07')) +
-                    float(states('sensor.b2500_' ~ repeat.item ~ '_zelle08')) +
-                    float(states('sensor.b2500_' ~ repeat.item ~ '_zelle09')) +
-                    float(states('sensor.b2500_' ~ repeat.item ~ '_zelle10')) +
-                    float(states('sensor.b2500_' ~ repeat.item ~ '_zelle11')) +
-                    float(states('sensor.b2500_' ~ repeat.item ~ '_zelle12')) +
-                    float(states('sensor.b2500_' ~ repeat.item ~ '_zelle13')) +
-                    float(states('sensor.b2500_' ~ repeat.item ~ '_zelle14')) +
-                    float(states('sensor.b2500_' ~ repeat.item ~ '_zelle15')) +
-                    float(states('sensor.b2500_' ~ repeat.item ~ '_zelle16'))  |
-                    int }}
-                  voltage: "{{ '{:.3f}'.format(voltage_mv | int / 1000 ) }}"
-                  soc: "{{ states('sensor.b2500_' ~ repeat.item ~ '_pe') | int }}"
-                  capacity: "{{ states('sensor.b2500_' ~ repeat.item ~ '_kn') | int }}"
-                  power_in: "{{ states('sensor.b' ~ repeat.item ~ '_pv_gesamt') | int }}"
+                    {{ ((states('sensor.b2500_' ~ repeat.item ~ '_zelle01'))|float(0) +
+                    (states('sensor.b2500_' ~ repeat.item ~ '_zelle02'))|float(0) +
+                    (states('sensor.b2500_' ~ repeat.item ~ '_zelle03'))|float(0) +
+                    (states('sensor.b2500_' ~ repeat.item ~ '_zelle04'))|float(0) +
+                    (states('sensor.b2500_' ~ repeat.item ~ '_zelle05'))|float(0) +
+                    (states('sensor.b2500_' ~ repeat.item ~ '_zelle06'))|float(0) +
+                    (states('sensor.b2500_' ~ repeat.item ~ '_zelle07'))|float(0) +
+                    (states('sensor.b2500_' ~ repeat.item ~ '_zelle08'))|float(0) +
+                    (states('sensor.b2500_' ~ repeat.item ~ '_zelle09'))|float(0) +
+                    (states('sensor.b2500_' ~ repeat.item ~ '_zelle10'))|float(0) +
+                    (states('sensor.b2500_' ~ repeat.item ~ '_zelle11'))|float(0) +
+                    (states('sensor.b2500_' ~ repeat.item ~ '_zelle12'))|float(0) +
+                    (states('sensor.b2500_' ~ repeat.item ~ '_zelle13'))|float(0) +
+                    (states('sensor.b2500_' ~ repeat.item ~ '_zelle14'))|float(0) +
+                    (states('sensor.b2500_' ~ repeat.item ~ '_zelle15'))|float(0) +
+                    (states('sensor.b2500_' ~ repeat.item ~ '_zelle16'))|float(0))  |
+                    int(0) }}
+                  voltage: "{{ '{:.3f}'.format(voltage_mv / 1000 ) }}"
+                  soc: "{{ states('sensor.b2500_' ~ repeat.item ~ '_pe') | int(0) }}"
+                  capacity: "{{ states('sensor.b2500_' ~ repeat.item ~ '_kn') | int(0) }}"
+                  power_in: "{{ states('sensor.b' ~ repeat.item ~ '_pv_gesamt') | int(0) }}"
                   power_out: >-
-                    {{ states('sensor.b' ~ repeat.item ~ '_output_gesamt') | int
+                    {{ states('sensor.b' ~ repeat.item ~ '_output_gesamt') | int(0)
                     }}
-                  ampere: "{{ '{:.3f}'.format((power_in - power_out - 5) / voltage ) }}"
+                  ampere: >-
+                    {% if voltage | float(0) > 0 %}
+                      {{ '{:.3f}'.format((power_in - power_out - 5) / voltage) }}
+                    {% else %}
+                      0
+                    {% endif %}
                   topic: B2500PKG/B2500_{{ repeat.item }}
               - action: mqtt.publish
                 metadata: {}
