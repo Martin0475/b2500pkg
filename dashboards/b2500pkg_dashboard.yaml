@@ -5,7 +5,9 @@ views:
         cards:
           - type: heading
             heading_style: title
-            heading: B2500 Package 2026-04-11 (MQTT auf Worker Script umgestellt)
+            heading: >-
+              B2500 Package 2026-04-21 (Befehle werden nun auf Bestätigung
+              geprüft))
             grid_options:
               columns: 12
               rows: 1
@@ -629,6 +631,9 @@ views:
                   show_header_toggle: false
         column_span: 2
     max_columns: 2
+    badges:
+      - type: entity
+        entity: sensor.b2500_status_zeile
   - type: sections
     max_columns: 4
     path: ''
@@ -1788,6 +1793,9 @@ views:
         column_span: 2
     subview: false
     cards: []
+    badges:
+      - type: entity
+        entity: sensor.b2500_status_zeile
   - type: sections
     max_columns: 4
     title: Unterspannungsschutz
