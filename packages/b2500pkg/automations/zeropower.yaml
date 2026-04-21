@@ -523,53 +523,31 @@ script:
                           total_power: >-
                             {{ [max_limit,
                             [(e_power + es_power), min_limit] | max] | min }}
-                          current_v1: >-
-                            {{ total_power * 2 if not both_outputs else
-                            total_power }}
+                          current_v1: >
+                            {{ (total_power * 2 if not both_outputs else total_power) | int }}
                           actual_power: >
-                            {% set i = current_id %} {{
-                            states('sensor.b2500_0' ~ i|string ~ '_h1') | float(0)
-                            }} 
+                            {% set i = current_id %}
+                            {{ states('sensor.b2500_0' ~ i|string ~ '_h1') | float(0) | int }}
                         enabled: true
-                      - alias: Sende MQTT nur wenn nötig
+                      - alias: Worker aufrufen wenn nötig
                         if:
                           - condition: template
-                            value_template: "{{ current_v1 != actual_power }}"
-                            enabled: true
-                            alias: >-
-                              Leistung v1 ungleich der aktuell gesetzten Leistung
-                              ist
+                            value_template: "{{ current_v1 | int != actual_power | int }}"
                         then:
-                          - variables:
-                              current_topic: >
-                                {{ states('input_text.b0' ~ current_id|string
-                                ~ '_topic') }}/{{ states('input_text.b0' ~
-                                current_id|string ~ '_typ') }}/App/{{
-                                states('input_text.b0' ~ current_id|string ~
-                                '_mac') }}/ctrl
-                              current_payload: |
-                                cd=20,md=0,a1=1,b1=0:0,e1=24:00,v1={{ current_v1 }}
-                          - data:
-                              topic: "{{ current_topic }}"
-                              payload: "{{ current_payload }}"
-                              qos: "0"
-                            action: mqtt.publish
-                            alias: Sende MQTT an aktuelle Batterie
+                          - action: script.turn_on
+                            target:
+                              entity_id: "{{ 'script.b2500_' ~ '%02d' | format(current_id | int) ~ '_worker' }}"
+                            data:
+                              variables:
+                                payload: "cd=20,md=0,a1=1,b1=0:0,e1=24:00,v1={{ current_v1 | int }}"
+                                followup_payload: "cd=01"
+                                expected_field: "h1"
+                                expected_value: "{{ current_v1 | int }}"
                           - delay:
                               hours: 0
                               minutes: 0
                               seconds: 0
-                              milliseconds: 600
-                          - data:
-                              topic: "{{ current_topic }}"
-                              payload: "cd=01"
-                              qos: "0"
-                            action: mqtt.publish
-
-
-
-
-
+                              milliseconds: 300                     
 
                   enabled: true
               enabled: true

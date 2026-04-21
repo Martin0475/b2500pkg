@@ -139,7 +139,7 @@ script:
             {% endif %}
           sensor_entity: "{{ 'sensor.b2500_01_' ~ expected_field_clean if expected_field_clean != '' else '' }}"
           sensor_entity_2: "{{ 'sensor.b2500_01_' ~ expected_field_2_clean if expected_field_2_clean != '' else '' }}"
-          text_fields: ['e1','e2','e3','e4','e5','f1','f2','f3','f4','f5']
+          text_fields: ['e1','e2','e3','e4','e5','f1','f2','f3','f4','f5','md']
 
       - if:
           - condition: template
@@ -176,7 +176,7 @@ script:
             value_template: '{{ followup_payload_clean != "" }}'
         then:
           - delay:
-              seconds: 3
+              seconds: 1
           - service: mqtt.publish
             data:
               topic: "{{ mqtt_topic }}"
@@ -198,7 +198,7 @@ script:
       - wait_for_trigger:
           - trigger: mqtt
             topic: "{{ wait_topic }}"
-        timeout: "00:00:10"
+        timeout: "00:00:05"
         continue_on_timeout: true
 
       - variables:
@@ -257,7 +257,7 @@ script:
                 value_template: '{{ followup_payload_clean != "" }}'
             then:
               - delay:
-                  seconds: 3
+                  seconds: 1
               - service: mqtt.publish
                 data:
                   topic: "{{ mqtt_topic }}"
@@ -267,7 +267,7 @@ script:
           - wait_for_trigger:
               - trigger: mqtt
                 topic: "{{ wait_topic }}"
-            timeout: "00:00:10"
+            timeout: "00:00:05"
             continue_on_timeout: true
 
           - variables:
@@ -382,7 +382,7 @@ script:
             {% endif %}
           sensor_entity: "{{ 'sensor.b2500_02_' ~ expected_field_clean if expected_field_clean != '' else '' }}"
           sensor_entity_2: "{{ 'sensor.b2500_02_' ~ expected_field_2_clean if expected_field_2_clean != '' else '' }}"
-          text_fields: ['e1','e2','e3','e4','e5','f1','f2','f3','f4','f5']
+          text_fields: ['e1','e2','e3','e4','e5','f1','f2','f3','f4','f5','md']
 
       - if:
           - condition: template
@@ -419,7 +419,7 @@ script:
             value_template: '{{ followup_payload_clean != "" }}'
         then:
           - delay:
-              seconds: 3
+              seconds: 1
           - service: mqtt.publish
             data:
               topic: "{{ mqtt_topic }}"
@@ -441,7 +441,7 @@ script:
       - wait_for_trigger:
           - trigger: mqtt
             topic: "{{ wait_topic }}"
-        timeout: "00:00:10"
+        timeout: "00:00:05"
         continue_on_timeout: true
 
       - variables:
@@ -500,7 +500,7 @@ script:
                 value_template: '{{ followup_payload_clean != "" }}'
             then:
               - delay:
-                  seconds: 3
+                  seconds: 1
               - service: mqtt.publish
                 data:
                   topic: "{{ mqtt_topic }}"
@@ -510,7 +510,7 @@ script:
           - wait_for_trigger:
               - trigger: mqtt
                 topic: "{{ wait_topic }}"
-            timeout: "00:00:10"
+            timeout: "00:00:05"
             continue_on_timeout: true
 
           - variables:
@@ -625,7 +625,7 @@ script:
             {% endif %}
           sensor_entity: "{{ 'sensor.b2500_03_' ~ expected_field_clean if expected_field_clean != '' else '' }}"
           sensor_entity_2: "{{ 'sensor.b2500_03_' ~ expected_field_2_clean if expected_field_2_clean != '' else '' }}"
-          text_fields: ['e1','e2','e3','e4','e5','f1','f2','f3','f4','f5']
+          text_fields: ['e1','e2','e3','e4','e5','f1','f2','f3','f4','f5','md']
 
       - if:
           - condition: template
@@ -662,7 +662,7 @@ script:
             value_template: '{{ followup_payload_clean != "" }}'
         then:
           - delay:
-              seconds: 3
+              seconds: 1
           - service: mqtt.publish
             data:
               topic: "{{ mqtt_topic }}"
@@ -684,7 +684,7 @@ script:
       - wait_for_trigger:
           - trigger: mqtt
             topic: "{{ wait_topic }}"
-        timeout: "00:00:10"
+        timeout: "00:00:05"
         continue_on_timeout: true
 
       - variables:
@@ -743,7 +743,7 @@ script:
                 value_template: '{{ followup_payload_clean != "" }}'
             then:
               - delay:
-                  seconds: 3
+                  seconds: 1
               - service: mqtt.publish
                 data:
                   topic: "{{ mqtt_topic }}"
@@ -753,7 +753,7 @@ script:
           - wait_for_trigger:
               - trigger: mqtt
                 topic: "{{ wait_topic }}"
-            timeout: "00:00:10"
+            timeout: "00:00:05"
             continue_on_timeout: true
 
           - variables:
@@ -868,7 +868,7 @@ script:
             {% endif %}
           sensor_entity: "{{ 'sensor.b2500_04_' ~ expected_field_clean if expected_field_clean != '' else '' }}"
           sensor_entity_2: "{{ 'sensor.b2500_04_' ~ expected_field_2_clean if expected_field_2_clean != '' else '' }}"
-          text_fields: ['e1','e2','e3','e4','e5','f1','f2','f3','f4','f5']
+          text_fields: ['e1','e2','e3','e4','e5','f1','f2','f3','f4','f5','md']
 
       - if:
           - condition: template
@@ -905,7 +905,7 @@ script:
             value_template: '{{ followup_payload_clean != "" }}'
         then:
           - delay:
-              seconds: 3
+              seconds: 1
           - service: mqtt.publish
             data:
               topic: "{{ mqtt_topic }}"
@@ -927,7 +927,7 @@ script:
       - wait_for_trigger:
           - trigger: mqtt
             topic: "{{ wait_topic }}"
-        timeout: "00:00:10"
+        timeout: "00:00:05"
         continue_on_timeout: true
 
       - variables:
@@ -986,7 +986,7 @@ script:
                 value_template: '{{ followup_payload_clean != "" }}'
             then:
               - delay:
-                  seconds: 3
+                  seconds: 1
               - service: mqtt.publish
                 data:
                   topic: "{{ mqtt_topic }}"
@@ -996,7 +996,7 @@ script:
           - wait_for_trigger:
               - trigger: mqtt
                 topic: "{{ wait_topic }}"
-            timeout: "00:00:10"
+            timeout: "00:00:05"
             continue_on_timeout: true
 
           - variables:
@@ -1111,7 +1111,7 @@ script:
             {% endif %}
           sensor_entity: "{{ 'sensor.b2500_05_' ~ expected_field_clean if expected_field_clean != '' else '' }}"
           sensor_entity_2: "{{ 'sensor.b2500_05_' ~ expected_field_2_clean if expected_field_2_clean != '' else '' }}"
-          text_fields: ['e1','e2','e3','e4','e5','f1','f2','f3','f4','f5']
+          text_fields: ['e1','e2','e3','e4','e5','f1','f2','f3','f4','f5','md']
 
       - if:
           - condition: template
@@ -1148,7 +1148,7 @@ script:
             value_template: '{{ followup_payload_clean != "" }}'
         then:
           - delay:
-              seconds: 3
+              seconds: 1
           - service: mqtt.publish
             data:
               topic: "{{ mqtt_topic }}"
@@ -1170,7 +1170,7 @@ script:
       - wait_for_trigger:
           - trigger: mqtt
             topic: "{{ wait_topic }}"
-        timeout: "00:00:10"
+        timeout: "00:00:05"
         continue_on_timeout: true
 
       - variables:
@@ -1229,7 +1229,7 @@ script:
                 value_template: '{{ followup_payload_clean != "" }}'
             then:
               - delay:
-                  seconds: 3
+                  seconds: 1
               - service: mqtt.publish
                 data:
                   topic: "{{ mqtt_topic }}"
@@ -1239,7 +1239,7 @@ script:
           - wait_for_trigger:
               - trigger: mqtt
                 topic: "{{ wait_topic }}"
-            timeout: "00:00:10"
+            timeout: "00:00:05"
             continue_on_timeout: true
 
           - variables:
@@ -1354,7 +1354,7 @@ script:
             {% endif %}
           sensor_entity: "{{ 'sensor.b2500_06_' ~ expected_field_clean if expected_field_clean != '' else '' }}"
           sensor_entity_2: "{{ 'sensor.b2500_06_' ~ expected_field_2_clean if expected_field_2_clean != '' else '' }}"
-          text_fields: ['e1','e2','e3','e4','e5','f1','f2','f3','f4','f5']
+          text_fields: ['e1','e2','e3','e4','e5','f1','f2','f3','f4','f5','md']
 
       - if:
           - condition: template
@@ -1391,7 +1391,7 @@ script:
             value_template: '{{ followup_payload_clean != "" }}'
         then:
           - delay:
-              seconds: 3
+              seconds: 1
           - service: mqtt.publish
             data:
               topic: "{{ mqtt_topic }}"
@@ -1413,7 +1413,7 @@ script:
       - wait_for_trigger:
           - trigger: mqtt
             topic: "{{ wait_topic }}"
-        timeout: "00:00:10"
+        timeout: "00:00:05"
         continue_on_timeout: true
 
       - variables:
@@ -1472,7 +1472,7 @@ script:
                 value_template: '{{ followup_payload_clean != "" }}'
             then:
               - delay:
-                  seconds: 3
+                  seconds: 1
               - service: mqtt.publish
                 data:
                   topic: "{{ mqtt_topic }}"
@@ -1482,7 +1482,7 @@ script:
           - wait_for_trigger:
               - trigger: mqtt
                 topic: "{{ wait_topic }}"
-            timeout: "00:00:10"
+            timeout: "00:00:05"
             continue_on_timeout: true
 
           - variables:
@@ -1597,7 +1597,7 @@ script:
             {% endif %}
           sensor_entity: "{{ 'sensor.b2500_07_' ~ expected_field_clean if expected_field_clean != '' else '' }}"
           sensor_entity_2: "{{ 'sensor.b2500_07_' ~ expected_field_2_clean if expected_field_2_clean != '' else '' }}"
-          text_fields: ['e1','e2','e3','e4','e5','f1','f2','f3','f4','f5']
+          text_fields: ['e1','e2','e3','e4','e5','f1','f2','f3','f4','f5','md']
 
       - if:
           - condition: template
@@ -1634,7 +1634,7 @@ script:
             value_template: '{{ followup_payload_clean != "" }}'
         then:
           - delay:
-              seconds: 3
+              seconds: 1
           - service: mqtt.publish
             data:
               topic: "{{ mqtt_topic }}"
@@ -1656,7 +1656,7 @@ script:
       - wait_for_trigger:
           - trigger: mqtt
             topic: "{{ wait_topic }}"
-        timeout: "00:00:10"
+        timeout: "00:00:05"
         continue_on_timeout: true
 
       - variables:
@@ -1715,7 +1715,7 @@ script:
                 value_template: '{{ followup_payload_clean != "" }}'
             then:
               - delay:
-                  seconds: 3
+                  seconds: 1
               - service: mqtt.publish
                 data:
                   topic: "{{ mqtt_topic }}"
@@ -1725,7 +1725,7 @@ script:
           - wait_for_trigger:
               - trigger: mqtt
                 topic: "{{ wait_topic }}"
-            timeout: "00:00:10"
+            timeout: "00:00:05"
             continue_on_timeout: true
 
           - variables:
@@ -1840,7 +1840,7 @@ script:
             {% endif %}
           sensor_entity: "{{ 'sensor.b2500_08_' ~ expected_field_clean if expected_field_clean != '' else '' }}"
           sensor_entity_2: "{{ 'sensor.b2500_08_' ~ expected_field_2_clean if expected_field_2_clean != '' else '' }}"
-          text_fields: ['e1','e2','e3','e4','e5','f1','f2','f3','f4','f5']
+          text_fields: ['e1','e2','e3','e4','e5','f1','f2','f3','f4','f5','md']
 
       - if:
           - condition: template
@@ -1877,7 +1877,7 @@ script:
             value_template: '{{ followup_payload_clean != "" }}'
         then:
           - delay:
-              seconds: 3
+              seconds: 1
           - service: mqtt.publish
             data:
               topic: "{{ mqtt_topic }}"
@@ -1899,7 +1899,7 @@ script:
       - wait_for_trigger:
           - trigger: mqtt
             topic: "{{ wait_topic }}"
-        timeout: "00:00:10"
+        timeout: "00:00:05"
         continue_on_timeout: true
 
       - variables:
@@ -1958,7 +1958,7 @@ script:
                 value_template: '{{ followup_payload_clean != "" }}'
             then:
               - delay:
-                  seconds: 3
+                  seconds: 1
               - service: mqtt.publish
                 data:
                   topic: "{{ mqtt_topic }}"
@@ -1968,7 +1968,7 @@ script:
           - wait_for_trigger:
               - trigger: mqtt
                 topic: "{{ wait_topic }}"
-            timeout: "00:00:10"
+            timeout: "00:00:05"
             continue_on_timeout: true
 
           - variables:
@@ -2083,7 +2083,7 @@ script:
             {% endif %}
           sensor_entity: "{{ 'sensor.b2500_09_' ~ expected_field_clean if expected_field_clean != '' else '' }}"
           sensor_entity_2: "{{ 'sensor.b2500_09_' ~ expected_field_2_clean if expected_field_2_clean != '' else '' }}"
-          text_fields: ['e1','e2','e3','e4','e5','f1','f2','f3','f4','f5']
+          text_fields: ['e1','e2','e3','e4','e5','f1','f2','f3','f4','f5','md']
 
       - if:
           - condition: template
@@ -2120,7 +2120,7 @@ script:
             value_template: '{{ followup_payload_clean != "" }}'
         then:
           - delay:
-              seconds: 3
+              seconds: 1
           - service: mqtt.publish
             data:
               topic: "{{ mqtt_topic }}"
@@ -2142,7 +2142,7 @@ script:
       - wait_for_trigger:
           - trigger: mqtt
             topic: "{{ wait_topic }}"
-        timeout: "00:00:10"
+        timeout: "00:00:05"
         continue_on_timeout: true
 
       - variables:
@@ -2201,7 +2201,7 @@ script:
                 value_template: '{{ followup_payload_clean != "" }}'
             then:
               - delay:
-                  seconds: 3
+                  seconds: 1
               - service: mqtt.publish
                 data:
                   topic: "{{ mqtt_topic }}"
@@ -2211,7 +2211,7 @@ script:
           - wait_for_trigger:
               - trigger: mqtt
                 topic: "{{ wait_topic }}"
-            timeout: "00:00:10"
+            timeout: "00:00:05"
             continue_on_timeout: true
 
           - variables:

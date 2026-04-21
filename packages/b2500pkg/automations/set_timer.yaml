@@ -1,7 +1,7 @@
 automation:
   alias: B2500PKG Set Timer
   description: |+
-  
+  id: "0007"
 
   triggers:
     - trigger: state
@@ -25,213 +25,257 @@ automation:
 
   actions:
     - variables:
-        a1: >-
-          {{ 1 if states('binary_sensor.' + states('input_select.speicherauswahl')
-          + '_d1') == 'on' else 0 }}
-        a2: >-
-          {{ 1 if states('binary_sensor.' + states('input_select.speicherauswahl')
-          + '_d2') == 'on' else 0 }}
-        a3: >-
-          {{ 1 if states('binary_sensor.' + states('input_select.speicherauswahl')
-          + '_d3') == 'on' else 0 }}
-        a4: >-
-          {{ 1 if states('binary_sensor.' + states('input_select.speicherauswahl')
-          + '_d4') == 'on' else 0 }}
-        a5: >-
-          {{ 1 if states('binary_sensor.' + states('input_select.speicherauswahl')
-          + '_d5') == 'on' else 0 }}
-        b1: "{{ states('sensor.' + states('input_select.speicherauswahl') + '_e1') }}"
-        b2: "{{ states('sensor.' + states('input_select.speicherauswahl') + '_e2') }}"
-        b3: "{{ states('sensor.' + states('input_select.speicherauswahl') + '_e3') }}"
-        b4: "{{ states('sensor.' + states('input_select.speicherauswahl') + '_e4') }}"
-        b5: "{{ states('sensor.' + states('input_select.speicherauswahl') + '_e5') }}"
-        e1: "{{ states('sensor.' + states('input_select.speicherauswahl') + '_f1') }}"
-        e2: "{{ states('sensor.' + states('input_select.speicherauswahl') + '_f2') }}"
-        e3: "{{ states('sensor.' + states('input_select.speicherauswahl') + '_f3') }}"
-        e4: "{{ states('sensor.' + states('input_select.speicherauswahl') + '_f4') }}"
-        e5: "{{ states('sensor.' + states('input_select.speicherauswahl') + '_f5') }}"
-        v1: "{{ states('sensor.' + states('input_select.speicherauswahl') + '_h1') }}"
-        v2: "{{ states('sensor.' + states('input_select.speicherauswahl') + '_h2') }}"
-        v3: "{{ states('sensor.' + states('input_select.speicherauswahl') + '_h3') }}"
-        v4: "{{ states('sensor.' + states('input_select.speicherauswahl') + '_h4') }}"
-        v5: "{{ states('sensor.' + states('input_select.speicherauswahl') + '_h5') }}"
-        b2500_mac: >-
-          {{ states('input_text.b01_mac') if states('input_select.speicherauswahl') == 'b2500_01' else
-             states('input_text.b02_mac') if states('input_select.speicherauswahl') == 'b2500_02' else
-             states('input_text.b03_mac') if states('input_select.speicherauswahl') == 'b2500_03' else
-             states('input_text.b04_mac') if states('input_select.speicherauswahl') == 'b2500_04' else
-             states('input_text.b05_mac') if states('input_select.speicherauswahl') == 'b2500_05' else
-             states('input_text.b06_mac') if states('input_select.speicherauswahl') == 'b2500_06' else
-             states('input_text.b07_mac') if states('input_select.speicherauswahl') == 'b2500_07' else
-             states('input_text.b08_mac') if states('input_select.speicherauswahl') == 'b2500_08' else
-             states('input_text.b09_mac') if states('input_select.speicherauswahl') == 'b2500_09' else
-             'unknown'
-          }}
-        b2500_typ: >-
-          {{ states('input_text.b01_typ') if states('input_select.speicherauswahl') == 'b2500_01' else
-             states('input_text.b02_typ') if states('input_select.speicherauswahl') == 'b2500_02' else
-             states('input_text.b03_typ') if states('input_select.speicherauswahl') == 'b2500_03' else
-             states('input_text.b04_typ') if states('input_select.speicherauswahl') == 'b2500_04' else
-             states('input_text.b05_typ') if states('input_select.speicherauswahl') == 'b2500_05' else
-             states('input_text.b06_typ') if states('input_select.speicherauswahl') == 'b2500_06' else
-             states('input_text.b07_typ') if states('input_select.speicherauswahl') == 'b2500_07' else
-             states('input_text.b08_typ') if states('input_select.speicherauswahl') == 'b2500_08' else
-             states('input_text.b09_typ') if states('input_select.speicherauswahl') == 'b2500_09' else
-             'unknown'
-          }}
-        b2500_topic: >-
-          {{ states('input_text.b01_topic') if states('input_select.speicherauswahl') == 'b2500_01' else
-             states('input_text.b02_topic') if states('input_select.speicherauswahl') == 'b2500_02' else
-             states('input_text.b03_topic') if states('input_select.speicherauswahl') == 'b2500_03' else
-             states('input_text.b04_topic') if states('input_select.speicherauswahl') == 'b2500_04' else
-             states('input_text.b05_topic') if states('input_select.speicherauswahl') == 'b2500_05' else
-             states('input_text.b06_topic') if states('input_select.speicherauswahl') == 'b2500_06' else
-             states('input_text.b07_topic') if states('input_select.speicherauswahl') == 'b2500_07' else
-             states('input_text.b08_topic') if states('input_select.speicherauswahl') == 'b2500_08' else
-             states('input_text.b09_topic') if states('input_select.speicherauswahl') == 'b2500_09' else
-             'unknown'
-          }}
-
+        speicher: "{{ states('input_select.speicherauswahl') }}"
+        all_speicher: "{{ states('input_text.b2500_all') | from_json }}"
+        targets: >
+          {% if speicher == 'Alle_Speicher' %}
+            {{ all_speicher }}
+          {% else %}
+            {{ [speicher] }}
+          {% endif %}
+        timerslot: "{{ states('input_select.timerslot') | int }}"
+        timer_leistung: "{{ states('input_number.timer_leistung') | int }}"
+        timer_status_value: "{{ 1 if is_state('input_boolean.timer_aktiv', 'on') else 0 }}"
+        startzeit: "{{ states('input_datetime.timer_beginn') }}"
+        endzeit: "{{ states('input_datetime.timer_ende') }}"
+        
     - choose:
         - conditions:
             - condition: trigger
               id:
                 - leistung_setzen
           sequence:
-            - variables:
-                v1: >-
-                  {{ states('input_number.timer_leistung')|int if
-                  states('input_select.timerslot') == "1" else v1 }}
-                v2: >-
-                  {{ states('input_number.timer_leistung')|int if
-                  states('input_select.timerslot') == "2" else v2 }}
-                v3: >-
-                  {{ states('input_number.timer_leistung')|int if
-                  states('input_select.timerslot') == "3" else v3 }}
-                v4: >-
-                  {{ states('input_number.timer_leistung')|int if
-                  states('input_select.timerslot') == "4" else v4 }}
-                v5: >-
-                  {{ states('input_number.timer_leistung')|int if
-                  states('input_select.timerslot') == "5" else v5 }} 
-            - action: mqtt.publish
-              metadata: {}
-              data:
-                evaluate_payload: false
-                qos: 0
-                retain: false
-                topic: >-
-                  {{ b2500_topic }}/{{ b2500_typ }}/App/{{ b2500_mac }}/ctrl
-                payload: >-
-                  cd=20,md=0,a1={{ a1 }},b1={{ b1 }},e1={{ e1 }},v1={{ v1 }},a2={{
-                  a2 }},b2={{ b2 }},e2={{ e2 }},v2={{ v2 }},a3={{ a3 }},b3={{ b3
-                  }},e3={{ e3 }},v3={{ v3 }},a4={{ a4 }},b4={{ b4 }},e4={{ e4
-                  }},v4={{ v4 }},a5={{ a5 }},b5={{ b5 }},e5={{ e5 }},v5={{ v5 }}
+            - repeat:
+                for_each: "{{ targets }}"
+                sequence:
+                  - variables:
+                      num: "{{ repeat.item.split('_')[-1] }}"
+
+                      a1: "{{ 1 if is_state('binary_sensor.b2500_' ~ num ~ '_d1','on') else 0 }}"
+                      a2: "{{ 1 if is_state('binary_sensor.b2500_' ~ num ~ '_d2','on') else 0 }}"
+                      a3: "{{ 1 if is_state('binary_sensor.b2500_' ~ num ~ '_d3','on') else 0 }}"
+                      a4: "{{ 1 if is_state('binary_sensor.b2500_' ~ num ~ '_d4','on') else 0 }}"
+                      a5: "{{ 1 if is_state('binary_sensor.b2500_' ~ num ~ '_d5','on') else 0 }}"
+
+                      b1: "{{ states('sensor.b2500_' ~ num ~ '_e1') }}"
+                      b2: "{{ states('sensor.b2500_' ~ num ~ '_e2') }}"
+                      b3: "{{ states('sensor.b2500_' ~ num ~ '_e3') }}"
+                      b4: "{{ states('sensor.b2500_' ~ num ~ '_e4') }}"
+                      b5: "{{ states('sensor.b2500_' ~ num ~ '_e5') }}"
+
+                      e1: "{{ states('sensor.b2500_' ~ num ~ '_f1') }}"
+                      e2: "{{ states('sensor.b2500_' ~ num ~ '_f2') }}"
+                      e3: "{{ states('sensor.b2500_' ~ num ~ '_f3') }}"
+                      e4: "{{ states('sensor.b2500_' ~ num ~ '_f4') }}"
+                      e5: "{{ states('sensor.b2500_' ~ num ~ '_f5') }}"
+
+                      v1: >-
+                        {{ timer_leistung if timerslot == 1
+                        else states('sensor.b2500_' ~ num ~ '_h1') | int }}
+                      v2: >-
+                        {{ timer_leistung if timerslot == 2
+                        else states('sensor.b2500_' ~ num ~ '_h2') | int }}
+                      v3: >-
+                        {{ timer_leistung if timerslot == 3
+                        else states('sensor.b2500_' ~ num ~ '_h3') | int }}
+                      v4: >-
+                        {{ timer_leistung if timerslot == 4
+                        else states('sensor.b2500_' ~ num ~ '_h4') | int }}
+                      v5: >-
+                        {{ timer_leistung if timerslot == 5
+                        else states('sensor.b2500_' ~ num ~ '_h5') | int }}
+
+                      expected_field: "h{{ timerslot }}"
+                      expected_value: "{{ timer_leistung }}"
+
+                      timer_payload: >-
+                        cd=20,md=0,a1={{ a1 }},b1={{ b1 }},e1={{ e1 }},v1={{ v1 }},a2={{ a2 }},b2={{ b2 }},e2={{ e2 }},v2={{ v2 }},a3={{ a3 }},b3={{ b3 }},e3={{ e3 }},v3={{ v3 }},a4={{ a4 }},b4={{ b4 }},e4={{ e4 }},v4={{ v4 }},a5={{ a5 }},b5={{ b5 }},e5={{ e5 }},v5={{ v5 }}
+
+                  - action: script.turn_on
+                    target:
+                      entity_id: "script.{{ repeat.item }}_worker"
+                    data:
+                      variables:
+                        payload: "{{ timer_payload }}"
+                        followup_payload: "cd=01"
+                        no_check: false
+                        expected_field: "{{ expected_field }}"
+                        expected_value: "{{ expected_value }}"
+
+                  - delay:
+                      seconds: 1
+          
         - conditions:
             - condition: trigger
               id:
                 - timer_status_setzen
           sequence:
-            - variables:
-                timer_on: "{{ 1 if states('input_boolean.timer_aktiv') == 'on' else 0 }}"
-                a1: >-
-                  {{ timer_on if states('input_select.timerslot') == '1' else a1
-                  }}
-                a2: >-
-                  {{ timer_on if states('input_select.timerslot') == '2' else a2
-                  }}
-                a3: >-
-                  {{ timer_on if states('input_select.timerslot') == '3' else a3
-                  }}
-                a4: >-
-                  {{ timer_on if states('input_select.timerslot') == '4' else a4
-                  }}
-                a5: >-
-                  {{ timer_on if states('input_select.timerslot') == '5' else a5
-                  }}
-            - action: mqtt.publish
-              metadata: {}
-              data:
-                evaluate_payload: false
-                qos: 0
-                retain: false
-                topic: >-
-                  {{ b2500_topic }}/{{ b2500_typ }}/App/{{ b2500_mac }}/ctrl
-                payload: >-
-                  cd=20,md=0,a1={{ a1 }},b1={{ b1 }},e1={{ e1 }},v1={{ v1 }},a2={{
-                  a2 }},b2={{ b2 }},e2={{ e2 }},v2={{ v2 }},a3={{ a3 }},b3={{ b3
-                  }},e3={{ e3 }},v3={{ v3 }},a4={{ a4 }},b4={{ b4 }},e4={{ e4
-                  }},v4={{ v4 }},a5={{ a5 }},b5={{ b5 }},e5={{ e5 }},v5={{ v5 }}
+            - repeat:
+                for_each: "{{ targets }}"
+                sequence:
+                  - variables:
+                      num: "{{ repeat.item.split('_')[-1] }}"
+        
+                      a1: "{{ timer_status_value if timerslot == 1 else (1 if is_state('binary_sensor.b2500_' ~ num ~ '_d1','on') else 0) }}"
+                      a2: "{{ timer_status_value if timerslot == 2 else (1 if is_state('binary_sensor.b2500_' ~ num ~ '_d2','on') else 0) }}"
+                      a3: "{{ timer_status_value if timerslot == 3 else (1 if is_state('binary_sensor.b2500_' ~ num ~ '_d3','on') else 0) }}"
+                      a4: "{{ timer_status_value if timerslot == 4 else (1 if is_state('binary_sensor.b2500_' ~ num ~ '_d4','on') else 0) }}"
+                      a5: "{{ timer_status_value if timerslot == 5 else (1 if is_state('binary_sensor.b2500_' ~ num ~ '_d5','on') else 0) }}"
+        
+                      b1: "{{ states('sensor.b2500_' ~ num ~ '_e1') }}"
+                      b2: "{{ states('sensor.b2500_' ~ num ~ '_e2') }}"
+                      b3: "{{ states('sensor.b2500_' ~ num ~ '_e3') }}"
+                      b4: "{{ states('sensor.b2500_' ~ num ~ '_e4') }}"
+                      b5: "{{ states('sensor.b2500_' ~ num ~ '_e5') }}"
+        
+                      e1: "{{ states('sensor.b2500_' ~ num ~ '_f1') }}"
+                      e2: "{{ states('sensor.b2500_' ~ num ~ '_f2') }}"
+                      e3: "{{ states('sensor.b2500_' ~ num ~ '_f3') }}"
+                      e4: "{{ states('sensor.b2500_' ~ num ~ '_f4') }}"
+                      e5: "{{ states('sensor.b2500_' ~ num ~ '_f5') }}"
+        
+                      v1: "{{ states('sensor.b2500_' ~ num ~ '_h1') | int }}"
+                      v2: "{{ states('sensor.b2500_' ~ num ~ '_h2') | int }}"
+                      v3: "{{ states('sensor.b2500_' ~ num ~ '_h3') | int }}"
+                      v4: "{{ states('sensor.b2500_' ~ num ~ '_h4') | int }}"
+                      v5: "{{ states('sensor.b2500_' ~ num ~ '_h5') | int }}"
+        
+                      expected_field: "d{{ timerslot }}"
+                      expected_value: "{{ timer_status_value }}"
+        
+                      timer_payload: >-
+                        cd=20,md=0,
+                        a1={{ a1 }},b1={{ b1 }},e1={{ e1 }},v1={{ v1 }},
+                        a2={{ a2 }},b2={{ b2 }},e2={{ e2 }},v2={{ v2 }},
+                        a3={{ a3 }},b3={{ b3 }},e3={{ e3 }},v3={{ v3 }},
+                        a4={{ a4 }},b4={{ b4 }},e4={{ e4 }},v4={{ v4 }},
+                        a5={{ a5 }},b5={{ b5 }},e5={{ e5 }},v5={{ v5 }}
+        
+                  - action: script.turn_on
+                    target:
+                      entity_id: "script.{{ repeat.item }}_worker"
+                    data:
+                      variables:
+                        payload: "{{ timer_payload }}"
+                        followup_payload: "cd=01"
+                        no_check: false
+                        expected_field: "{{ expected_field }}"
+                        expected_value: "{{ expected_value }}"
+        
+                  - delay:
+                      seconds: 1
+
         - conditions:
             - condition: trigger
               id:
                 - zeit_setzen
           sequence:
-            - variables:
-                b_hour: >-
-                  {{ states('input_datetime.timer_beginn')[0].lstrip('0') }}{{
-                  states('input_datetime.timer_beginn')[1] }}
-                b_minute: >-
-                  {{ states('input_datetime.timer_beginn')[3].lstrip('0')}}{{
-                  states('input_datetime.timer_beginn')[4] }}
-                e_hour: >-
-                  {{ states('input_datetime.timer_ende')[0].lstrip('0') }}{{
-                  states('input_datetime.timer_ende')[1] }}
-                e_minute: >-
-                  {{ states('input_datetime.timer_ende')[3].lstrip('0')}}{{
-                  states('input_datetime.timer_ende')[4] }}
-                b: "{{ b_hour }}:{{ b_minute }}"
-                e: "{{ e_hour }}:{{ e_minute }}"
-                b1: "{{ b if states('input_select.timerslot') == '1' else b1 }}"
-                e1: "{{ e if states('input_select.timerslot') == '1' else e1 }}"
-                b2: "{{ b if states('input_select.timerslot') == '2' else b2 }}"
-                e2: "{{ e if states('input_select.timerslot') == '2' else e2 }}"
-                b3: "{{ b if states('input_select.timerslot') == '3' else b3 }}"
-                e3: "{{ e if states('input_select.timerslot') == '3' else e3 }}"
-                b4: "{{ b if states('input_select.timerslot') == '4' else b4 }}"
-                e4: "{{ e if states('input_select.timerslot') == '4' else e4 }}"
-                b5: "{{ b if states('input_select.timerslot') == '5' else b5 }}"
-                e5: "{{ e if states('input_select.timerslot') == '5' else e5 }}"
-            - action: mqtt.publish
-              metadata: {}
-              data:
-                evaluate_payload: false
-                qos: 0
-                retain: false
-                topic: >-
-                  {{ b2500_topic }}/{{ b2500_typ }}/App/{{ b2500_mac }}/ctrl
-                payload: >-
-                  cd=20,md=0,a1={{ a1 }},b1={{ b1 }},e1={{ e1 }},v1={{ v1 }},a2={{
-                  a2 }},b2={{ b2 }},e2={{ e2 }},v2={{ v2 }},a3={{ a3 }},b3={{ b3
-                  }},e3={{ e3 }},v3={{ v3 }},a4={{ a4 }},b4={{ b4 }},e4={{ e4
-                  }},v4={{ v4 }},a5={{ a5 }},b5={{ b5 }},e5={{ e5 }},v5={{ v5 }}
+            - repeat:
+                for_each: "{{ targets }}"
+                sequence:
+                  - variables:
+                      num: "{{ repeat.item.split('_')[-1] }}"
+
+                      a1: "{{ 1 if is_state('binary_sensor.b2500_' ~ num ~ '_d1','on') else 0 }}"
+                      a2: "{{ 1 if is_state('binary_sensor.b2500_' ~ num ~ '_d2','on') else 0 }}"
+                      a3: "{{ 1 if is_state('binary_sensor.b2500_' ~ num ~ '_d3','on') else 0 }}"
+                      a4: "{{ 1 if is_state('binary_sensor.b2500_' ~ num ~ '_d4','on') else 0 }}"
+                      a5: "{{ 1 if is_state('binary_sensor.b2500_' ~ num ~ '_d5','on') else 0 }}"
+
+                      b1: "{{ states('sensor.b2500_' ~ num ~ '_e1') }}"
+                      b2: "{{ states('sensor.b2500_' ~ num ~ '_e2') }}"
+                      b3: "{{ states('sensor.b2500_' ~ num ~ '_e3') }}"
+                      b4: "{{ states('sensor.b2500_' ~ num ~ '_e4') }}"
+                      b5: "{{ states('sensor.b2500_' ~ num ~ '_e5') }}"
+
+                      e1: "{{ states('sensor.b2500_' ~ num ~ '_f1') }}"
+                      e2: "{{ states('sensor.b2500_' ~ num ~ '_f2') }}"
+                      e3: "{{ states('sensor.b2500_' ~ num ~ '_f3') }}"
+                      e4: "{{ states('sensor.b2500_' ~ num ~ '_f4') }}"
+                      e5: "{{ states('sensor.b2500_' ~ num ~ '_f5') }}"
+
+                      v1: "{{ states('sensor.b2500_' ~ num ~ '_h1') | int }}"
+                      v2: "{{ states('sensor.b2500_' ~ num ~ '_h2') | int }}"
+                      v3: "{{ states('sensor.b2500_' ~ num ~ '_h3') | int }}"
+                      v4: "{{ states('sensor.b2500_' ~ num ~ '_h4') | int }}"
+                      v5: "{{ states('sensor.b2500_' ~ num ~ '_h5') | int }}"
+
+                      start_h: "{{ startzeit.split(':')[0] | int }}"
+                      start_m: "{{ startzeit.split(':')[1] | int }}"
+                      end_h: "{{ endzeit.split(':')[0] | int }}"
+                      end_m: "{{ endzeit.split(':')[1] | int }}"
+
+                      new_b: "{{ start_h ~ ':' ~ start_m }}"
+                      new_e: "{{ end_h ~ ':' ~ end_m }}"
+
+                      b1_new: "{{ new_b if timerslot == 1 else states('sensor.b2500_' ~ num ~ '_e1') }}"
+                      b2_new: "{{ new_b if timerslot == 2 else states('sensor.b2500_' ~ num ~ '_e2') }}"
+                      b3_new: "{{ new_b if timerslot == 3 else states('sensor.b2500_' ~ num ~ '_e3') }}"
+                      b4_new: "{{ new_b if timerslot == 4 else states('sensor.b2500_' ~ num ~ '_e4') }}"
+                      b5_new: "{{ new_b if timerslot == 5 else states('sensor.b2500_' ~ num ~ '_e5') }}"
+
+                      e1_new: "{{ new_e if timerslot == 1 else states('sensor.b2500_' ~ num ~ '_f1') }}"
+                      e2_new: "{{ new_e if timerslot == 2 else states('sensor.b2500_' ~ num ~ '_f2') }}"
+                      e3_new: "{{ new_e if timerslot == 3 else states('sensor.b2500_' ~ num ~ '_f3') }}"
+                      e4_new: "{{ new_e if timerslot == 4 else states('sensor.b2500_' ~ num ~ '_f4') }}"
+                      e5_new: "{{ new_e if timerslot == 5 else states('sensor.b2500_' ~ num ~ '_f5') }}"
+
+                      expected_field: "e{{ timerslot }}"
+                      expected_value: "{{ new_b }}"
+                      expected_field_2: "f{{ timerslot }}"
+                      expected_value_2: "{{ new_e }}"
+
+                      timer_payload: >-
+                        cd=20,md=0,
+                        a1={{ a1 }},b1={{ b1_new }},e1={{ e1_new }},v1={{ v1 }},
+                        a2={{ a2 }},b2={{ b2_new }},e2={{ e2_new }},v2={{ v2 }},
+                        a3={{ a3 }},b3={{ b3_new }},e3={{ e3_new }},v3={{ v3 }},
+                        a4={{ a4 }},b4={{ b4_new }},e4={{ e4_new }},v4={{ v4 }},
+                        a5={{ a5 }},b5={{ b5_new }},e5={{ e5_new }},v5={{ v5 }}
+
+                  - action: script.turn_on
+                    target:
+                      entity_id: "script.{{ repeat.item }}_worker"
+                    data:
+                      variables:
+                        payload: "{{ timer_payload }}"
+                        followup_payload: "cd=01"
+                        no_check: false
+                        expected_field: "{{ expected_field }}"
+                        expected_value: "{{ expected_value }}"
+                        expected_field_2: "{{ expected_field_2 }}"
+                        expected_value_2: "{{ expected_value_2 }}"
+
+                  - delay:
+                      seconds: 1
+
+
         - conditions:
             - condition: trigger
               id:
                 - selbstanpassung_setzen
           sequence:
-            - action: mqtt.publish
-              metadata: {}
-              data:
-                evaluate_payload: false
-                qos: 0
-                retain: false
-                topic: >-
-                  {{ b2500_topic }}/{{ b2500_typ }}/App/{{ b2500_mac }}/ctrl
-                payload: cd=20,md=1
-    - delay:
-        hours: 0
-        minutes: 0
-        seconds: 3
-    - action: mqtt.publish
-      metadata: {}
-      data:
-        evaluate_payload: false
-        qos: 0
-        retain: false
-        topic: >-
-          {{ b2500_topic }}/{{ b2500_typ }}/App/{{ b2500_mac }}/ctrl
-        payload: cd=01
-      enabled: true
+            - repeat:
+                for_each: "{{ targets }}"
+                sequence:
+                  - variables:
+                      expected_field: "md"
+                      expected_value: "Selbstanpassung"
+
+                  - action: script.turn_on
+                    target:
+                      entity_id: "script.{{ repeat.item }}_worker"
+                    data:
+                      variables:
+                        payload: "cd=20,md=1"
+                        followup_payload: "cd=01"
+                        no_check: false
+                        expected_field: "{{ expected_field }}"
+                        expected_value: "{{ expected_value }}"
+
+                  - delay:
+                      seconds: 1
+              
+              
   mode: queued
   max: 20
