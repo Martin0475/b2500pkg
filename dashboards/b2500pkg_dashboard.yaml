@@ -1067,7 +1067,7 @@ views:
                 entities:
                   - entity: sensor.b2500_01_cd
                 show_header_toggle: false
-                title: Entladeinstellung  - gilt nur für Speicherversion V1
+                title: Entladeeinstellung  - gilt nur für Speicherversion V1
             columns: 1
             visibility:
               - condition: state
@@ -1126,7 +1126,7 @@ views:
                 entities:
                   - entity: sensor.b2500_02_cd
                 show_header_toggle: false
-                title: Entladeinstellung  - gilt nur für Speicherversion V1
+                title: Entladeeinstellung  - gilt nur für Speicherversion V1
             columns: 1
             visibility:
               - condition: state
@@ -1185,7 +1185,7 @@ views:
                 entities:
                   - entity: sensor.b2500_03_cd
                 show_header_toggle: false
-                title: Entladeinstellung  - gilt nur für Speicherversion V1
+                title: Entladeeinstellung  - gilt nur für Speicherversion V1
             columns: 1
             visibility:
               - condition: state
@@ -1244,7 +1244,7 @@ views:
                 entities:
                   - entity: sensor.b2500_04_cd
                 show_header_toggle: false
-                title: Entladeinstellung  - gilt nur für Speicherversion V1
+                title: Entladeeinstellung  - gilt nur für Speicherversion V1
             columns: 1
             visibility:
               - condition: state
@@ -1303,7 +1303,7 @@ views:
                 entities:
                   - entity: sensor.b2500_05_cd
                 show_header_toggle: false
-                title: Entladeinstellung  - gilt nur für Speicherversion V1
+                title: Entladeeinstellung  - gilt nur für Speicherversion V1
             columns: 1
             visibility:
               - condition: state
@@ -1362,7 +1362,7 @@ views:
                 entities:
                   - entity: sensor.b2500_06_cd
                 show_header_toggle: false
-                title: Entladeinstellung  - gilt nur für Speicherversion V1
+                title: Entladeeinstellung  - gilt nur für Speicherversion V1
             columns: 1
             visibility:
               - condition: state
@@ -1421,7 +1421,7 @@ views:
                 entities:
                   - entity: sensor.b2500_07_cd
                 show_header_toggle: false
-                title: Entladeinstellung  - gilt nur für Speicherversion V1
+                title: Entladeeinstellung  - gilt nur für Speicherversion V1
             columns: 1
             visibility:
               - condition: state
@@ -1480,7 +1480,7 @@ views:
                 entities:
                   - entity: sensor.b2500_08_cd
                 show_header_toggle: false
-                title: Entladeinstellung  - gilt nur für Speicherversion V1
+                title: Entladeeinstellung  - gilt nur für Speicherversion V1
             columns: 1
             visibility:
               - condition: state
@@ -1539,7 +1539,7 @@ views:
                 entities:
                   - entity: sensor.b2500_09_cd
                 show_header_toggle: false
-                title: Entladeinstellung  - gilt nur für Speicherversion V1
+                title: Entladeeinstellung  - gilt nur für Speicherversion V1
             columns: 1
             visibility:
               - condition: state
