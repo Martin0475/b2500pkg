@@ -1,0 +1,767 @@
+mqtt:
+  binary_sensor:
+  - name: B01 Entladen
+    unique_id: b2500_01_l0_bit0
+    state_topic: B2500PKG/B2500_01/CD01
+    payload_on: '1'
+    payload_off: '0'
+    entity_category: diagnostic
+    value_template: '{{ (''{:0=8b}''.format(value.split(''l0='')[1].split('','')[0] | int(0) )|batch(1)|map(''join'')|join('' '')).split('' '')[7] }}'
+    availability_topic: B2500PKG/B2500_01/CD01
+    availability_template: '{{ ''l0='' in value }}'
+    device: &id001
+      identifiers:
+      - b2500_01
+      name: B2500 B01
+      manufacturer: B2500PKG
+      model: B2500
+  - name: B01 Laden
+    unique_id: b2500_01_l0_bit1
+    state_topic: B2500PKG/B2500_01/CD01
+    payload_on: '1'
+    payload_off: '0'
+    entity_category: diagnostic
+    value_template: '{{ (''{:0=8b}''.format(value.split(''l0='')[1].split('','')[0] | int(0) )|batch(1)|map(''join'')|join('' '')).split('' '')[6] }}'
+    availability_topic: B2500PKG/B2500_01/CD01
+    availability_template: '{{ ''l0='' in value }}'
+    device: *id001
+  - name: B01 DOD erreicht
+    unique_id: b2500_01_l0_bit2
+    state_topic: B2500PKG/B2500_01/CD01
+    payload_on: '1'
+    payload_off: '0'
+    entity_category: diagnostic
+    value_template: '{{ (''{:0=8b}''.format(value.split(''l0='')[1].split('','')[0] | int(0) )|batch(1)|map(''join'')|join('' '')).split('' '')[5] }}'
+    availability_topic: B2500PKG/B2500_01/CD01
+    availability_template: '{{ ''l0='' in value }}'
+    device: *id001
+  - name: B01 Unterspannung
+    unique_id: b2500_01_l0_bit3
+    state_topic: B2500PKG/B2500_01/CD01
+    payload_on: '1'
+    payload_off: '0'
+    entity_category: diagnostic
+    value_template: '{{ (''{:0=8b}''.format(value.split(''l0='')[1].split('','')[0] | int(0) )|batch(1)|map(''join'')|join('' '')).split('' '')[4] }}'
+    availability_topic: B2500PKG/B2500_01/CD01
+    availability_template: '{{ ''l0='' in value }}'
+    device: *id001
+  - name: B01E2 Entladen
+    unique_id: b2500_01_l1_bit0
+    state_topic: B2500PKG/B2500_01/CD01
+    payload_on: '1'
+    payload_off: '0'
+    entity_category: diagnostic
+    value_template: '{{ (''{:0=8b}''.format(value.split(''l1='')[1].split('','')[0] | int(0) )|batch(1)|map(''join'')|join('' '')).split('' '')[7] }}'
+    availability_topic: B2500PKG/B2500_01/CD01
+    availability_template: '{{ ''l1='' in value }}'
+    device: *id001
+  - name: B01E2 Laden
+    unique_id: b2500_01_l1_bit1
+    state_topic: B2500PKG/B2500_01/CD01
+    payload_on: '1'
+    payload_off: '0'
+    entity_category: diagnostic
+    value_template: '{{ (''{:0=8b}''.format(value.split(''l1='')[1].split('','')[0] | int(0) )|batch(1)|map(''join'')|join('' '')).split('' '')[6] }}'
+    availability_topic: B2500PKG/B2500_01/CD01
+    availability_template: '{{ ''l1='' in value }}'
+    device: *id001
+  - name: B01E2 DOD erreicht
+    unique_id: b2500_01_l1_bit2
+    state_topic: B2500PKG/B2500_01/CD01
+    payload_on: '1'
+    payload_off: '0'
+    entity_category: diagnostic
+    value_template: '{{ (''{:0=8b}''.format(value.split(''l1='')[1].split('','')[0] | int(0) )|batch(1)|map(''join'')|join('' '')).split('' '')[5] }}'
+    availability_topic: B2500PKG/B2500_01/CD01
+    availability_template: '{{ ''l1='' in value }}'
+    device: *id001
+  - name: B01E2 Unterspannung
+    unique_id: b2500_01_l1_bit3
+    state_topic: B2500PKG/B2500_01/CD01
+    payload_on: '1'
+    payload_off: '0'
+    entity_category: diagnostic
+    value_template: '{{ (''{:0=8b}''.format(value.split(''l1='')[1].split('','')[0] | int(0) )|batch(1)|map(''join'')|join('' '')).split('' '')[4] }}'
+    availability_topic: B2500PKG/B2500_01/CD01
+    availability_template: '{{ ''l1='' in value }}'
+    device: *id001
+  - name: B01E1 Entladen
+    unique_id: b2500_01_l1_bit4
+    state_topic: B2500PKG/B2500_01/CD01
+    payload_on: '1'
+    payload_off: '0'
+    entity_category: diagnostic
+    value_template: '{{ (''{:0=8b}''.format(value.split(''l1='')[1].split('','')[0] | int(0) )|batch(1)|map(''join'')|join('' '')).split('' '')[3] }}'
+    availability_topic: B2500PKG/B2500_01/CD01
+    availability_template: '{{ ''l1='' in value }}'
+    device: *id001
+  - name: B01E1 Laden
+    unique_id: b2500_01_l1_bit5
+    state_topic: B2500PKG/B2500_01/CD01
+    payload_on: '1'
+    payload_off: '0'
+    entity_category: diagnostic
+    value_template: '{{ (''{:0=8b}''.format(value.split(''l1='')[1].split('','')[0] | int(0) )|batch(1)|map(''join'')|join('' '')).split('' '')[2] }}'
+    availability_topic: B2500PKG/B2500_01/CD01
+    availability_template: '{{ ''l1='' in value }}'
+    device: *id001
+  - name: B01E1 DOD erreicht
+    unique_id: b2500_01_l1_bit6
+    state_topic: B2500PKG/B2500_01/CD01
+    payload_on: '1'
+    payload_off: '0'
+    entity_category: diagnostic
+    value_template: '{{ (''{:0=8b}''.format(value.split(''l1='')[1].split('','')[0] | int(0) )|batch(1)|map(''join'')|join('' '')).split('' '')[1] }}'
+    availability_topic: B2500PKG/B2500_01/CD01
+    availability_template: '{{ ''l1='' in value }}'
+    device: *id001
+  - name: B01E1 Unterspannung
+    unique_id: b2500_01_l1_bit7
+    state_topic: B2500PKG/B2500_01/CD01
+    payload_on: '1'
+    payload_off: '0'
+    entity_category: diagnostic
+    value_template: '{{ (''{:0=8b}''.format(value.split(''l1='')[1].split('','')[0] | int(0) )|batch(1)|map(''join'')|join('' '')).split('' '')[0] }}'
+    availability_topic: B2500PKG/B2500_01/CD01
+    availability_template: '{{ ''l1='' in value }}'
+    device: *id001
+  - name: B01 E1 verbunden
+    unique_id: b2500_01_b1
+    state_topic: B2500PKG/B2500_01/CD01
+    payload_on: '1'
+    payload_off: '0'
+    entity_category: diagnostic
+    value_template: '{{ value.split(''b1='')[1].split('','')[0] }}'
+    availability_topic: B2500PKG/B2500_01/CD01
+    availability_template: '{{ ''b1='' in value }}'
+    device: *id001
+  - name: B01 E2 verbunden
+    unique_id: b2500_01_b2
+    state_topic: B2500PKG/B2500_01/CD01
+    payload_on: '1'
+    payload_off: '0'
+    entity_category: diagnostic
+    value_template: '{{ value.split(''b2='')[1].split('','')[0] }}'
+    availability_topic: B2500PKG/B2500_01/CD01
+    availability_template: '{{ ''b2='' in value }}'
+    device: *id001
+  - name: B01 Timer1 aktiv
+    unique_id: b2500_01_d1
+    state_topic: B2500PKG/B2500_01/CD01
+    payload_on: '1'
+    payload_off: '0'
+    entity_category: diagnostic
+    value_template: '{{ value.split(''d1='')[1].split('','')[0] }}'
+    availability_topic: B2500PKG/B2500_01/CD01
+    availability_template: '{{ ''d1='' in value }}'
+    device: *id001
+  - name: B01 Timer2 aktiv
+    unique_id: b2500_01_d2
+    state_topic: B2500PKG/B2500_01/CD01
+    payload_on: '1'
+    payload_off: '0'
+    entity_category: diagnostic
+    value_template: '{{ value.split(''d2='')[1].split('','')[0] }}'
+    availability_topic: B2500PKG/B2500_01/CD01
+    availability_template: '{{ ''d2='' in value }}'
+    device: *id001
+  - name: B01 Timer3 aktiv
+    unique_id: b2500_01_d3
+    state_topic: B2500PKG/B2500_01/CD01
+    payload_on: '1'
+    payload_off: '0'
+    entity_category: diagnostic
+    value_template: '{{ value.split(''d3='')[1].split('','')[0] }}'
+    availability_topic: B2500PKG/B2500_01/CD01
+    availability_template: '{{ ''d3='' in value }}'
+    device: *id001
+  - name: B01 Timer4 aktiv
+    unique_id: b2500_01_d4
+    state_topic: B2500PKG/B2500_01/CD01
+    payload_on: '1'
+    payload_off: '0'
+    entity_category: diagnostic
+    value_template: '{{ value.split(''d4='')[1].split('','')[0] }}'
+    availability_topic: B2500PKG/B2500_01/CD01
+    availability_template: '{{ ''d4='' in value }}'
+    device: *id001
+  - name: B01 Timer5 aktiv
+    unique_id: b2500_01_d5
+    state_topic: B2500PKG/B2500_01/CD01
+    payload_on: '1'
+    payload_off: '0'
+    entity_category: diagnostic
+    value_template: '{{ value.split(''d5='')[1].split('','')[0] }}'
+    availability_topic: B2500PKG/B2500_01/CD01
+    availability_template: '{{ ''d5='' in value }}'
+    device: *id001
+  sensor:
+  - name: B01 Solar1 Input Status
+    unique_id: b2500_01_p1
+    state_topic: B2500PKG/B2500_01/CD01
+    entity_category: diagnostic
+    value_template: '{{ value.split(''p1='')[1].split('','')[0] }}'
+    availability_topic: B2500PKG/B2500_01/CD01
+    availability_template: '{{ ''p1='' in value }}'
+    device: *id001
+  - name: B01 Solar2 Input Status
+    unique_id: b2500_01_p2
+    state_topic: B2500PKG/B2500_01/CD01
+    entity_category: diagnostic
+    value_template: '{{ value.split(''p2='')[1].split('','')[0] }}'
+    availability_topic: B2500PKG/B2500_01/CD01
+    availability_template: '{{ ''p2='' in value }}'
+    device: *id001
+  - name: B01 PV1 Leistung
+    unique_id: b2500_01_w1
+    state_topic: B2500PKG/B2500_01/CD01
+    device_class: power
+    state_class: measurement
+    unit_of_measurement: W
+    entity_category: diagnostic
+    value_template: '{{ value.split(''w1='')[1].split('','')[0] }}'
+    availability_topic: B2500PKG/B2500_01/CD01
+    availability_template: '{{ ''w1='' in value }}'
+    device: *id001
+  - name: B01 PV2 Leistung
+    unique_id: b2500_01_w2
+    state_topic: B2500PKG/B2500_01/CD01
+    device_class: power
+    state_class: measurement
+    unit_of_measurement: W
+    entity_category: diagnostic
+    value_template: '{{ value.split(''w2='')[1].split('','')[0] }}'
+    availability_topic: B2500PKG/B2500_01/CD01
+    availability_template: '{{ ''w2='' in value }}'
+    device: *id001
+  - name: B01 Batterie SOC
+    unique_id: b2500_01_pe
+    state_topic: B2500PKG/B2500_01/CD01
+    device_class: battery
+    state_class: measurement
+    unit_of_measurement: '%'
+    entity_category: diagnostic
+    value_template: '{{ value.split(''pe='')[1].split('','')[0] }}'
+    availability_topic: B2500PKG/B2500_01/CD01
+    availability_template: '{{ ''pe='' in value }}'
+    device: *id001
+  - name: B01 Geräteversion
+    unique_id: b2500_01_vv
+    state_topic: B2500PKG/B2500_01/CD01
+    entity_category: diagnostic
+    value_template: '{{ value.split(''vv='')[1].split('','')[0] }}'
+    availability_topic: B2500PKG/B2500_01/CD01
+    availability_template: '{{ ''vv='' in value }}'
+    device: *id001
+  - name: B01 Gerätesubversion
+    unique_id: b2500_01_sv
+    state_topic: B2500PKG/B2500_01/CD01
+    entity_category: diagnostic
+    value_template: '{{ value.split(''sv='')[1].split('','')[0] }}'
+    availability_topic: B2500PKG/B2500_01/CD01
+    availability_template: '{{ ''sv='' in value }}'
+    device: *id001
+  - name: B01 Ladeeinstellung
+    unique_id: b2500_01_cs
+    state_topic: B2500PKG/B2500_01/CD01
+    entity_category: diagnostic
+    value_template: '{{ value.split(''cs='')[1].split('','')[0].replace(''0'',''Laden und Entladen gleichzeitig'').replace(''1'',''Laden vor dem Entladen'') }}'
+    availability_topic: B2500PKG/B2500_01/CD01
+    availability_template: '{{ ''cs='' in value }}'
+    device: *id001
+  - name: B01 Entladeeinstellung
+    unique_id: b2500_01_cd
+    state_topic: B2500PKG/B2500_01/CD01
+    entity_category: diagnostic
+    value_template: '{% set parts = value.split(''cd='') %}{% if parts | length > 1 %}{% set cd = parts[1].split('','')[0] %}{% if cd == ''0'' %}Ausgang PV1 und PV2 off{% elif cd == ''1'' %}Ausgang PV1 on, PV2 off{% elif cd == ''2'' %}Ausgang PV1 off, PV2 on{% elif cd == ''3'' %}Ausgang PV1 und PV2 on{% else %}unbekannt{% endif %}{% else %}unbekannt{% endif %}'
+    availability_topic: B2500PKG/B2500_01/CD01
+    availability_template: '{{ ''cd='' in value }}'
+    device: *id001
+  - name: B01 AM
+    unique_id: b2500_01_am
+    state_topic: B2500PKG/B2500_01/CD01
+    entity_category: diagnostic
+    value_template: '{{ value.split(''am='')[1].split('','')[0] }}'
+    availability_topic: B2500PKG/B2500_01/CD01
+    availability_template: '{{ ''am='' in value }}'
+    device: *id001
+  - name: B01 Output Status 1
+    unique_id: b2500_01_o1
+    state_topic: B2500PKG/B2500_01/CD01
+    entity_category: diagnostic
+    value_template: '{{ value.split(''o1='')[1].split('','')[0] }}'
+    availability_topic: B2500PKG/B2500_01/CD01
+    availability_template: '{{ ''o1='' in value }}'
+    device: *id001
+  - name: B01 Output Status 2
+    unique_id: b2500_01_o2
+    state_topic: B2500PKG/B2500_01/CD01
+    entity_category: diagnostic
+    value_template: '{{ value.split(''o2='')[1].split('','')[0] }}'
+    availability_topic: B2500PKG/B2500_01/CD01
+    availability_template: '{{ ''o2='' in value }}'
+    device: *id001
+  - name: B01 DOD Entnehmbare Kapazität in %
+    unique_id: b2500_01_do
+    state_topic: B2500PKG/B2500_01/CD01
+    entity_category: diagnostic
+    value_template: '{{ value.split(''do='')[1].split('','')[0] }}'
+    availability_topic: B2500PKG/B2500_01/CD01
+    availability_template: '{{ ''do='' in value }}'
+    device: *id001
+  - name: B01 Entladeschwelle
+    unique_id: b2500_01_lv
+    state_topic: B2500PKG/B2500_01/CD01
+    entity_category: diagnostic
+    value_template: '{{ value.split(''lv='')[1].split('','')[0] }}'
+    availability_topic: B2500PKG/B2500_01/CD01
+    availability_template: '{{ ''lv='' in value }}'
+    device: *id001
+  - name: B01 CJ Scene
+    unique_id: b2500_01_cj
+    state_topic: B2500PKG/B2500_01/CD01
+    entity_category: diagnostic
+    value_template: '{{ value.split(''cj='')[1].split('','')[0] }}'
+    availability_topic: B2500PKG/B2500_01/CD01
+    availability_template: '{{ ''cj='' in value }}'
+    device: *id001
+  - name: B01 Gesamtkapazität
+    unique_id: b2500_01_kn
+    state_topic: B2500PKG/B2500_01/CD01
+    device_class: energy_storage
+    state_class: measurement
+    unit_of_measurement: Wh
+    entity_category: diagnostic
+    value_template: '{{ value.split(''kn='')[1].split('','')[0] }}'
+    availability_topic: B2500PKG/B2500_01/CD01
+    availability_template: '{{ ''kn='' in value }}'
+    device: *id001
+  - name: B01 Output1 Leistung
+    unique_id: b2500_01_g1
+    state_topic: B2500PKG/B2500_01/CD01
+    device_class: power
+    state_class: measurement
+    unit_of_measurement: W
+    entity_category: diagnostic
+    value_template: '{{ value.split(''g1='')[1].split('','')[0] }}'
+    availability_topic: B2500PKG/B2500_01/CD01
+    availability_template: '{{ ''g1='' in value }}'
+    device: *id001
+  - name: B01 Output2 Leistung
+    unique_id: b2500_01_g2
+    state_topic: B2500PKG/B2500_01/CD01
+    device_class: power
+    state_class: measurement
+    unit_of_measurement: W
+    entity_category: diagnostic
+    value_template: '{{ value.split(''g2='')[1].split('','')[0] }}'
+    availability_topic: B2500PKG/B2500_01/CD01
+    availability_template: '{{ ''g2='' in value }}'
+    device: *id001
+  - name: B01 Temperatur low
+    unique_id: b2500_01_tl
+    state_topic: B2500PKG/B2500_01/CD01
+    device_class: temperature
+    unit_of_measurement: °C
+    entity_category: diagnostic
+    value_template: '{{ value.split(''tl='')[1].split('','')[0] }}'
+    availability_topic: B2500PKG/B2500_01/CD01
+    availability_template: '{{ ''tl='' in value }}'
+    device: *id001
+  - name: B01 Temperatur high
+    unique_id: b2500_01_th
+    state_topic: B2500PKG/B2500_01/CD01
+    device_class: temperature
+    unit_of_measurement: °C
+    entity_category: diagnostic
+    value_template: '{{ value.split(''th='')[1].split('','')[0] }}'
+    availability_topic: B2500PKG/B2500_01/CD01
+    availability_template: '{{ ''th='' in value }}'
+    device: *id001
+  - name: B01 Temperaturalarm (Laden)
+    unique_id: b2500_01_tc
+    state_topic: B2500PKG/B2500_01/CD01
+    entity_category: diagnostic
+    value_template: '{{ value.split(''tc='')[1].split('','')[0] }}'
+    availability_topic: B2500PKG/B2500_01/CD01
+    availability_template: '{{ ''tc='' in value }}'
+    device: *id001
+  - name: B01 Temperaturalarm (Entladen)
+    unique_id: b2500_01_tf
+    state_topic: B2500PKG/B2500_01/CD01
+    entity_category: diagnostic
+    value_template: '{{ value.split(''tf='')[1].split('','')[0] }}'
+    availability_topic: B2500PKG/B2500_01/CD01
+    availability_template: '{{ ''tf='' in value }}'
+    device: *id001
+  - name: B01 Chip Version
+    unique_id: b2500_01_fc
+    state_topic: B2500PKG/B2500_01/CD01
+    entity_category: diagnostic
+    value_template: '{{ value.split(''fc='')[1].split('','')[0] }}'
+    availability_topic: B2500PKG/B2500_01/CD01
+    availability_template: '{{ ''fc='' in value }}'
+    device: *id001
+  - name: B01 Geräte ID
+    unique_id: b2500_01_id
+    state_topic: B2500PKG/B2500_01/CD01
+    entity_category: diagnostic
+    value_template: '{{ value.split(''id='')[1].split('','')[0] }}'
+    availability_topic: B2500PKG/B2500_01/CD01
+    availability_template: '{{ ''id='' in value }}'
+    device: *id001
+  - name: B01 Ladezustand Hauptspeicher
+    unique_id: b2500_01_a0
+    state_topic: B2500PKG/B2500_01/CD01
+    unit_of_measurement: '%'
+    entity_category: diagnostic
+    value_template: '{{ value.split(''a0='')[1].split('','')[0] }}'
+    availability_topic: B2500PKG/B2500_01/CD01
+    availability_template: '{{ ''a0='' in value }}'
+    device: *id001
+  - name: B01 Ladezustand Erweiterung1
+    unique_id: b2500_01_a1
+    state_topic: B2500PKG/B2500_01/CD01
+    unit_of_measurement: '%'
+    entity_category: diagnostic
+    value_template: '{{ value.split(''a1='')[1].split('','')[0] }}'
+    availability_topic: B2500PKG/B2500_01/CD01
+    availability_template: '{{ ''a1='' in value }}'
+    device: *id001
+  - name: B01 Ladezustand Erweiterung2
+    unique_id: b2500_01_a2
+    state_topic: B2500PKG/B2500_01/CD01
+    unit_of_measurement: '%'
+    entity_category: diagnostic
+    value_template: '{{ value.split(''a2='')[1].split('','')[0] }}'
+    availability_topic: B2500PKG/B2500_01/CD01
+    availability_template: '{{ ''a2='' in value }}'
+    device: *id001
+  - name: B01 Timer1 Beginn
+    unique_id: b2500_01_e1
+    state_topic: B2500PKG/B2500_01/CD01
+    entity_category: diagnostic
+    value_template: '{{ value.split(''e1='')[1].split('','')[0] }}'
+    availability_topic: B2500PKG/B2500_01/CD01
+    availability_template: '{{ ''e1='' in value }}'
+    device: *id001
+  - name: B01 Timer1 Ende
+    unique_id: b2500_01_f1
+    state_topic: B2500PKG/B2500_01/CD01
+    entity_category: diagnostic
+    value_template: '{{ value.split(''f1='')[1].split('','')[0] }}'
+    availability_topic: B2500PKG/B2500_01/CD01
+    availability_template: '{{ ''f1='' in value }}'
+    device: *id001
+  - name: B01 Timer1 Ausgabeleistung
+    unique_id: b2500_01_h1
+    state_topic: B2500PKG/B2500_01/CD01
+    unit_of_measurement: W
+    entity_category: diagnostic
+    value_template: '{{ value.split(''h1='')[1].split('','')[0] }}'
+    availability_topic: B2500PKG/B2500_01/CD01
+    availability_template: '{{ ''h1='' in value }}'
+    device: *id001
+  - name: B01 Timer2 Beginn
+    unique_id: b2500_01_e2
+    state_topic: B2500PKG/B2500_01/CD01
+    entity_category: diagnostic
+    value_template: '{{ value.split(''e2='')[1].split('','')[0] }}'
+    availability_topic: B2500PKG/B2500_01/CD01
+    availability_template: '{{ ''e2='' in value }}'
+    device: *id001
+  - name: B01 Timer2 Ende
+    unique_id: b2500_01_f2
+    state_topic: B2500PKG/B2500_01/CD01
+    entity_category: diagnostic
+    value_template: '{{ value.split(''f2='')[1].split('','')[0] }}'
+    availability_topic: B2500PKG/B2500_01/CD01
+    availability_template: '{{ ''f2='' in value }}'
+    device: *id001
+  - name: B01 Timer2 Ausgabeleistung
+    unique_id: b2500_01_h2
+    state_topic: B2500PKG/B2500_01/CD01
+    unit_of_measurement: W
+    entity_category: diagnostic
+    value_template: '{{ value.split(''h2='')[1].split('','')[0] }}'
+    availability_topic: B2500PKG/B2500_01/CD01
+    availability_template: '{{ ''h2='' in value }}'
+    device: *id001
+  - name: B01 Timer3 Beginn
+    unique_id: b2500_01_e3
+    state_topic: B2500PKG/B2500_01/CD01
+    entity_category: diagnostic
+    value_template: '{{ value.split(''e3='')[1].split('','')[0] }}'
+    availability_topic: B2500PKG/B2500_01/CD01
+    availability_template: '{{ ''e3='' in value }}'
+    device: *id001
+  - name: B01 Timer3 Ende
+    unique_id: b2500_01_f3
+    state_topic: B2500PKG/B2500_01/CD01
+    entity_category: diagnostic
+    value_template: '{{ value.split(''f3='')[1].split('','')[0] }}'
+    availability_topic: B2500PKG/B2500_01/CD01
+    availability_template: '{{ ''f3='' in value }}'
+    device: *id001
+  - name: B01 Timer3 Ausgabeleistung
+    unique_id: b2500_01_h3
+    state_topic: B2500PKG/B2500_01/CD01
+    unit_of_measurement: W
+    entity_category: diagnostic
+    value_template: '{{ value.split(''h3='')[1].split('','')[0] }}'
+    availability_topic: B2500PKG/B2500_01/CD01
+    availability_template: '{{ ''h3='' in value }}'
+    device: *id001
+  - name: B01 Timer4 Beginn
+    unique_id: b2500_01_e4
+    state_topic: B2500PKG/B2500_01/CD01
+    entity_category: diagnostic
+    value_template: '{{ value.split(''e4='')[1].split('','')[0] }}'
+    availability_topic: B2500PKG/B2500_01/CD01
+    availability_template: '{{ ''e4='' in value }}'
+    device: *id001
+  - name: B01 Timer4 Ende
+    unique_id: b2500_01_f4
+    state_topic: B2500PKG/B2500_01/CD01
+    entity_category: diagnostic
+    value_template: '{{ value.split(''f4='')[1].split('','')[0] }}'
+    availability_topic: B2500PKG/B2500_01/CD01
+    availability_template: '{{ ''f4='' in value }}'
+    device: *id001
+  - name: B01 Timer4 Ausgabeleistung
+    unique_id: b2500_01_h4
+    state_topic: B2500PKG/B2500_01/CD01
+    unit_of_measurement: W
+    entity_category: diagnostic
+    value_template: '{{ value.split(''h4='')[1].split('','')[0] }}'
+    availability_topic: B2500PKG/B2500_01/CD01
+    availability_template: '{{ ''h4='' in value }}'
+    device: *id001
+  - name: B01 Timer5 Beginn
+    unique_id: b2500_01_e5
+    state_topic: B2500PKG/B2500_01/CD01
+    entity_category: diagnostic
+    value_template: '{{ value.split(''e5='')[1].split('','')[0] }}'
+    availability_topic: B2500PKG/B2500_01/CD01
+    availability_template: '{{ ''e5='' in value }}'
+    device: *id001
+  - name: B01 Timer5 Ende
+    unique_id: b2500_01_f5
+    state_topic: B2500PKG/B2500_01/CD01
+    entity_category: diagnostic
+    value_template: '{{ value.split(''f5='')[1].split('','')[0] }}'
+    availability_topic: B2500PKG/B2500_01/CD01
+    availability_template: '{{ ''f5='' in value }}'
+    device: *id001
+  - name: B01 Timer5 Ausgabeleistung
+    unique_id: b2500_01_h5
+    state_topic: B2500PKG/B2500_01/CD01
+    unit_of_measurement: W
+    entity_category: diagnostic
+    value_template: '{{ value.split(''h5='')[1].split('','')[0] }}'
+    availability_topic: B2500PKG/B2500_01/CD01
+    availability_template: '{{ ''h5='' in value }}'
+    device: *id001
+  - name: B01 Tägliche Battterieladung
+    unique_id: b2500_01_bc
+    state_topic: B2500PKG/B2500_01/CD01
+    device_class: energy
+    state_class: total_increasing
+    unit_of_measurement: Wh
+    entity_category: diagnostic
+    value_template: '{{ value.split(''bc='')[1].split('','')[0] }}'
+    availability_topic: B2500PKG/B2500_01/CD01
+    availability_template: '{{ ''bc='' in value }}'
+    device: *id001
+  - name: B01 Tägliche Batterieentladung
+    unique_id: b2500_01_bs
+    state_topic: B2500PKG/B2500_01/CD01
+    device_class: energy
+    state_class: total_increasing
+    unit_of_measurement: Wh
+    entity_category: diagnostic
+    value_template: '{{ value.split(''bs='')[1].split('','')[0] }}'
+    availability_topic: B2500PKG/B2500_01/CD01
+    availability_template: '{{ ''bs='' in value }}'
+    device: *id001
+  - name: B01 Tägliche PV Erzeugung
+    unique_id: b2500_01_pt
+    state_topic: B2500PKG/B2500_01/CD01
+    device_class: energy
+    state_class: total_increasing
+    unit_of_measurement: Wh
+    entity_category: diagnostic
+    value_template: '{{ value.split(''pt='')[1].split('','')[0] }}'
+    availability_topic: B2500PKG/B2500_01/CD01
+    availability_template: '{{ ''pt='' in value }}'
+    device: *id001
+  - name: B01 Entlademodus Timer/Selbstanpassung
+    unique_id: b2500_01_md
+    state_topic: B2500PKG/B2500_01/CD01
+    entity_category: diagnostic
+    value_template: '{{ value.split(''md='')[1].split('','')[0].replace(''0'',''Timer'').replace(''1'',''Selbstanpassung'') }}'
+    availability_topic: B2500PKG/B2500_01/CD01
+    availability_template: '{{ ''md='' in value }}'
+    device: *id001
+  - name: B01 CT Sensor verbunden
+    unique_id: b2500_01_sg
+    state_topic: B2500PKG/B2500_01/CD01
+    entity_category: diagnostic
+    value_template: '{{ value.split(''sg='')[1].split('','')[0] }}'
+    availability_topic: B2500PKG/B2500_01/CD01
+    availability_template: '{{ ''sg='' in value }}'
+    device: *id001
+  - name: B01 SP
+    unique_id: b2500_01_sp
+    state_topic: B2500PKG/B2500_01/CD01
+    entity_category: diagnostic
+    value_template: '{{ value.split(''sp='')[1].split('','')[0] }}'
+    availability_topic: B2500PKG/B2500_01/CD01
+    availability_template: '{{ ''sp='' in value }}'
+    device: *id001
+  - name: B01 ST
+    unique_id: b2500_01_st
+    state_topic: B2500PKG/B2500_01/CD01
+    entity_category: diagnostic
+    value_template: '{{ value.split(''st='')[1].split('','')[0] }}'
+    availability_topic: B2500PKG/B2500_01/CD01
+    availability_template: '{{ ''st='' in value }}'
+    device: *id001
+  - name: B01 CTCH Kanal
+    unique_id: b2500_01_c0
+    state_topic: B2500PKG/B2500_01/CD01
+    entity_category: diagnostic
+    value_template: '{{ value.split(''c0='')[1].split('','')[0] }}'
+    availability_topic: B2500PKG/B2500_01/CD01
+    availability_template: '{{ ''c0='' in value }}'
+    device: *id001
+  - name: B01 Status CT
+    unique_id: b2500_01_c1
+    state_topic: B2500PKG/B2500_01/CD01
+    entity_category: diagnostic
+    value_template: '{{ value.split(''c1='')[1].split('','')[0] }}'
+    availability_topic: B2500PKG/B2500_01/CD01
+    availability_template: '{{ ''c1='' in value }}'
+    device: *id001
+  - name: B01 IT Tägliche abgegebene Leistung
+    unique_id: b2500_01_it
+    state_topic: B2500PKG/B2500_01/CD01
+    entity_category: diagnostic
+    value_template: '{{ value.split(''it='')[1].split('','')[0] }}'
+    availability_topic: B2500PKG/B2500_01/CD01
+    availability_template: '{{ ''it='' in value }}'
+    device: *id001
+  - name: B01 Leistungsmessung Phase1
+    unique_id: b2500_01_m0
+    state_topic: B2500PKG/B2500_01/CD01
+    entity_category: diagnostic
+    value_template: '{{ value.split(''m0='')[1].split('','')[0] }}'
+    availability_topic: B2500PKG/B2500_01/CD01
+    availability_template: '{{ ''m0='' in value }}'
+    device: *id001
+  - name: B01 Leistungsmessung Phase2
+    unique_id: b2500_01_m1
+    state_topic: B2500PKG/B2500_01/CD01
+    entity_category: diagnostic
+    value_template: '{{ value.split(''m1='')[1].split('','')[0] }}'
+    availability_topic: B2500PKG/B2500_01/CD01
+    availability_template: '{{ ''m1='' in value }}'
+    device: *id001
+  - name: B01 Leistungsmessung Phase3
+    unique_id: b2500_01_m2
+    state_topic: B2500PKG/B2500_01/CD01
+    entity_category: diagnostic
+    value_template: '{{ value.split(''m2='')[1].split('','')[0] }}'
+    availability_topic: B2500PKG/B2500_01/CD01
+    availability_template: '{{ ''m2='' in value }}'
+    device: *id001
+  - name: B01 M3
+    unique_id: b2500_01_m3
+    state_topic: B2500PKG/B2500_01/CD01
+    entity_category: diagnostic
+    value_template: '{{ value.split(''m3='')[1].split('','')[0] }}'
+    availability_topic: B2500PKG/B2500_01/CD01
+    availability_template: '{{ ''m3='' in value }}'
+    device: *id001
+  - name: B01 LMO Nennausgangsleistung
+    unique_id: b2500_01_lmo
+    state_topic: B2500PKG/B2500_01/CD01
+    unit_of_measurement: W
+    entity_category: diagnostic
+    value_template: '{{ value.split(''lmo='')[1].split('','')[0] }}'
+    availability_topic: B2500PKG/B2500_01/CD01
+    availability_template: '{{ ''lmo='' in value }}'
+    device: *id001
+  - name: B01 LMI Nennaufnahmeleistung
+    unique_id: b2500_01_lmi
+    state_topic: B2500PKG/B2500_01/CD01
+    unit_of_measurement: W
+    entity_category: diagnostic
+    value_template: '{{ value.split(''lmi='')[1].split('','')[0] }}'
+    availability_topic: B2500PKG/B2500_01/CD01
+    availability_template: '{{ ''lmi='' in value }}'
+    device: *id001
+  - name: B01 LMF Gerätebeschränkung
+    unique_id: b2500_01_lmf
+    state_topic: B2500PKG/B2500_01/CD01
+    entity_category: diagnostic
+    value_template: '{{ value.split(''lmf='')[1].split('','')[0] }}'
+    availability_topic: B2500PKG/B2500_01/CD01
+    availability_template: '{{ ''lmf='' in value }}'
+    device: *id001
+  - name: B01 UV
+    unique_id: b2500_01_uv
+    state_topic: B2500PKG/B2500_01/CD01
+    entity_category: diagnostic
+    value_template: '{{ value.split(''uv='')[1].split('','')[0] }}'
+    availability_topic: B2500PKG/B2500_01/CD01
+    availability_template: '{{ ''uv='' in value }}'
+    device: *id001
+  - name: B01 SM
+    unique_id: b2500_01_sm
+    state_topic: B2500PKG/B2500_01/CD01
+    entity_category: diagnostic
+    value_template: '{{ value.split(''sm='')[1].split('','')[0] }}'
+    availability_topic: B2500PKG/B2500_01/CD01
+    availability_template: '{{ ''sm='' in value }}'
+    device: *id001
+  - name: B01 BN
+    unique_id: b2500_01_bn
+    state_topic: B2500PKG/B2500_01/CD01
+    entity_category: diagnostic
+    value_template: '{{ value.split(''bn='')[1].split('','')[0] }}'
+    availability_topic: B2500PKG/B2500_01/CD01
+    availability_template: '{{ ''bn='' in value }}'
+    device: *id001
+  - name: B01 Smartmeter Typ
+    unique_id: b2500_01_ct_t
+    state_topic: B2500PKG/B2500_01/CD01
+    entity_category: diagnostic
+    value_template: '{{ value.split(''ct_t='')[1].split('','')[0].replace(''1'',''CT001'').replace(''3'',''CT002'').replace(''4'',''Shelly Pro 3EM'').replace(''6'',''CT003'').replace(''7'',''Shelly EM gen3'').replace(''8'',''Shelly Pro EM50'').replace(''9'',''Eco Tracker'') }}'
+    availability_topic: B2500PKG/B2500_01/CD01
+    availability_template: '{{ ''ct_t='' in value }}'
+    device: *id001
+  - name: B01 Surplus Modus
+    unique_id: b2500_01_tc_dis
+    state_topic: B2500PKG/B2500_01/CD01
+    entity_category: diagnostic
+    value_template: '{{ value.split(''tc_dis='')[1].split('','')[0].replace(''0'',''Surplus Modus aktiv'').replace(''1'',''Surplus Modus deaktiviert'') }}'
+    availability_topic: B2500PKG/B2500_01/CD01
+    availability_template: '{{ ''tc_dis='' in value }}'
+    device: *id001
+  - name: B01 Wifi Signal
+    unique_id: b2500_01_ws
+    state_topic: B2500PKG/B2500_01/CD01
+    entity_category: diagnostic
+    value_template: '{{ value.split(''ws='')[1].split('','')[0] }}'
+    availability_topic: B2500PKG/B2500_01/CD01
+    availability_template: '{{ ''ws='' in value }}'
+    device: *id001
+  - name: B01 FKTC
+    unique_id: b2500_01_fktc
+    state_topic: B2500PKG/B2500_01/CD01
+    entity_category: diagnostic
+    value_template: '{{ value.split(''fktc='')[1].split('','')[0] }}'
+    availability_topic: B2500PKG/B2500_01/CD01
+    availability_template: '{{ ''fktc='' in value }}'
+    device: *id001
