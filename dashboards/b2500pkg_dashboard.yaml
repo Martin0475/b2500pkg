@@ -42,6 +42,16 @@ views:
               - entity: input_select.speicherauswahl
               - entity: input_button.test_config
             title: Konfiguration testen
+            footer:
+              type: buttons
+              entities:
+                - entity: automation.b2500pkg_speicherliste_aktualisieren
+                  name: Speicherliste aktualisieren
+                  tap_action:
+                    action: call-service
+                    service: automation.trigger
+                    service_data:
+                      entity_id: automation.b2500pkg_speicherliste_aktualisieren
           - type: entities
             entities:
               - entity: input_text.b01_topic
@@ -1820,14 +1830,14 @@ views:
               - entity: input_number.zeropower_venus_max_limit
               - entity: switch.venus_rs485_control_mode_switch
               - entity: sensor.venus_rs485_control_mode_status
-            visibility:
-              - condition: state
-                entity: input_text.b09_typ
-                state: Venus
             header:
               type: graph
               entity: sensor.venus_battery_soc
               detail: 2
+        visibility:
+          - condition: state
+            entity: input_text.b09_typ
+            state: Venus
     subview: false
     cards: []
     badges:
