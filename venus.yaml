@@ -1,0 +1,495 @@
+# ------
+# MODBUS
+# ------
+modbus:
+  - name: Venus
+    type: tcp
+    host: 192.168.178.222
+    port: 502
+    delay: 1
+    message_wait_milliseconds: 50
+    timeout: 5
+    
+    sensors:
+      - name: "Venus Battery Voltage"
+        unique_id: venus_battery_voltage
+        address: 32100
+        slave: 1
+        scan_interval: 10
+        input_type: holding
+        data_type: uint16
+        unit_of_measurement: V
+        device_class: voltage
+        state_class: measurement
+        scale: 0.01
+        offset: 0
+        precision: 2
+
+      - name: "Venus Battery Power"
+        unique_id: venus_battery_power
+        address: 32102
+        slave: 1
+        scan_interval: 2
+        input_type: holding
+        data_type: int32
+        unit_of_measurement: W
+        device_class: power
+        state_class: measurement
+        scale: 1
+        offset: 0
+        precision: 0
+
+      - name: "Venus Battery SOC"
+        unique_id: venus_battery_soc
+        address: 32104
+        slave: 1
+        scan_interval: 30
+        input_type: holding
+        data_type: uint16
+        unit_of_measurement: "%"
+        device_class: battery
+        state_class: measurement
+        scale: 1
+        offset: 0
+        precision: 0
+
+      - name: "Venus AC Power"
+        unique_id: venus_ac_power
+        address: 32202
+        slave: 1
+        scan_interval: 2
+        input_type: holding
+        data_type: int32
+        unit_of_measurement: W
+        device_class: power
+        state_class: measurement
+        scale: 1
+        offset: 0
+        precision: 0
+
+      - name: "Venus Total Charging Energy"
+        unique_id: venus_total_charging_energy
+        address: 33000
+        slave: 1
+        scan_interval: 30
+        input_type: holding
+        data_type: uint32
+        unit_of_measurement: kWh
+        device_class: energy
+        state_class: total_increasing
+        scale: 0.01
+        offset: 0
+        precision: 1
+
+      - name: "Venus Total Discharging Energy"
+        unique_id: venus_total_discharging_energy
+        address: 33002
+        slave: 1
+        scan_interval: 30
+        input_type: holding
+        data_type: uint32
+        unit_of_measurement: kWh
+        device_class: energy
+        state_class: total_increasing
+        scale: 0.01
+        offset: 0
+        precision: 1
+
+      - name: "Venus Internal Temperature"
+        unique_id: venus_internal_temperature
+        address: 35000
+        slave: 1
+        scan_interval: 30
+        input_type: holding
+        data_type: int16
+        unit_of_measurement: "°C"
+        device_class: temperature
+        state_class: measurement
+        scale: 0.1
+        offset: 0
+        precision: 1
+
+      - name: "Venus Internal MOS1 Temperature"
+        unique_id: venus_internal_mos1_temperature
+        address: 35001
+        slave: 1
+        scan_interval: 30
+        input_type: holding
+        data_type: int16
+        unit_of_measurement: "°C"
+        device_class: temperature
+        state_class: measurement
+        scale: 0.1
+        offset: 0
+        precision: 1
+
+      - name: "Venus Internal MOS2 Temperature"
+        unique_id: venus_internal_mos2_temperature
+        address: 35002
+        slave: 1
+        scan_interval: 30
+        input_type: holding
+        data_type: int16
+        unit_of_measurement: "°C"
+        device_class: temperature
+        state_class: measurement
+        scale: 0.1
+        offset: 0
+        precision: 1
+
+      - name: "Venus Max Cell Temperature"
+        unique_id: venus_max_cell_temperature
+        address: 35010
+        slave: 1
+        scan_interval: 30
+        input_type: holding
+        data_type: int16
+        unit_of_measurement: "°C"
+        device_class: temperature
+        state_class: measurement
+        scale: 0.1
+        offset: 0
+        precision: 1
+
+      - name: "Venus Min Cell Temperature"
+        unique_id: venus_min_cell_temperature
+        address: 35011
+        slave: 1
+        scan_interval: 30
+        input_type: holding
+        data_type: int16
+        unit_of_measurement: "°C"
+        device_class: temperature
+        state_class: measurement
+        scale: 0.1
+        offset: 0
+        precision: 1
+
+      - name: "Venus Inverter State"
+        unique_id: venus_inverter_state
+        address: 35100
+        slave: 1
+        scan_interval: 5
+        input_type: holding
+        data_type: uint16
+        unit_of_measurement: ""
+        state_class: measurement
+
+      - name: "Venus RS485 Control Mode"
+        unique_id: venus_rs485_control_mode
+        address: 42000
+        slave: 1
+        input_type: holding
+        data_type: uint16
+        unit_of_measurement: ""
+        scale: 1
+        offset: 0
+        precision: 0
+
+      - name: "Venus Force Charge/Discharge Mode"
+        unique_id: venus_force_charge_discharge_mode
+        address: 42010
+        slave: 1
+        input_type: holding
+        data_type: uint16
+        unit_of_measurement: ""
+        scale: 1
+        offset: 0
+        precision: 0
+
+      - name: "Venus Charge to SOC"
+        unique_id: venus_charge_to_soc
+        address: 42011
+        slave: 1
+        input_type: holding
+        data_type: uint16
+        unit_of_measurement: "%"
+        scale: 1
+        offset: 0
+        precision: 0
+
+      - name: "Venus Forcible Charge Power"
+        unique_id: venus_forcible_charge_power
+        address: 42020
+        slave: 1
+        input_type: holding
+        data_type: uint16
+        unit_of_measurement: W
+        scale: 1
+        offset: 0
+        precision: 0
+
+      - name: "Venus Forcible Discharge Power"
+        unique_id: venus_forcible_discharge_power
+        address: 42021
+        slave: 1
+        input_type: holding
+        data_type: uint16
+        unit_of_measurement: W
+        scale: 1
+        offset: 0
+        precision: 0
+
+      - name: "Venus User Work Mode"
+        unique_id: venus_user_work_mode
+        address: 43000
+        slave: 1
+        input_type: holding
+        data_type: uint16
+        unit_of_measurement: ""
+        scale: 1
+        offset: 0
+        precision: 0
+   
+sensor:
+  - platform: integration
+    name: Venus Discharging in kWh
+    unique_id: venus_discharging_in_kwh
+    source: sensor.venus_discharging_in_w
+    round: 2
+    unit_prefix: k
+    unit_time: h
+    method: left
+  - platform: integration
+    name: Venus Charging in kWh
+    unique_id: venus_charging_in_kwh
+    source: sensor.venus_charging_in_w
+    round: 2
+    unit_prefix: k
+    unit_time: h
+    method: left
+
+
+# template ######################################################################################################
+template:
+  - sensor:
+      - name: "Venus Charging in W"
+        unique_id: venus_charging_in_w
+        unit_of_measurement: W
+        device_class: power
+        state_class: measurement
+        state: >
+          {% if states('sensor.venus_ac_power') | float(0) < 0 %}
+            {{ (states('sensor.venus_ac_power') | float(0)) * -1 }}
+          {% else %}
+            0
+          {% endif %}
+
+      - name: "Venus Discharging in W"
+        unique_id: venus_discharging_in_w
+        unit_of_measurement: W
+        device_class: power
+        state_class: measurement
+        state: >
+          {% if states('sensor.venus_ac_power') | float(0) > 0 %}
+            {{ (states('sensor.venus_ac_power') | float(0)) }}
+          {% else %}
+            0
+          {% endif %}
+
+      - name: "Venus Force Charge/Discharge Mode Status"
+        unique_id: venus_force_charge_discharge_mode_status
+        state: >
+          {% set mode = states('sensor.venus_force_charge_discharge_mode') | int(-1) %}
+          {% if mode == 0 %}Stop{% elif mode == 1 %}Charge{% elif mode == 2 %}Discharge{% else %}Unknown{% endif %}
+
+      - name: "Venus RS485 Control Mode Status"
+        unique_id: venus_rs485_control_mode_status
+        state: >
+          {% set mode = states('sensor.venus_rs485_control_mode') | int(-1) %}
+          {% if mode == 21930 %}Enabled{% elif mode == 21947 %}Disabled{% else %}Unknown{% endif %}
+
+      - name: "Venus Charge Cycles"
+        unique_id: venus_charge_cycles
+        state_class: total_increasing
+        state: >
+          {{ (states('sensor.venus_total_charging_energy') | float(0) / 5.12) | round(0) }}
+
+      - name: "Venus Efficiency"
+        unique_id: venus_efficiency
+        state_class: measurement
+        unit_of_measurement: "%"
+        state: >
+          {% set ch = states('sensor.venus_total_charging_energy') | float(0) %}
+          {% set dis = states('sensor.venus_total_discharging_energy') | float(0) %}
+          {{ ( (dis / ch) * 100 ) | round(0) if ch > 0 else 0 }}
+
+# template switch ######################################################################################################
+  - switch:
+      - name: "Venus RS485 Control Mode Switch"
+        unique_id: venus_rs485_control_mode_switch
+
+        state: >
+          {{ states('sensor.venus_rs485_control_mode') | int(0) == 21930 }}
+
+        turn_on:
+          - service: modbus.write_register
+            data:
+              hub: Venus
+              unit: 1
+              address: 42000
+              value: 21930
+
+        turn_off:
+          - service: modbus.write_register
+            data:
+              hub: Venus
+              unit: 1
+              address: 42000
+              value: 21947
+
+
+# input_number ######################################################################################################
+input_number:
+  venus_discharging_charging_power:
+    name: "Venus (dis)charging power"
+    min: -2500
+#    min: 0
+    max: 2500
+    step: 5
+    unit_of_measurement: W
+    mode: box
+    
+
+
+# input_select ######################################################################################################
+input_select:
+  venus_user_work_mode_input_select:
+    name: Venus User Work Mode
+    options:
+      - "Manual"
+      - "Anti-Feed"
+      - "Trade Mode"
+    initial: "Manual"
+    
+automation:
+  - alias: Venus Set Forcible Charge triggered by target change
+    id: venus_set_forcible_charge_triggered_by_target_change
+    description: "Automatically sets (dis)charge target if changed."
+    triggers:
+    - trigger: state
+      entity_id:
+      - input_number.venus_discharging_charging_power
+    conditions: []
+    actions:
+    - action: script.turn_on
+      metadata: {}
+      data: {}
+      target:
+        entity_id: script.venus_set_forcible_charge
+    mode: single
+    
+
+  - alias: Venus Sync Modbus and Input Select
+    id: venus_sync_modbus_and_input_select
+    description: "Sync Modbus sensor with input select, so that changes in HA are visible in the Marstek app and vice versa."
+    triggers:
+    - entity_id: sensor.venus_user_work_mode
+      id: sensor_to_input_select
+      trigger: state
+    - entity_id: input_select.venus_user_work_mode_input_select
+      id: input_select_to_sensor
+      trigger: state
+    conditions: []
+    actions:
+    - choose:
+      - conditions:
+        - condition: trigger
+          id: sensor_to_input_select
+        sequence:
+        - target:
+            entity_id: input_select.venus_user_work_mode_input_select
+          data:
+            option: '{% set v = states(''sensor.venus_user_work_mode'') | int
+              %} {% if v == 0 %}Manual{% elif v == 1 %}Anti-Feed{% elif v == 2 %}Trade
+              Mode{% else %}Manual{% endif %}
+              '
+          action: input_select.select_option
+      - conditions:
+        - condition: trigger
+          id: input_select_to_sensor
+        sequence:
+        - data:
+            hub: Venus
+            address: 43000
+            unit: 1
+            value: "{% if is_state('input_select.venus_user_work_mode_input_select',
+              'Manual') %}\n  0\n{% elif is_state('input_select.venus_user_work_mode_input_select',
+              'Anti-Feed') %}\n  1\n{% elif is_state('input_select.venus_user_work_mode_input_select',
+              'Trade Mode') %}\n  2\n{% else %}\n  0\n{% endif %}\n"
+          action: modbus.write_register
+    mode: single
+  
+script:
+  venus_set_forcible_charge:
+    alias: Venus Set Forcible Charge
+    description: ""
+    icon: mdi:battery-charging-40
+    sequence:
+      - choose:
+          - conditions:
+              - condition: numeric_state
+                entity_id: input_number.venus_discharging_charging_power
+                above: -1
+                below: 1
+            sequence:
+              - action: modbus.write_register
+                data:
+                  hub: Venus
+                  address: 42010
+                  unit: 1
+                  value: 0
+              - action: modbus.write_register
+                data:
+                  hub: Venus
+                  address: 42020
+                  unit: 1
+                  value: 0
+              - action: modbus.write_register
+                data:
+                  hub: Venus
+                  address: 42021
+                  unit: 1
+                  value: 0
+
+          # negativ = Laden
+          - conditions:
+              - condition: numeric_state
+                entity_id: input_number.venus_discharging_charging_power
+                above: -2501
+                below: -10
+            sequence:
+              - action: modbus.write_register
+                data:
+                  hub: Venus
+                  address: 42020
+                  unit: 1
+                  value: >-
+                    {{ states('input_number.venus_discharging_charging_power') | int | abs }}
+              - action: modbus.write_register
+                data:
+                  hub: Venus
+                  address: 42010
+                  unit: 1
+                  value: 1
+
+          # positiv = Entladen
+          - conditions:
+              - condition: numeric_state
+                entity_id: input_number.venus_discharging_charging_power
+                above: 10
+                below: 2501
+            sequence:
+              - action: modbus.write_register
+                data:
+                  hub: Venus
+                  address: 42021
+                  unit: 1
+                  value: >-
+                    {{ states('input_number.venus_discharging_charging_power') | int | abs }}
+              - action: modbus.write_register
+                data:
+                  hub: Venus
+                  address: 42010
+                  unit: 1
+                  value: 2
