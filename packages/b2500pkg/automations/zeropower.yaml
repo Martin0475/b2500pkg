@@ -2,6 +2,10 @@ input_boolean:
 
   zeropower_surplus_enabled:
     name: Überschusseinspeisung an/aus
+
+  zeropower_use_venus:
+    name: Zeropower Venus verwenden
+    icon: mdi:battery-sync
    
 
 input_select:   
@@ -9,8 +13,9 @@ input_select:
     name: B01 verwenden
     options:
       - Aus
-      - Ein (Nur ein Ausgang)
-      - Ein (Beide Ausgänge)
+      - 400W
+      - 400W x2
+      - 800W
     icon: mdi:toggle-switch  
     
 
@@ -18,64 +23,72 @@ input_select:
     name: B02 verwenden
     options:
       - Aus
-      - Ein (Nur ein Ausgang)
-      - Ein (Beide Ausgänge)
+      - 400W
+      - 400W x2
+      - 800W
     icon: mdi:toggle-switch  
 
   zeropower_use_b03:
     name: B03 verwenden
     options:
       - Aus
-      - Ein (Nur ein Ausgang)
-      - Ein (Beide Ausgänge)
+      - 400W
+      - 400W x2
+      - 800W
     icon: mdi:toggle-switch  
   
   zeropower_use_b04:
     name: B04 verwenden
     options:
       - Aus
-      - Ein (Nur ein Ausgang)
-      - Ein (Beide Ausgänge)
+      - 400W
+      - 400W x2
+      - 800W
     icon: mdi:toggle-switch  
   
   zeropower_use_b05:
     name: B05 verwenden
     options:
       - Aus
-      - Ein (Nur ein Ausgang)
-      - Ein (Beide Ausgänge)
+      - 400W
+      - 400W x2
+      - 800W
     icon: mdi:toggle-switch  
   
   zeropower_use_b06:
     name: B06 verwenden
     options:
       - Aus
-      - Ein (Nur ein Ausgang)
-      - Ein (Beide Ausgänge)
+      - 400W
+      - 400W x2
+      - 800W
     icon: mdi:toggle-switch  
   
   zeropower_use_b07:
     name: B07 verwenden
     options:
       - Aus
-      - Ein (Nur ein Ausgang)
-      - Ein (Beide Ausgänge)
+      - 400W
+      - 400W x2
+      - 800W
     icon: mdi:toggle-switch  
   
   zeropower_use_b08:
     name: B08 verwenden
     options:
       - Aus
-      - Ein (Nur ein Ausgang)
-      - Ein (Beide Ausgänge)
+      - 400W
+      - 400W x2
+      - 800W
     icon: mdi:toggle-switch  
   
   zeropower_use_b09:
     name: B09 verwenden
     options:
       - Aus
-      - Ein (Nur ein Ausgang)
-      - Ein (Beide Ausgänge)
+      - 400W
+      - 400W x2
+      - 800W
     icon: mdi:toggle-switch  
 
 input_text:
@@ -90,9 +103,18 @@ input_text:
   zeropower_variables2:
     name: Zeropower Variables2
     max: 255
- 
 
 input_number:
+
+  zeropower_stabilization_time:
+    name: Stabilisierungszeit
+    min: 1
+    max: 30
+    step: 1
+    mode: box
+    unit_of_measurement: s
+    icon: mdi:timer-cog
+    
   zeropower_min_limit:
     name: Speicher unteres Limit
     min: 10
@@ -135,7 +157,25 @@ input_number:
     min: 5
     max: 200
     mode: box
-    
+
+  zeropower_venus_min_limit:
+    name: Venus unteres Limit
+    min: -2500
+    max: 0
+    step: 10
+    mode: box
+    unit_of_measurement: W
+    icon: mdi:battery-arrow-down
+
+  zeropower_venus_max_limit:
+    name: Venus oberes Limit
+    min: 0
+    max: 2500
+    step: 10
+    mode: box
+    unit_of_measurement: W
+    icon: mdi:battery-arrow-up
+
 template:
   - sensor:
       - name: zeropower_measure_load
@@ -239,6 +279,7 @@ script:
     max: 10
     sequence:
       - variables:
+          min_limit: "{{ states('input_number.zeropower_min_limit') | int }}"
           variables_lastrun: >
             {% set txt = states('input_text.zeropower_variables') %} {% if txt not
             in ['unknown', '', None] %}
@@ -285,6 +326,19 @@ script:
                 (variables_lastrun.e8p | default(0) | float(0) | int)
               ]
             }}
+          all_extra_min_limit: >-
+            {{
+              [
+                variables_lastrun.e1p | default(0) | float(0),
+                variables_lastrun.e2p | default(0) | float(0),
+                variables_lastrun.e3p | default(0) | float(0),
+                variables_lastrun.e4p | default(0) | float(0),
+                variables_lastrun.e5p | default(0) | float(0),
+                variables_lastrun.e6p | default(0) | float(0),
+                variables_lastrun.e7p | default(0) | float(0),
+                variables_lastrun.e8p | default(0) | float(0)
+              ] | select('<=', min_limit | int) | list | count == 8
+            }}  
           start_time: "{{ as_timestamp(now()) }}"
         alias: Zuletzt gesetzte Werte einlesen und Startzeit setzen
 
@@ -292,43 +346,135 @@ script:
       - repeat:
           sequence:
             - variables:
+                charging_allowed: >-
+                  {{ all_extra_min_limit }}
                 batteries_list: |
                   {% set ns = namespace(batteries_list=[]) %}
+
+                  {#
+                    B09 kann optional als Venus-Slot benutzt werden.
+                    Aktiv nur wenn:
+                    - input_text.b09_typ enthält "venus" (egal ob Venus/VENUS/venus)
+                    - input_boolean.zeropower_use_venus ist on und Sensoren liefern gültige Werte
+
+                    Wenn nicht aktiv, läuft B09 ganz normal als B2500 über input_select.zeropower_use_b09.
+                  #}
+                  {% set bad = ['unknown', 'unavailable', 'none', 'None', ''] %}
+
+                  {% set b09_typ_text = states('input_text.b09_typ') | lower %}
+                  {% set b09_is_venus = 'venus' in b09_typ_text %}
+
+                  {% set use_venus =
+                     is_state('input_boolean.zeropower_use_venus', 'on') %}
+
+                  {% set venus_soc_state =
+                     states('sensor.venus_battery_soc') %}
+
+                  {% set venus_power_state =
+                     states('input_number.venus_discharging_charging_power') %}
+
+                  {% set venus_ready =
+                     venus_soc_state not in bad
+                     and venus_power_state not in bad
+                  %}
+
+                  {% set b09_venus_active =
+                     b09_is_venus
+                     and use_venus
+                     and venus_ready %}
+
                   {% for i in range(1, 10) %}
                     {% set id_str = '{:02d}'.format(i) %}
-                    {% set mode = {
-                      'Aus': 0,
-                      'Ein (Nur ein Ausgang)': 1,
-                      'Ein (Beide Ausgänge)': 2
-                    } %}
-                    {% set enabled = mode.get(states('input_select.zeropower_use_b' ~ id_str), 0) %}
-                    {% set both_outputs = (enabled == 2) %}
+                    {% set use_mode = states('input_select.zeropower_use_b' ~ id_str) %}
+
+                    {% set enabled = use_mode != 'Aus' %}
+
+                    {% set needs_doubling = (use_mode == '400W x2') %}
+
+                    {% set max_limit_mode =
+                      800 if use_mode == '800W'
+                      else 400 if use_mode in ['400W', '400W x2']
+                      else 0
+                    %}
+
                     {% set max_limit = [
                       states('input_number.zeropower_max_limit') | int,
-                      (800 if both_outputs else 400)
+                      max_limit_mode
                     ] | min | int %}
+
                     {% set timer_enabled = is_state('binary_sensor.b2500_' ~ id_str ~ '_d1', 'on') %}
                     {% set soc = states('sensor.b2500_' ~ id_str ~ '_pe') | float(0) | int %}
                     {% set soc_rounded = [((soc / 5) | round(0, 'ceil') * 5), 100] | min | int %}
                     {% set pv_power = states('sensor.b' ~ id_str ~ '_pv_gesamt') | float(0) | int %}
-                    {% set lmi = states('sensor.b2500_' ~ id_str ~ '_lmi') | float(0) - 20  | int %}
+                    {% set lmi = states('sensor.b2500_' ~ id_str ~ '_lmi') | float(0) - 20 | int %}
                     {% set manual_bypass = states('input_number.zeropower_surplus_bypass') | float(0) | int %}
-                    {% set sp_rounded = [[(((pv_power - [manual_bypass | float(0), lmi | float(0)] | min ) / 10) | round(0, 'ceil') * 10), max_limit] | min, 0] | max| int %}
-                    {% set pv_mode = states('sensor.b2500_' ~ id_str ~ '_p2') | float(0) | int %} 
+
+                    {% set sp_rounded = [[(((pv_power - [manual_bypass | float(0), lmi | float(0)] | min) / 10) | round(0, 'ceil') * 10), max_limit] | min, 0] | max | int %}
+
+                    {% set pv_mode = states('sensor.b2500_' ~ id_str ~ '_p2') | float(0) | int %}
                     {% set passthrough = (pv_mode == 2) %}
                     {% set pv_mode3 = (pv_mode == 3) or (pv_mode == 0 and soc == 100) %}
                     {% set output_act = is_state('sensor.b2500_' ~ id_str ~ '_o1', '1') %}
-                    {% if enabled > 0 and timer_enabled and (output_act or passthrough) %}
-                      {% set entry = {'id': i, 'soc': soc, 'soc_rounded': soc_rounded, 'pt': passthrough, 'pvm3': pv_mode3, 'sp_rounded': sp_rounded, 'max_limit': max_limit, 'both_outputs': both_outputs} %}
-                      {% set ns.batteries_list = ns.batteries_list + [entry] %}
+
+                    {# B09 nicht als normalen B2500 eintragen, wenn B09 gerade Venus ist #}
+                    {% if not (i == 9 and b09_venus_active) %}
+                      {% if enabled and timer_enabled and (output_act or passthrough) %}
+                        {% set entry = {
+                          'id': i,
+                          'type': 'b2500',
+                          'soc': soc,
+                          'soc_rounded': soc_rounded,
+                          'pt': passthrough,
+                          'pvm3': pv_mode3,
+                          'sp_rounded': sp_rounded,
+                          'max_limit': max_limit,
+                          'min_limit': min_limit,
+                          'needs_doubling': needs_doubling
+                        } %}
+                        {% set ns.batteries_list = ns.batteries_list + [entry] %}
+                      {% endif %}
                     {% endif %}
-                  {% endfor %} {{ ns.batteries_list }}
+                  {% endfor %}
+
+                  {# B09 als Venus-Master, bleibt aber id 9 #}
+                  {% if b09_venus_active %}
+                    {% set venus_soc = states('sensor.venus_battery_soc') | float(0) | int %}
+
+                    {% set venus_entry = {
+                      'id': 9,
+                      'type': 'venus',
+                      'soc': venus_soc,
+                      'soc_rounded': [((venus_soc / 5) | round(0, 'ceil') * 5), 100] | min | int,
+                      'pt': false,
+                      'pvm3': false,
+                      'sp_rounded': 0,
+
+                      'max_limit': states('input_number.zeropower_venus_max_limit') | int(2500),
+
+                      'min_limit': ((states('input_number.zeropower_venus_min_limit') | int(-2500)) if charging_allowed else 0),
+
+                      'needs_doubling': false
+                    } %}
+
+                    {% set ns.batteries_list = ns.batteries_list + [venus_entry] %}
+                  {% endif %}
+                 
+                  {{ ns.batteries_list }}
+
+       
+ 
                 useable_batteries_list: |
-                  {% set useable = batteries_list
+                  {% set normal = batteries_list
                     | selectattr('pt', 'equalto', false)
+                    | rejectattr('type', 'equalto', 'venus')
                     | sort(attribute='soc', reverse=true)
                     | list %}
-                  {{ useable }}
+
+                  {% set venus = batteries_list
+                    | selectattr('type', 'equalto', 'venus')
+                    | list %}
+
+                  {{ venus + normal }}
                 other_batteries_list: |
                   {% set other = batteries_list
                     | selectattr('pt', 'equalto', true)
@@ -349,12 +495,14 @@ script:
                 target: "{{ states('input_number.zeropower_target_value') | int }}"
                 curr_diff: >-
                   {{ ((states('sensor.zeropower_measure_load') | float(0) | int) -
-                  (target)) * 1.12 }}
+                  (target)) }}
                 p_master_candidate: "{{ power_master + curr_diff }}"
-                min_limit: "{{ states('input_number.zeropower_min_limit') | int }}"
+                
                 master_max_limit: "{{ useable_batteries_list[0].max_limit if useable_batteries_list|length>0 else 0 }}"
+                
+                master_min_limit: "{{ useable_batteries_list[0].min_limit | default(min_limit) | int if useable_batteries_list|length>0 else min_limit | int }}"
                 redistribution_needed: |
-                  {{ p_master_candidate <= min_limit or
+                  {{ p_master_candidate <= master_min_limit or
                      p_master_candidate >= master_max_limit or
                      force_redistribution }}
               enabled: true
@@ -367,9 +515,8 @@ script:
                   sequence:
                     - variables:
                         power_master: >-
-                          {{ [master_max_limit, [min_limit, p_master_candidate] | max ] |
-                          min  if useable_batteries_list | length > 0 else 0 | int
-                          }}
+                          {{ [master_max_limit, [master_min_limit, p_master_candidate] | max] | min
+                             if useable_batteries_list | length > 0 else 0 | int }}
                         e_power_list: >
                           {{ [ power_master | float(0) | int ] + e_power_list[1:] }}  
                   alias: Master nachregeln
@@ -380,73 +527,254 @@ script:
 
                     - variables:
                         total_load: >-
-                          {{ (power_master + power_extras) + curr_diff | int }}
+                          {{ ((power_master | int(0)) + (power_extras | int(0)) + (curr_diff | int(0))) | int }}
                       enabled: true
 
                     - variables:
                         e_power_list: |-
                           {% set batt = useable_batteries_list %}
-                          {% set total_soc = batt | map(attribute='soc') | sum %}
-                          {% set loads = batt
-                            | map(attribute='soc')
-                            | map('float')
-                            | map('multiply', total_load / total_soc if total_soc > 0 else 0)
-                            | list %}
-                          {% set ns = namespace(remaining=0, final=[]) %}
 
-                          {# 1. Initiale Limit-Prüfung (jetzt pro Batterie mit entry.max_limit) #}
-                          {% for idx in range(loads|length) %}
-                            {% set l = loads[idx] %}
-                            {% set limit = batt[idx].max_limit %}
-                            {% if l > limit %}
-                              {% set ns.final = ns.final + [limit] %}
-                              {% set ns.remaining = ns.remaining + (l - limit) %}
-                            {% else %}
-                              {% set ns.final = ns.final + [l] %}
-                            {% endif %}
-                          {% endfor %}
+                          {% if batt | length == 0 %}
+                            {{ [0, 0, 0, 0, 0, 0, 0, 0, 0] }}
+                          {% else %}
 
-                          {# 2. Restlast-Verteilung (for statt while) #}
-                          {% set max_loops = 15 %}
-                          {% for _ in range(max_loops) %}
-                            {% if ns.remaining <= 0 %}
-                              {% break %}
-                            {% endif %}
+                            {#
+                              Neuverteilung:
+                              - B2500-min_limit bleibt harte Untergrenze.
+                              - Venus-soft_limit gilt nur beim Entladen / positiver Last.
+                              - Im Normalfall: B2500 bekommen mindestens ihr min_limit,
+                                Venus übernimmt den Rest bis soft_limit.
+                              - Wenn total_load größer ist als soft_limit + Extra-Hardware-Max,
+                                wird Venus wieder bis Hardware-max_limit freigegeben.
+                            #}
 
-                            {% set free_total = 0 %}
-                            {% for idx in range(ns.final|length) %}
-                              {% set cap = batt[idx].max_limit - ns.final[idx] %}
-                              {% if cap > 0 %}
-                                {% set free_total = free_total + batt[idx].soc %}
+                            {% set total = total_load | float(0) %}
+                            {% set has_venus = (batt[0].type | default('') == 'venus') %}
+
+                            {% set cap = namespace(hw_max_sum=0, min_sum=0, extra_hw_max_sum=0, extra_min_sum=0) %}
+                            {% set venus_soc = batt[0].soc | float(0) if has_venus else 0 %}
+                            {% set venus_level_raw = (venus_soc - 25) / (100 - 25) if has_venus else 0 %}
+                            {% set venus_level = [[venus_level_raw, 1] | min, 0] | max %}
+                            {% set venus_soft_limit = ((batt[0].max_limit | int(0)) * venus_level) | round(0) | int if has_venus else 0 %}
+
+                            {% for b in batt %}
+                              {% set b_max = b.max_limit | int(0) %}
+                              {% set b_min = b.min_limit | default(min_limit) | int(0) %}
+                              {% set cap.hw_max_sum = cap.hw_max_sum + b_max %}
+                              {% set cap.min_sum = cap.min_sum + b_min %}
+                              {% if not (b.type | default('') == 'venus') %}
+                                {% set cap.extra_hw_max_sum = cap.extra_hw_max_sum + b_max %}
+                                {% set cap.extra_min_sum = cap.extra_min_sum + b_min %}
                               {% endif %}
                             {% endfor %}
 
-                            {% if free_total == 0 %}
-                              {% break %}
-                            {% endif %}
+                            {% set powers = namespace(list=[]) %}
 
-                            {% for idx in range(ns.final|length) %}
-                              {% set cap = batt[idx].max_limit - ns.final[idx] %}
-                              {% if cap > 0 %}
-                                {% set add = min(cap, ns.remaining * (batt[idx].soc / free_total)) %}
-                                {% set ns.final = ns.final[:idx] + [ns.final[idx] + add] + ns.final[idx+1:] %}
-                                {% set ns.remaining = ns.remaining - add %}
+                            {% if total >= cap.hw_max_sum %}
+
+                              {# Alles geben: alle aktiven Speicher auf Hardware-max_limit #}
+                              {% for i in range(9) %}
+                                {% if i < batt | length %}
+                                  {% set p = batt[i].max_limit | int(0) %}
+                                {% else %}
+                                  {% set p = 0 %}
+                                {% endif %}
+                                {% set powers.list = powers.list + [p] %}
+                              {% endfor %}
+                              {{ powers.list }}
+
+                            {% elif total <= cap.min_sum %}
+
+                              {# Untere Grenze: pro Speicher eigenes min_limit #}
+                              {% for i in range(9) %}
+                                {% if i < batt | length %}
+                                  {% set p = batt[i].min_limit | default(min_limit) | int(0) %}
+                                {% else %}
+                                  {% set p = 0 %}
+                                {% endif %}
+                                {% set powers.list = powers.list + [p] %}
+                              {% endfor %}
+                              {{ powers.list }}
+
+                            {% elif has_venus and total > 0 and total <= (venus_soft_limit + cap.extra_hw_max_sum) %}
+
+                              {#
+                                Normaler Venus-Betrieb:
+                                Extras bekommen nur den Rest oberhalb venus_soft_limit,
+                                aber mindestens ihr eigenes min_limit.
+                                Wenn die Extra-min_limits mehr Leistung erzwingen,
+                                wird diese Differenz automatisch von Venus abgezogen.
+                              #}
+
+                              {% set extras = batt[1:] %}
+                              {% set extra_target = [total - venus_soft_limit, 0] | max %}
+                              {% set extra = namespace(final=[]) %}
+
+                              {% if extras | length > 0 %}
+                                {% set extra_soc = extras | map(attribute='soc') | map('float') | sum %}
+
+                                {# 1. Extra-Grundverteilung nach SOC, mit min/max #}
+                                {% for idx in range(extras | length) %}
+                                  {% set b = extras[idx] %}
+                                  {% set wanted = extra_target * ((b.soc | float(0)) / extra_soc) if extra_soc > 0 else (extra_target / (extras | length)) %}
+                                  {% set b_min = b.min_limit | default(min_limit) | int(0) %}
+                                  {% set b_max = b.max_limit | int(0) %}
+                                  {% set p = [[wanted, b_max] | min, b_min] | max %}
+                                  {% set extra.final = extra.final + [p] %}
+                                {% endfor %}
+
+                                {# 2. Rest auf Extras verteilen, weiter nach SOC und innerhalb min/max #}
+                                {% set rest = namespace(value = extra_target - (extra.final | sum)) %}
+                                {% for _ in range(15) %}
+                                  {% if (rest.value | abs) < 0.5 %}
+                                    {% break %}
+                                  {% endif %}
+
+                                  {% set free = namespace(weight=0) %}
+                                  {% for idx in range(extra.final | length) %}
+                                    {% set b = extras[idx] %}
+                                    {% set b_min = b.min_limit | default(min_limit) | int(0) %}
+                                    {% set b_max = b.max_limit | int(0) %}
+
+                                    {% if rest.value > 0 %}
+                                      {% set free_cap = b_max - extra.final[idx] %}
+                                    {% else %}
+                                      {% set free_cap = extra.final[idx] - b_min %}
+                                    {% endif %}
+
+                                    {% if free_cap > 0 %}
+                                      {% set free.weight = free.weight + (b.soc | float(0)) %}
+                                    {% endif %}
+                                  {% endfor %}
+
+                                  {% if free.weight <= 0 %}
+                                    {% break %}
+                                  {% endif %}
+
+                                  {% for idx in range(extra.final | length) %}
+                                    {% set b = extras[idx] %}
+                                    {% set b_min = b.min_limit | default(min_limit) | int(0) %}
+                                    {% set b_max = b.max_limit | int(0) %}
+
+                                    {% if rest.value > 0 %}
+                                      {% set free_cap = b_max - extra.final[idx] %}
+                                    {% else %}
+                                      {% set free_cap = extra.final[idx] - b_min %}
+                                    {% endif %}
+
+                                    {% if free_cap > 0 %}
+                                      {% set share = (rest.value | abs) * ((b.soc | float(0)) / free.weight) %}
+                                      {% set step_abs = [free_cap, share] | min %}
+                                      {% set step = step_abs if rest.value > 0 else (0 - step_abs) %}
+                                      {% set new_p = extra.final[idx] + step %}
+                                      {% set new_p = [[new_p, b_max] | min, b_min] | max %}
+                                      {% set extra.final = extra.final[:idx] + [new_p] + extra.final[idx+1:] %}
+                                    {% endif %}
+                                  {% endfor %}
+
+                                  {% set rest.value = extra_target - (extra.final | sum) %}
+                                {% endfor %}
                               {% endif %}
-                            {% endfor %}
-                          {% endfor %}
 
-                          {# 3. In 9er-Liste mit min/max-Grenzen übertragen #}
-                          {% set powers = namespace(list=[]) %}
-                          {% for i in range(9) %}
-                            {% if i < ns.final|length %}
-                              {% set p = [[ns.final[i], batt[i].max_limit] | min, min_limit] | max | round %}
+                              {% set extra_sum = extra.final | sum %}
+                              {% set venus_min = batt[0].min_limit | default(min_limit) | int(0) %}
+                              {% set venus_max = venus_soft_limit %}
+                              {% set venus_p = total - extra_sum %}
+                              {% set venus_p = [[venus_p, venus_max] | min, venus_min] | max %}
+
+                              {% set powers.list = [venus_p | round(0) | int] %}
+                              {% for i in range(8) %}
+                                {% if i < extra.final | length %}
+                                  {% set b = extras[i] %}
+                                  {% set b_min = b.min_limit | default(min_limit) | int(0) %}
+                                  {% set b_max = b.max_limit | int(0) %}
+                                  {% set p = [[extra.final[i], b_max] | min, b_min] | max | round(0) | int %}
+                                {% else %}
+                                  {% set p = 0 %}
+                                {% endif %}
+                                {% set powers.list = powers.list + [p] %}
+                              {% endfor %}
+
+                              {{ powers.list }}
+
                             {% else %}
-                              {% set p = 0 %}
+
+                              {#
+                                Allgemeine Verteilung:
+                                - ohne Venus
+                                - negative Leistung / Laden
+                                - oder hohe Last über soft_limit + Extra-Max: Venus darf Hardware-max nutzen
+                              #}
+                              {% set total_soc = batt | map(attribute='soc') | map('float') | sum %}
+                              {% set ns = namespace(final=[]) %}
+
+                              {% for idx in range(batt | length) %}
+                                {% set wanted = total * ((batt[idx].soc | float(0)) / total_soc) if total_soc > 0 else (total / (batt | length)) %}
+                                {% set this_max = batt[idx].max_limit | int(0) %}
+                                {% set this_min = batt[idx].min_limit | default(min_limit) | int(0) %}
+                                {% set p = [[wanted, this_max] | min, this_min] | max %}
+                                {% set ns.final = ns.final + [p] %}
+                              {% endfor %}
+
+                              {% set ns_remaining = namespace(value = total - (ns.final | sum)) %}
+                              {% for _ in range(15) %}
+                                {% if (ns_remaining.value | abs) < 0.5 %}
+                                  {% break %}
+                                {% endif %}
+
+                                {% set free_total = namespace(value=0) %}
+                                {% for idx in range(ns.final | length) %}
+                                  {% set this_max = batt[idx].max_limit | int(0) %}
+                                  {% set this_min = batt[idx].min_limit | default(min_limit) | int(0) %}
+                                  {% if ns_remaining.value > 0 %}
+                                    {% set cap_free = this_max - ns.final[idx] %}
+                                  {% else %}
+                                    {% set cap_free = ns.final[idx] - this_min %}
+                                  {% endif %}
+                                  {% if cap_free > 0 %}
+                                    {% set free_total.value = free_total.value + (batt[idx].soc | float(0)) %}
+                                  {% endif %}
+                                {% endfor %}
+
+                                {% if free_total.value <= 0 %}
+                                  {% break %}
+                                {% endif %}
+
+                                {% for idx in range(ns.final | length) %}
+                                  {% set this_max = batt[idx].max_limit | int(0) %}
+                                  {% set this_min = batt[idx].min_limit | default(min_limit) | int(0) %}
+                                  {% if ns_remaining.value > 0 %}
+                                    {% set cap_free = this_max - ns.final[idx] %}
+                                  {% else %}
+                                    {% set cap_free = ns.final[idx] - this_min %}
+                                  {% endif %}
+                                  {% if cap_free > 0 %}
+                                    {% set share = (ns_remaining.value | abs) * ((batt[idx].soc | float(0)) / free_total.value) %}
+                                    {% set add_abs = [cap_free, share] | min %}
+                                    {% set add = add_abs if ns_remaining.value > 0 else (0 - add_abs) %}
+                                    {% set new_p = ns.final[idx] + add %}
+                                    {% set new_p = [[new_p, this_max] | min, this_min] | max %}
+                                    {% set ns.final = ns.final[:idx] + [new_p] + ns.final[idx+1:] %}
+                                  {% endif %}
+                                {% endfor %}
+
+                                {% set ns_remaining.value = total - (ns.final | sum) %}
+                              {% endfor %}
+
+                              {% for i in range(9) %}
+                                {% if i < ns.final | length %}
+                                  {% set this_max = batt[i].max_limit | int(0) %}
+                                  {% set this_min = batt[i].min_limit | default(min_limit) | int(0) %}
+                                  {% set p = [[ns.final[i], this_max] | min, this_min] | max | round(0) | int %}
+                                {% else %}
+                                  {% set p = 0 %}
+                                {% endif %}
+                                {% set powers.list = powers.list + [p] %}
+                              {% endfor %}
+
+                              {{ powers.list }}
                             {% endif %}
-                            {% set powers.list = powers.list + [p] %}
-                          {% endfor %}
-                          {{ powers.list }}
-                        
+                          {% endif %}
                         power_master: "{{ (e_power_list[0] if e_power_list | length > 0 else 0) | int }}"
                         power_extras: "{{ (e_power_list[1:9] | sum) | int }}"
                     - variables:
@@ -511,44 +839,62 @@ script:
                               0
                             {% endif %}
                           e_power: "{{ e_power_list[idx] | int }}"
-                          
-                       
+                                                 
                           es_power: "{{ es_power_list[idx] | int }}"
-                            
-                          max_limit: "{{ total_batteries_list[idx]['max_limit'] | int  }}"
                           
-                          both_outputs: >-
-                            {% set both_outputs = total_batteries_list[idx]['both_outputs'] %}
-                            {{ both_outputs }}
+                          max_limit: "{{ total_batteries_list[idx]['max_limit'] | int }}"
+                          
+                          min_limit_current: "{{ total_batteries_list[idx]['min_limit'] | default(min_limit) | int }}"
+                          
+                          needs_doubling: "{{ total_batteries_list[idx]['needs_doubling'] | default(false) | bool }}"
+                          
                           total_power: >-
-                            {{ [max_limit,
-                            [(e_power + es_power), min_limit] | max] | min }}
+                            {{ [max_limit, [(e_power + es_power), min_limit_current] | max] | min }}                          
+                            
                           current_v1: >
-                            {{ (total_power * 2 if not both_outputs else total_power) | int }}
+                            {{ (total_power * 2 if needs_doubling else total_power) | int }}
+                            
+                          battery_type: "{{ total_batteries_list[idx]['type'] }}"
+                          
                           actual_power: >
-                            {% set i = current_id %}
-                            {{ states('sensor.b2500_0' ~ i|string ~ '_h1') | float(0) | int }}
+                            {% if battery_type == 'venus' %}
+                              {{ states('input_number.venus_discharging_charging_power') | float(0) | int }}
+                            {% else %}
+                              {% set i = current_id %}
+                              {{ states('sensor.b2500_' ~ '%02d' | format(i | int) ~ '_h1') | float(0) | int }}
+                            {% endif %}
                         enabled: true
-                      - alias: Worker aufrufen wenn nötig
+                      - alias: Leistung setzen wenn nötig
                         if:
                           - condition: template
                             value_template: "{{ current_v1 | int != actual_power | int }}"
                         then:
-                          - action: script.turn_on
-                            target:
-                              entity_id: "{{ 'script.b2500_' ~ '%02d' | format(current_id | int) ~ '_worker' }}"
-                            data:
-                              variables:
-                                payload: "cd=20,md=0,a1=1,b1=0:0,e1=24:00,v1={{ current_v1 | int }}"
-                                followup_payload: "cd=01"
-                                expected_field: "h1"
-                                expected_value: "{{ current_v1 | int }}"
-                          - delay:
-                              hours: 0
-                              minutes: 0
-                              seconds: 0
-                              milliseconds: 300                     
+                          - choose:
+                              - conditions:
+                                  - condition: template
+                                    value_template: "{{ battery_type == 'venus' }}"
+                                sequence:
+                                  - action: input_number.set_value
+                                    target:
+                                      entity_id: input_number.venus_discharging_charging_power
+                                    data:
+                                      value: "{{ current_v1 | int }}"
 
+                              - conditions:
+                                  - condition: template
+                                    value_template: "{{ battery_type == 'b2500' }}"
+                                sequence:
+                                  - action: script.turn_on
+                                    target:
+                                      entity_id: "{{ 'script.b2500_' ~ '%02d' | format(current_id | int) ~ '_worker' }}"
+                                    data:
+                                      variables:
+                                        payload: "cd=20,md=0,a1=1,b1=0:0,e1=24:00,v1={{ current_v1 | int }}"
+                                        followup_payload: "cd=01"
+                                        expected_field: "h1"
+                                        expected_value: "{{ current_v1 | int }}"
+                                  - delay:
+                                      milliseconds: 300
                   enabled: true
               enabled: true
             - target:
@@ -625,10 +971,9 @@ script:
               action: input_text.set_value
               enabled: true
             - delay:
-                hours: 0
-                minutes: 0
-                seconds: 5
-                milliseconds: 0
+                seconds: >
+                  {{ states('input_number.zeropower_stabilization_time')
+                     | int(0) }}
               enabled: true
           while:
             - condition: and
@@ -647,7 +992,7 @@ script:
                   entity_id: automation.b2500pkg_zeropower_trigger
                   state: "on"
                 - condition: template
-                  value_template: "{{ (as_timestamp(now()) - start_time) < 270 }}"        
+                  value_template: "{{ (as_timestamp(now()) - start_time) < 60 }}"        
           
     alias: B2500PKG_Zeropower_main
     fields:
