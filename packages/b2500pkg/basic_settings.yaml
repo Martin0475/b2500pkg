@@ -84,16 +84,6 @@ input_text:
     name: B09 MAC/ID
     initial: 0
 
-#modbus:
-#  - name: Venus1
-#    type: tcp
-#    host : 192.168.178.222
-#    port: 502
-#    delay: 1
-#    message_wait_milliseconds: 50
-#    timeout: 5
-      
-    
 
 
       
