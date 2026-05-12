@@ -1,7 +1,7 @@
 # B2500PKG for Home Assistant
 
 Dieses Paket enthält:
-- MQTT-Sensoren für bis zu 9 B2500-Geräte
+- MQTT-Sensoren für bis zu 9 B2500-Geräte oder 8 B2500 und 1 Venus
 - Automationen zur Steuerung und Konfiguration
 - Helfer-Elemente (Inputs)
 - YAML-Dashboard zur einfachen Übersicht
