@@ -6,8 +6,8 @@ views:
           - type: heading
             heading_style: title
             heading: >-
-              B2500 Package 2026-04-21 (Befehle werden nun auf Bestätigung
-              geprüft))
+              B2500 Package 2026-05-13 (Zeropower verbessert und Venus
+              hinzugefügt)
             grid_options:
               columns: 12
               rows: 1
@@ -1566,42 +1566,46 @@ views:
               {% set v2 = states('input_text.zeropower_variables2') | from_json
               %}
 
+
               {% set m_id, e1_id, e2_id, e3_id, e4_id, e5_id, e6_id, e7_id,
               e8_id = v2.ID.split('|') %}
+
 
               {% set sp_master, e1sp, e2sp, e3sp, e4sp, e5sp, e6sp, e7sp, e8sp =
               v2.SP.split('|') %}
 
 
-
               {% set mp = (states('input_text.zeropower_variables') | from_json
-              | default({})).mp |
-                  float(0) | int %}
-              {% set e1p = (states('input_text.zeropower_variables') | from_json
-              | default({})).e1p
-                  | float(0) | int %}
-              {% set e2p = (states('input_text.zeropower_variables') | from_json
-              | default({})).e2p
-                  | float(0) | int %}
-              {% set e3p = (states('input_text.zeropower_variables') | from_json
-              | default({})).e3p
-                  | float(0) | int %}
-              {% set e4p = (states('input_text.zeropower_variables') | from_json
-              | default({})).e4p
-                  | float(0) | int %}
-              {% set e5p = (states('input_text.zeropower_variables') | from_json
-              | default({})).e5p
-                  | float(0) | int %}
-              {% set e6p = (states('input_text.zeropower_variables') | from_json
-              | default({})).e6p
-                  | float(0) | int %}
-              {% set e7p = (states('input_text.zeropower_variables') | from_json
-              | default({})).e7p
-                  | float(0) | int %}
-              {% set e8p = (states('input_text.zeropower_variables') | from_json
-              | default({})).e8p
-                  | float(0) | int %}
-              {% set msoc = states('sensor.b2500_0' ~ m_id ~ '_pe') | int(0) %}
+              | default({})).mp | float(0) | int %}
+
+              {% set e1p = (states('input_text.zeropower_variables') |
+              from_json| default({})).e1p| float(0) | int %}
+
+              {% set e2p = (states('input_text.zeropower_variables') |
+              from_json| default({})).e2p| float(0) | int %}
+
+              {% set e3p = (states('input_text.zeropower_variables') |
+              from_json| default({})).e3p| float(0) | int %}
+
+              {% set e4p = (states('input_text.zeropower_variables') |
+              from_json| default({})).e4p| float(0) | int %}
+
+              {% set e5p = (states('input_text.zeropower_variables') |
+              from_json| default({})).e5p| float(0) | int %}
+
+              {% set e6p = (states('input_text.zeropower_variables') |
+              from_json| default({})).e6p| float(0) | int %}
+
+              {% set e7p = (states('input_text.zeropower_variables') |
+              from_json| default({})).e7p| float(0) | int %}
+
+              {% set e8p = (states('input_text.zeropower_variables') |
+              from_json| default({})).e8p| float(0) | int %}
+
+
+              {% set msoc = states('sensor.venus_battery_soc') | int(0) if
+              is_state('input_boolean.zeropower_use_venus', 'on') else
+              states('sensor.b2500_0' ~ m_id ~ '_pe') | int(0) %}
 
               {% set e1soc = states('sensor.b2500_0' ~ e1_id ~ '_pe') | int(0)
               %}
@@ -1640,12 +1644,12 @@ views:
 
               {% endif %}
 
-               
+                             
 
               <pre>
                                 Einspeisung
               ID Name    SOC   Null/Überschuss  
-                                    
+                                                  
               {{ m_id }} Master  ({{ "%3s"|format(msoc) }}):{{ "%5s"|format(mp)
               }}/{{ "%-5s"|format(sp_master) }} W
 
@@ -1674,6 +1678,13 @@ views:
               "%5s"|format(e8p) }}/{{ "%-5s"|format(e8sp) }} W
 
               </pre>
+          - type: markdown
+            content: >
+              Um ein Venus-Gerät zu nutzen ist die Datei venus.yaml erforderlich
+              welche von Github geladen werden kann.
+
+
+              Desweiteren muss bei B09 als Typ Venus eingetragen werden.
       - type: grid
         cards:
           - type: heading
@@ -1704,6 +1715,7 @@ views:
             entities:
               - entity: input_number.zeropower_target_value
               - entity: input_number.zeropower_target_deviation
+              - entity: input_number.zeropower_stabilization_time
               - entity: input_number.zeropower_min_limit
               - entity: input_number.zeropower_max_limit
               - entity: input_boolean.zeropower_surplus_enabled
@@ -1791,6 +1803,31 @@ views:
               - entity: input_text.zeropower_measure
             show_header_toggle: false
         column_span: 2
+      - type: grid
+        cards:
+          - type: heading
+            heading: Venus  (pos. Wert = entladen / neg. Wert = laden)
+            heading_style: subtitle
+          - type: entities
+            entities:
+              - entity: input_boolean.zeropower_use_venus
+                name: Venus verwenden
+              - entity: sensor.venus_battery_soc
+              - entity: sensor.venus_battery_power
+              - entity: sensor.venus_ac_power
+              - entity: input_number.venus_discharging_charging_power
+              - entity: input_number.zeropower_venus_min_limit
+              - entity: input_number.zeropower_venus_max_limit
+              - entity: switch.venus_rs485_control_mode_switch
+              - entity: sensor.venus_rs485_control_mode_status
+            visibility:
+              - condition: state
+                entity: input_text.b09_typ
+                state: Venus
+            header:
+              type: graph
+              entity: sensor.venus_battery_soc
+              detail: 2
     subview: false
     cards: []
     badges:
