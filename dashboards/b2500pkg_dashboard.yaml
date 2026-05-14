@@ -6,8 +6,7 @@ views:
           - type: heading
             heading_style: title
             heading: >-
-              B2500 Package 2026-05-13 (Zeropower verbessert und Venus
-              hinzugefügt)
+              B2500 Package 2026-05-13 (Zeropower erweitert)
             grid_options:
               columns: 12
               rows: 1
@@ -1688,13 +1687,6 @@ views:
               "%5s"|format(e8p) }}/{{ "%-5s"|format(e8sp) }} W
 
               </pre>
-          - type: markdown
-            content: >
-              Um ein Venus-Gerät zu nutzen ist die Datei venus.yaml erforderlich
-              welche von Github geladen werden kann.
-
-
-              Desweiteren muss bei B09 als Typ Venus eingetragen werden.
       - type: grid
         cards:
           - type: heading
@@ -1717,15 +1709,26 @@ views:
               - entity: automation.b2500pkg_zeropower_trigger
                 secondary_info: last-triggered
                 name: Automatik Aus/Ein
-              - entity: script.b2500pkg_zeropower_main
-                name: Manuell ausführen
             show_header_toggle: false
             title: Nulleinspeisung
+            header:
+              type: buttons
+              entities:
+                - entity: script.b2500pkg_zeropower_main
+                  name: Neuverteilung erzwingen
+                  tap_action:
+                    action: call-service
+                    service: script.turn_on
+                    service_data:
+                      entity_id: script.b2500pkg_zeropower_main
+                      variables:
+                        force_redistribution: true
           - type: entities
             entities:
               - entity: input_number.zeropower_target_value
               - entity: input_number.zeropower_target_deviation
               - entity: input_number.zeropower_stabilization_time
+              - entity: input_number.zeropower_b2500_eff
               - entity: input_number.zeropower_min_limit
               - entity: input_number.zeropower_max_limit
               - entity: input_boolean.zeropower_surplus_enabled
@@ -1812,6 +1815,13 @@ views:
             entities:
               - entity: input_text.zeropower_measure
             show_header_toggle: false
+          - type: markdown
+            content: >
+              Um ein Venus-Gerät zu nutzen ist die Datei venus.yaml erforderlich
+              welche von Github geladen werden kann.
+
+
+              Desweiteren muss bei B09 als Typ Venus eingetragen werden.
         column_span: 2
       - type: grid
         cards:
