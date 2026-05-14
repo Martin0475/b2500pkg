@@ -106,6 +106,15 @@ input_text:
 
 input_number:
 
+  zeropower_b2500_eff:
+    name: B2500 Wirkungsgrad
+    min: 0.50
+    max: 1.00
+    step: 0.01
+    mode: box
+    unit_of_measurement: "%"
+    icon: mdi:lightning-bolt
+
   zeropower_stabilization_time:
     name: Stabilisierungszeit
     min: 1
@@ -178,10 +187,7 @@ input_number:
 
 template:
   - sensor:
-      - name: zeropower_measure_load
-        unique_id: zeropower_measure_load
-        unit_of_measurement: "W"
-        device_class: power
+      - name: zeropower_measure_load_raw
         state: >
           {{ states(states('input_text.zeropower_measure')) | float(0) | int }}
 
@@ -197,6 +203,15 @@ template:
         unique_id: zeropower_target_range_high
         state: >
           {{ states('input_number.zeropower_target_value') | float(0) + states('input_number.zeropower_target_deviation') | float(0) }}
+          
+sensor:
+  - platform: filter
+    name: "zeropower_measure_load"
+    entity_id: sensor.zeropower_measure_load_raw
+    filters:
+      - filter: lowpass
+        time_constant: 1   
+        precision: 0
 
 
 automation:
@@ -279,7 +294,20 @@ script:
     max: 10
     sequence:
       - variables:
+          target_range_high: "{{ states('sensor.zeropower_target_range_high') | float(0) }}"
+          target_range_low: "{{ states('sensor.zeropower_target_range_low') | float(0) }}"
           min_limit: "{{ states('input_number.zeropower_min_limit') | int }}"
+          max_limit_global: "{{ states('input_number.zeropower_max_limit') | int }}"
+          manual_bypass: "{{ states('input_number.zeropower_surplus_bypass') | int }}"
+          use_venus: "{{ is_state('input_boolean.zeropower_use_venus', 'on') }}"
+          b09_typ_text: "{{ states('input_text.b09_typ') | lower }}"
+          venus_power_state: "{{ states('input_number.venus_discharging_charging_power') }}"
+          venus_min_limit: "{{ states('input_number.zeropower_venus_min_limit') | int(-2500)}}"
+          venus_max_limit: "{{ states('input_number.zeropower_venus_max_limit') | int(2500) }}"
+          venus_soc: "{{ states('sensor.venus_battery_soc') | int(0) }}"
+          stabilization_time: "{{ states('input_number.zeropower_stabilization_time') | int(0) }}"
+          b2500_eff: "{{ states('input_number.zeropower_b2500_eff') | float(0.90) }}"
+          
           variables_lastrun: >
             {% set txt = states('input_text.zeropower_variables') %} {% if txt not
             in ['unknown', '', None] %}
@@ -347,7 +375,10 @@ script:
           sequence:
             - variables:
                 charging_allowed: >-
-                  {{ all_extra_min_limit }}
+                  {{
+                    all_extra_min_limit
+                    and venus_soc | int(0) < 100
+                  }}
                 batteries_list: |
                   {% set ns = namespace(batteries_list=[]) %}
 
@@ -360,19 +391,12 @@ script:
                     Wenn nicht aktiv, läuft B09 ganz normal als B2500 über input_select.zeropower_use_b09.
                   #}
                   {% set bad = ['unknown', 'unavailable', 'none', 'None', ''] %}
-
-                  {% set b09_typ_text = states('input_text.b09_typ') | lower %}
+             
                   {% set b09_is_venus = 'venus' in b09_typ_text %}
-
-                  {% set use_venus =
-                     is_state('input_boolean.zeropower_use_venus', 'on') %}
 
                   {% set venus_soc_state =
                      states('sensor.venus_battery_soc') %}
-
-                  {% set venus_power_state =
-                     states('input_number.venus_discharging_charging_power') %}
-
+               
                   {% set venus_ready =
                      venus_soc_state not in bad
                      and venus_power_state not in bad
@@ -398,7 +422,7 @@ script:
                     %}
 
                     {% set max_limit = [
-                      states('input_number.zeropower_max_limit') | int,
+                      max_limit_global,
                       max_limit_mode
                     ] | min | int %}
 
@@ -407,7 +431,7 @@ script:
                     {% set soc_rounded = [((soc / 5) | round(0, 'ceil') * 5), 100] | min | int %}
                     {% set pv_power = states('sensor.b' ~ id_str ~ '_pv_gesamt') | float(0) | int %}
                     {% set lmi = states('sensor.b2500_' ~ id_str ~ '_lmi') | float(0) - 20 | int %}
-                    {% set manual_bypass = states('input_number.zeropower_surplus_bypass') | float(0) | int %}
+                    {% set manual_bypass = manual_bypass %}
 
                     {% set sp_rounded = [[(((pv_power - [manual_bypass | float(0), lmi | float(0)] | min) / 10) | round(0, 'ceil') * 10), max_limit] | min, 0] | max | int %}
 
@@ -449,9 +473,9 @@ script:
                       'pvm3': false,
                       'sp_rounded': 0,
 
-                      'max_limit': states('input_number.zeropower_venus_max_limit') | int(2500),
+                      'max_limit': venus_max_limit,
 
-                      'min_limit': ((states('input_number.zeropower_venus_min_limit') | int(-2500)) if charging_allowed else 0),
+                      'min_limit': (venus_min_limit if charging_allowed else 0),
 
                       'needs_doubling': false
                     } %}
@@ -847,10 +871,10 @@ script:
                           min_limit_current: "{{ total_batteries_list[idx]['min_limit'] | default(min_limit) | int }}"
                           
                           needs_doubling: "{{ total_batteries_list[idx]['needs_doubling'] | default(false) | bool }}"
-                          
                           total_power: >-
-                            {{ [max_limit, [(e_power + es_power), min_limit_current] | max] | min }}                          
-                            
+                            {{ [max_limit, [((((e_power / b2500_eff) if total_batteries_list[idx]['type'] == 'b2500' and e_power > 0 else e_power) + es_power)), min_limit_current] | max] | min }}                          
+
+
                           current_v1: >
                             {{ (total_power * 2 if needs_doubling else total_power) | int }}
                             
@@ -858,7 +882,7 @@ script:
                           
                           actual_power: >
                             {% if battery_type == 'venus' %}
-                              {{ states('input_number.venus_discharging_charging_power') | float(0) | int }}
+                              {{ venus_power_state | float(0) | int }}
                             {% else %}
                               {% set i = current_id %}
                               {{ states('sensor.b2500_' ~ '%02d' | format(i | int) ~ '_h1') | float(0) | int }}
@@ -972,9 +996,19 @@ script:
               enabled: true
             - delay:
                 seconds: >
-                  {{ states('input_number.zeropower_stabilization_time')
-                     | int(0) }}
-              enabled: true
+                  {{ (stabilization_time | float(5) / 2) | round(1) }}
+
+            - wait_template: >
+                {% set load =
+                   states('sensor.zeropower_measure_load') | float(0) %}
+
+                {{ load > target_range_high }}
+
+              timeout:
+                seconds: >
+                  {{ (stabilization_time | float(5) / 2) | round(1) }}
+
+              continue_on_timeout: true
           while:
             - condition: and
               conditions:
