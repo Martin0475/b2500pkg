@@ -5,8 +5,7 @@ views:
         cards:
           - type: heading
             heading_style: title
-            heading: >-
-              B2500 Package 2026-05-13 (Zeropower erweitert)
+            heading: B2500 Package 2026-05-13 (Zeropower erweitert)
             grid_options:
               columns: 12
               rows: 1
@@ -132,7 +131,7 @@ views:
             visibility:
               - condition: state
                 entity: input_text.b01_mac
-                state_not: '0'
+                state_not: "0"
           - type: entities
             entities:
               - entity: automation.b2500pkg_b02_sensor_discovery
@@ -145,7 +144,7 @@ views:
             visibility:
               - condition: state
                 entity: input_text.b02_mac
-                state_not: '0'
+                state_not: "0"
           - type: entities
             entities:
               - entity: automation.b2500pkg_b03_sensor_discovery
@@ -158,7 +157,7 @@ views:
             visibility:
               - condition: state
                 entity: input_text.b03_mac
-                state_not: '0'
+                state_not: "0"
           - type: entities
             entities:
               - entity: automation.b2500pkg_b04_sensor_discovery
@@ -171,7 +170,7 @@ views:
             visibility:
               - condition: state
                 entity: input_text.b04_mac
-                state_not: '0'
+                state_not: "0"
           - type: entities
             entities:
               - entity: automation.b2500pkg_b05_sensor_discovery
@@ -184,7 +183,7 @@ views:
             visibility:
               - condition: state
                 entity: input_text.b05_mac
-                state_not: '0'
+                state_not: "0"
           - type: entities
             entities:
               - entity: automation.b2500pkg_b06_sensor_discovery
@@ -197,7 +196,7 @@ views:
             visibility:
               - condition: state
                 entity: input_text.b06_mac
-                state_not: '0'
+                state_not: "0"
           - type: entities
             entities:
               - entity: automation.b2500pkg_b07_sensor_discovery
@@ -210,7 +209,7 @@ views:
             visibility:
               - condition: state
                 entity: input_text.b07_mac
-                state_not: '0'
+                state_not: "0"
           - type: entities
             entities:
               - entity: automation.b2500pkg_b08_sensor_discovery
@@ -223,7 +222,7 @@ views:
             visibility:
               - condition: state
                 entity: input_text.b08_mac
-                state_not: '0'
+                state_not: "0"
           - type: entities
             entities:
               - entity: automation.b2500pkg_b09_sensor_discovery
@@ -236,7 +235,7 @@ views:
             visibility:
               - condition: state
                 entity: input_text.b09_mac
-                state_not: '0'
+                state_not: "0"
     type: sections
     max_columns: 4
     cards: []
@@ -297,7 +296,7 @@ views:
             visibility:
               - condition: state
                 entity: input_text.b01_mac
-                state_not: '0'
+                state_not: "0"
           - show_name: false
             show_icon: false
             show_state: true
@@ -328,7 +327,7 @@ views:
             visibility:
               - condition: state
                 entity: input_text.b02_mac
-                state_not: '0'
+                state_not: "0"
           - show_name: false
             show_icon: false
             show_state: true
@@ -359,7 +358,7 @@ views:
             visibility:
               - condition: state
                 entity: input_text.b03_mac
-                state_not: '0'
+                state_not: "0"
           - show_name: false
             show_icon: false
             show_state: true
@@ -390,7 +389,7 @@ views:
             visibility:
               - condition: state
                 entity: input_text.b04_mac
-                state_not: '0'
+                state_not: "0"
           - show_name: false
             show_icon: false
             show_state: true
@@ -421,7 +420,7 @@ views:
             visibility:
               - condition: state
                 entity: input_text.b05_mac
-                state_not: '0'
+                state_not: "0"
           - show_name: false
             show_icon: false
             show_state: true
@@ -452,7 +451,7 @@ views:
             visibility:
               - condition: state
                 entity: input_text.b06_mac
-                state_not: '0'
+                state_not: "0"
           - show_name: false
             show_icon: false
             show_state: true
@@ -483,7 +482,7 @@ views:
             visibility:
               - condition: state
                 entity: input_text.b07_mac
-                state_not: '0'
+                state_not: "0"
           - show_name: false
             show_icon: false
             show_state: true
@@ -514,7 +513,7 @@ views:
             visibility:
               - condition: state
                 entity: input_text.b08_mac
-                state_not: '0'
+                state_not: "0"
           - show_name: false
             show_icon: false
             show_state: true
@@ -545,14 +544,14 @@ views:
             visibility:
               - condition: state
                 entity: input_text.b09_mac
-                state_not: '0'
+                state_not: "0"
           - type: vertical-stack
             cards:
               - type: conditional
                 conditions:
                   - condition: state
                     entity: input_text.b01_mac
-                    state_not: '0'
+                    state_not: "0"
                 card:
                   type: entities
                   entities:
@@ -562,7 +561,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b02_mac
-                    state_not: '0'
+                    state_not: "0"
                 card:
                   type: entities
                   entities:
@@ -572,7 +571,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b03_mac
-                    state_not: '0'
+                    state_not: "0"
                 card:
                   type: entities
                   entities:
@@ -582,7 +581,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b04_mac
-                    state_not: '0'
+                    state_not: "0"
                 card:
                   type: entities
                   entities:
@@ -592,7 +591,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b05_mac
-                    state_not: '0'
+                    state_not: "0"
                 card:
                   type: entities
                   entities:
@@ -602,7 +601,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b06_mac
-                    state_not: '0'
+                    state_not: "0"
                 card:
                   type: entities
                   entities:
@@ -612,7 +611,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b07_mac
-                    state_not: '0'
+                    state_not: "0"
                 card:
                   type: entities
                   entities:
@@ -622,7 +621,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b08_mac
-                    state_not: '0'
+                    state_not: "0"
                 card:
                   type: entities
                   entities:
@@ -632,7 +631,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b09_mac
-                    state_not: '0'
+                    state_not: "0"
                 card:
                   type: entities
                   entities:
@@ -645,7 +644,7 @@ views:
         entity: sensor.b2500_status_zeile
   - type: sections
     max_columns: 4
-    path: ''
+    path: ""
     sections:
       - type: grid
         cards:
@@ -664,7 +663,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b01_mac
-                    state_not: '0'
+                    state_not: "0"
                 card:
                   type: entities
                   entities:
@@ -674,7 +673,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b02_mac
-                    state_not: '0'
+                    state_not: "0"
                 card:
                   type: entities
                   entities:
@@ -684,7 +683,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b03_mac
-                    state_not: '0'
+                    state_not: "0"
                 card:
                   type: entities
                   entities:
@@ -694,7 +693,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b04_mac
-                    state_not: '0'
+                    state_not: "0"
                 card:
                   type: entities
                   entities:
@@ -704,7 +703,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b05_mac
-                    state_not: '0'
+                    state_not: "0"
                 card:
                   type: entities
                   entities:
@@ -714,7 +713,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b06_mac
-                    state_not: '0'
+                    state_not: "0"
                 card:
                   type: entities
                   entities:
@@ -724,7 +723,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b07_mac
-                    state_not: '0'
+                    state_not: "0"
                 card:
                   type: entities
                   entities:
@@ -734,7 +733,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b08_mac
-                    state_not: '0'
+                    state_not: "0"
                 card:
                   type: entities
                   entities:
@@ -744,7 +743,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b09_mac
-                    state_not: '0'
+                    state_not: "0"
                 card:
                   type: entities
                   entities:
@@ -756,7 +755,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b01_mac
-                    state_not: '0'
+                    state_not: "0"
                 card:
                   type: gauge
                   entity: sensor.b2500_01_pe
@@ -771,7 +770,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b02_mac
-                    state_not: '0'
+                    state_not: "0"
                 card:
                   type: gauge
                   entity: sensor.b2500_02_pe
@@ -786,7 +785,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b03_mac
-                    state_not: '0'
+                    state_not: "0"
                 card:
                   type: gauge
                   entity: sensor.b2500_03_pe
@@ -801,7 +800,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b04_mac
-                    state_not: '0'
+                    state_not: "0"
                 card:
                   type: gauge
                   entity: sensor.b2500_04_pe
@@ -821,7 +820,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b05_mac
-                    state_not: '0'
+                    state_not: "0"
                 card:
                   type: gauge
                   entity: sensor.b2500_05_pe
@@ -836,7 +835,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b06_mac
-                    state_not: '0'
+                    state_not: "0"
                 card:
                   type: gauge
                   entity: sensor.b2500_06_pe
@@ -851,7 +850,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b07_mac
-                    state_not: '0'
+                    state_not: "0"
                 card:
                   type: gauge
                   entity: sensor.b2500_07_pe
@@ -866,7 +865,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b08_mac
-                    state_not: '0'
+                    state_not: "0"
                 card:
                   type: gauge
                   entity: sensor.b2500_08_pe
@@ -886,7 +885,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b09_mac
-                    state_not: '0'
+                    state_not: "0"
                 card:
                   type: gauge
                   entity: sensor.b2500_09_pe
@@ -926,7 +925,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b01_mac
-                    state_not: '0'
+                    state_not: "0"
                 card:
                   type: entities
                   entities:
@@ -936,7 +935,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b02_mac
-                    state_not: '0'
+                    state_not: "0"
                 card:
                   type: entities
                   entities:
@@ -946,7 +945,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b03_mac
-                    state_not: '0'
+                    state_not: "0"
                 card:
                   type: entities
                   entities:
@@ -956,7 +955,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b04_mac
-                    state_not: '0'
+                    state_not: "0"
                 card:
                   type: entities
                   entities:
@@ -966,7 +965,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b05_mac
-                    state_not: '0'
+                    state_not: "0"
                 card:
                   type: entities
                   entities:
@@ -976,7 +975,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b06_mac
-                    state_not: '0'
+                    state_not: "0"
                 card:
                   type: entities
                   entities:
@@ -986,7 +985,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b07_mac
-                    state_not: '0'
+                    state_not: "0"
                 card:
                   type: entities
                   entities:
@@ -996,7 +995,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b08_mac
-                    state_not: '0'
+                    state_not: "0"
                 card:
                   type: entities
                   entities:
@@ -1006,7 +1005,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b09_mac
-                    state_not: '0'
+                    state_not: "0"
                 card:
                   type: entities
                   entities:
@@ -1081,7 +1080,7 @@ views:
             visibility:
               - condition: state
                 entity: input_text.b01_mac
-                state_not: '0'
+                state_not: "0"
           - square: false
             type: grid
             cards:
@@ -1140,7 +1139,7 @@ views:
             visibility:
               - condition: state
                 entity: input_text.b02_mac
-                state_not: '0'
+                state_not: "0"
           - square: false
             type: grid
             cards:
@@ -1199,7 +1198,7 @@ views:
             visibility:
               - condition: state
                 entity: input_text.b03_mac
-                state_not: '0'
+                state_not: "0"
           - square: false
             type: grid
             cards:
@@ -1258,7 +1257,7 @@ views:
             visibility:
               - condition: state
                 entity: input_text.b04_mac
-                state_not: '0'
+                state_not: "0"
           - square: false
             type: grid
             cards:
@@ -1317,7 +1316,7 @@ views:
             visibility:
               - condition: state
                 entity: input_text.b05_mac
-                state_not: '0'
+                state_not: "0"
           - square: false
             type: grid
             cards:
@@ -1376,7 +1375,7 @@ views:
             visibility:
               - condition: state
                 entity: input_text.b06_mac
-                state_not: '0'
+                state_not: "0"
           - square: false
             type: grid
             cards:
@@ -1435,7 +1434,7 @@ views:
             visibility:
               - condition: state
                 entity: input_text.b07_mac
-                state_not: '0'
+                state_not: "0"
           - square: false
             type: grid
             cards:
@@ -1494,7 +1493,7 @@ views:
             visibility:
               - condition: state
                 entity: input_text.b08_mac
-                state_not: '0'
+                state_not: "0"
           - square: false
             type: grid
             cards:
@@ -1553,7 +1552,7 @@ views:
             visibility:
               - condition: state
                 entity: input_text.b09_mac
-                state_not: '0'
+                state_not: "0"
         column_span: 4
       - type: grid
         cards:
@@ -1691,7 +1690,7 @@ views:
         cards:
           - type: heading
             heading_style: title
-            heading: 'Powermeter Entität auswählen '
+            heading: "Powermeter Entität auswählen "
             badges: []
           - type: gauge
             entity: sensor.zeropower_measure_load
@@ -1746,7 +1745,7 @@ views:
             visibility:
               - condition: state
                 entity: input_text.b01_mac
-                state_not: '0'
+                state_not: "0"
           - type: entities
             entities:
               - entity: input_select.zeropower_use_b02
@@ -1754,7 +1753,7 @@ views:
             visibility:
               - condition: state
                 entity: input_text.b02_mac
-                state_not: '0'
+                state_not: "0"
           - type: entities
             entities:
               - entity: input_select.zeropower_use_b03
@@ -1762,7 +1761,7 @@ views:
             visibility:
               - condition: state
                 entity: input_text.b03_mac
-                state_not: '0'
+                state_not: "0"
           - type: entities
             entities:
               - entity: input_select.zeropower_use_b04
@@ -1770,7 +1769,7 @@ views:
             visibility:
               - condition: state
                 entity: input_text.b04_mac
-                state_not: '0'
+                state_not: "0"
           - type: entities
             entities:
               - entity: input_select.zeropower_use_b05
@@ -1778,7 +1777,7 @@ views:
             visibility:
               - condition: state
                 entity: input_text.b05_mac
-                state_not: '0'
+                state_not: "0"
           - type: entities
             entities:
               - entity: input_select.zeropower_use_b06
@@ -1786,7 +1785,7 @@ views:
             visibility:
               - condition: state
                 entity: input_text.b06_mac
-                state_not: '0'
+                state_not: "0"
           - type: entities
             entities:
               - entity: input_select.zeropower_use_b07
@@ -1794,7 +1793,7 @@ views:
             visibility:
               - condition: state
                 entity: input_text.b07_mac
-                state_not: '0'
+                state_not: "0"
           - type: entities
             entities:
               - entity: input_select.zeropower_use_b08
@@ -1802,7 +1801,7 @@ views:
             visibility:
               - condition: state
                 entity: input_text.b08_mac
-                state_not: '0'
+                state_not: "0"
           - type: entities
             entities:
               - entity: input_select.zeropower_use_b09
@@ -1810,7 +1809,7 @@ views:
             visibility:
               - condition: state
                 entity: input_text.b09_mac
-                state_not: '0'
+                state_not: "0"
           - type: entities
             entities:
               - entity: input_text.zeropower_measure
@@ -1885,7 +1884,7 @@ views:
         visibility:
           - condition: state
             entity: input_text.b01_mac
-            state_not: '0'
+            state_not: "0"
       - type: grid
         cards:
           - type: heading
@@ -1900,7 +1899,7 @@ views:
         visibility:
           - condition: state
             entity: input_text.b02_mac
-            state_not: '0'
+            state_not: "0"
       - type: grid
         cards:
           - type: heading
@@ -1915,7 +1914,7 @@ views:
         visibility:
           - condition: state
             entity: input_text.b03_mac
-            state_not: '0'
+            state_not: "0"
       - type: grid
         cards:
           - type: heading
@@ -1930,7 +1929,7 @@ views:
         visibility:
           - condition: state
             entity: input_text.b04_mac
-            state_not: '0'
+            state_not: "0"
       - type: grid
         cards:
           - type: heading
@@ -1945,7 +1944,7 @@ views:
         visibility:
           - condition: state
             entity: input_text.b05_mac
-            state_not: '0'
+            state_not: "0"
       - type: grid
         cards:
           - type: heading
@@ -1960,7 +1959,7 @@ views:
         visibility:
           - condition: state
             entity: input_text.b06_mac
-            state_not: '0'
+            state_not: "0"
       - type: grid
         cards:
           - type: heading
@@ -1975,7 +1974,7 @@ views:
         visibility:
           - condition: state
             entity: input_text.b07_mac
-            state_not: '0'
+            state_not: "0"
       - type: grid
         cards:
           - type: heading
@@ -1990,7 +1989,7 @@ views:
         visibility:
           - condition: state
             entity: input_text.b08_mac
-            state_not: '0'
+            state_not: "0"
       - type: grid
         cards:
           - type: heading
@@ -2005,7 +2004,7 @@ views:
         visibility:
           - condition: state
             entity: input_text.b09_mac
-            state_not: '0'
+            state_not: "0"
   - type: sections
     max_columns: 4
     title: Überschusseinspeisung
@@ -2014,20 +2013,24 @@ views:
       - type: grid
         cards:
           - type: heading
-            heading: Lademodus einstellen
+            heading: Überschusseinspeisung
             heading_style: title
           - type: entities
             entities:
               - entity: input_select.speicherauswahl
               - entity: input_select.surplus
-              - entity: input_button.surplus_set
+            footer:
+              type: buttons
+              entities:
+                - entity: script.b2500pkg_set_surplus
+                  name: Surplus_Mode setzen
           - type: vertical-stack
             cards:
               - type: conditional
                 conditions:
                   - condition: state
                     entity: input_text.b01_mac
-                    state_not: '0'
+                    state_not: "0"
                 card:
                   type: entities
                   entities:
@@ -2037,7 +2040,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b02_mac
-                    state_not: '0'
+                    state_not: "0"
                 card:
                   type: entities
                   entities:
@@ -2047,7 +2050,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b03_mac
-                    state_not: '0'
+                    state_not: "0"
                 card:
                   type: entities
                   entities:
@@ -2057,7 +2060,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b04_mac
-                    state_not: '0'
+                    state_not: "0"
                 card:
                   type: entities
                   entities:
@@ -2067,7 +2070,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b05_mac
-                    state_not: '0'
+                    state_not: "0"
                 card:
                   type: entities
                   entities:
@@ -2077,7 +2080,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b06_mac
-                    state_not: '0'
+                    state_not: "0"
                 card:
                   type: entities
                   entities:
@@ -2087,7 +2090,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b07_mac
-                    state_not: '0'
+                    state_not: "0"
                 card:
                   type: entities
                   entities:
@@ -2097,7 +2100,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b08_mac
-                    state_not: '0'
+                    state_not: "0"
                 card:
                   type: entities
                   entities:
@@ -2107,12 +2110,15 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b09_mac
-                    state_not: '0'
+                    state_not: "0"
                 card:
                   type: entities
                   entities:
                     - entity: sensor.b2500_09_tc_dis
                   show_header_toggle: false
+    badges:
+      - type: entity
+        entity: sensor.b2500_status_zeile
   - type: sections
     max_columns: 4
     title: Smartmeter
@@ -2140,7 +2146,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b01_mac
-                    state_not: '0'
+                    state_not: "0"
                 card:
                   type: entities
                   entities:
@@ -2160,7 +2166,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b02_mac
-                    state_not: '0'
+                    state_not: "0"
                 card:
                   type: entities
                   entities:
@@ -2180,7 +2186,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b03_mac
-                    state_not: '0'
+                    state_not: "0"
                 card:
                   type: entities
                   entities:
@@ -2200,7 +2206,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b04_mac
-                    state_not: '0'
+                    state_not: "0"
                 card:
                   type: entities
                   entities:
@@ -2220,7 +2226,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b05_mac
-                    state_not: '0'
+                    state_not: "0"
                 card:
                   type: entities
                   entities:
@@ -2240,7 +2246,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b06_mac
-                    state_not: '0'
+                    state_not: "0"
                 card:
                   type: entities
                   entities:
@@ -2260,7 +2266,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b07_mac
-                    state_not: '0'
+                    state_not: "0"
                 card:
                   type: entities
                   entities:
@@ -2280,7 +2286,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b08_mac
-                    state_not: '0'
+                    state_not: "0"
                 card:
                   type: entities
                   entities:
@@ -2300,7 +2306,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b09_mac
-                    state_not: '0'
+                    state_not: "0"
                 card:
                   type: entities
                   entities:
@@ -2380,7 +2386,7 @@ views:
         visibility:
           - condition: state
             entity: input_text.b01_mac
-            state_not: '0'
+            state_not: "0"
       - type: grid
         cards:
           - type: heading
@@ -2419,7 +2425,7 @@ views:
         visibility:
           - condition: state
             entity: input_text.b02_mac
-            state_not: '0'
+            state_not: "0"
       - type: grid
         cards:
           - type: heading
@@ -2458,7 +2464,7 @@ views:
         visibility:
           - condition: state
             entity: input_text.b03_mac
-            state_not: '0'
+            state_not: "0"
       - type: grid
         cards:
           - type: heading
@@ -2497,7 +2503,7 @@ views:
         visibility:
           - condition: state
             entity: input_text.b04_mac
-            state_not: '0'
+            state_not: "0"
       - type: grid
         cards:
           - type: heading
@@ -2536,7 +2542,7 @@ views:
         visibility:
           - condition: state
             entity: input_text.b05_mac
-            state_not: '0'
+            state_not: "0"
       - type: grid
         cards:
           - type: heading
@@ -2575,7 +2581,7 @@ views:
         visibility:
           - condition: state
             entity: input_text.b06_mac
-            state_not: '0'
+            state_not: "0"
       - type: grid
         cards:
           - type: heading
@@ -2614,7 +2620,7 @@ views:
         visibility:
           - condition: state
             entity: input_text.b07_mac
-            state_not: '0'
+            state_not: "0"
       - type: grid
         cards:
           - type: heading
@@ -2653,7 +2659,7 @@ views:
         visibility:
           - condition: state
             entity: input_text.b08_mac
-            state_not: '0'
+            state_not: "0"
       - type: grid
         cards:
           - type: heading
@@ -2692,7 +2698,7 @@ views:
         visibility:
           - condition: state
             entity: input_text.b09_mac
-            state_not: '0'
+            state_not: "0"
   - type: sections
     max_columns: 4
     title: Leistung
@@ -2733,7 +2739,7 @@ views:
         visibility:
           - condition: state
             entity: input_text.b01_mac
-            state_not: '0'
+            state_not: "0"
       - type: grid
         cards:
           - type: heading
@@ -2769,7 +2775,7 @@ views:
         visibility:
           - condition: state
             entity: input_text.b02_mac
-            state_not: '0'
+            state_not: "0"
       - type: grid
         cards:
           - type: heading
@@ -2805,7 +2811,7 @@ views:
         visibility:
           - condition: state
             entity: input_text.b03_mac
-            state_not: '0'
+            state_not: "0"
       - type: grid
         cards:
           - type: heading
@@ -2841,7 +2847,7 @@ views:
         visibility:
           - condition: state
             entity: input_text.b04_mac
-            state_not: '0'
+            state_not: "0"
       - type: grid
         cards:
           - type: heading
@@ -2877,7 +2883,7 @@ views:
         visibility:
           - condition: state
             entity: input_text.b05_mac
-            state_not: '0'
+            state_not: "0"
       - type: grid
         cards:
           - type: heading
@@ -2913,7 +2919,7 @@ views:
         visibility:
           - condition: state
             entity: input_text.b06_mac
-            state_not: '0'
+            state_not: "0"
       - type: grid
         cards:
           - type: heading
@@ -2949,7 +2955,7 @@ views:
         visibility:
           - condition: state
             entity: input_text.b07_mac
-            state_not: '0'
+            state_not: "0"
       - type: grid
         cards:
           - type: heading
@@ -2985,7 +2991,7 @@ views:
         visibility:
           - condition: state
             entity: input_text.b08_mac
-            state_not: '0'
+            state_not: "0"
       - type: grid
         cards:
           - type: heading
@@ -3021,7 +3027,7 @@ views:
         visibility:
           - condition: state
             entity: input_text.b09_mac
-            state_not: '0'
+            state_not: "0"
   - grid:
       columns: 5
       rows: 5
@@ -3087,9 +3093,9 @@ views:
                   - type: entities
                     entities:
                       - entity: sensor.b2500_01_cd16m2
-                        name: ' PV2'
+                        name: " PV2"
                       - entity: sensor.b2500_01_cd16c2
-                        name: ' PV2'
+                        name: " PV2"
                       - entity: sensor.b2500_01_w2
                         name: PV2
                     show_header_toggle: false
@@ -3133,10 +3139,10 @@ views:
         visibility:
           - condition: state
             entity: input_boolean.req_cd16
-            state: 'on'
+            state: "on"
           - condition: state
             entity: input_text.b01_mac
-            state_not: '0'
+            state_not: "0"
       - square: false
         type: grid
         cards:
@@ -3159,9 +3165,9 @@ views:
                   - type: entities
                     entities:
                       - entity: sensor.b2500_02_cd16m2
-                        name: ' PV2'
+                        name: " PV2"
                       - entity: sensor.b2500_02_cd16c2
-                        name: ' PV2'
+                        name: " PV2"
                       - entity: sensor.b2500_02_w2
                         name: PV2
                     show_header_toggle: false
@@ -3205,10 +3211,10 @@ views:
         visibility:
           - condition: state
             entity: input_boolean.req_cd16
-            state: 'on'
+            state: "on"
           - condition: state
             entity: input_text.b02_mac
-            state_not: '0'
+            state_not: "0"
       - square: false
         type: grid
         cards:
@@ -3231,9 +3237,9 @@ views:
                   - type: entities
                     entities:
                       - entity: sensor.b2500_03_cd16m2
-                        name: ' PV2'
+                        name: " PV2"
                       - entity: sensor.b2500_03_cd16c2
-                        name: ' PV2'
+                        name: " PV2"
                       - entity: sensor.b2500_03_w2
                         name: PV2
                     show_header_toggle: false
@@ -3277,10 +3283,10 @@ views:
         visibility:
           - condition: state
             entity: input_boolean.req_cd16
-            state: 'on'
+            state: "on"
           - condition: state
             entity: input_text.b03_mac
-            state_not: '0'
+            state_not: "0"
       - square: false
         type: grid
         cards:
@@ -3303,9 +3309,9 @@ views:
                   - type: entities
                     entities:
                       - entity: sensor.b2500_04_cd16m2
-                        name: ' PV2'
+                        name: " PV2"
                       - entity: sensor.b2500_04_cd16c2
-                        name: ' PV2'
+                        name: " PV2"
                       - entity: sensor.b2500_04_w2
                         name: PV2
                     show_header_toggle: false
@@ -3349,10 +3355,10 @@ views:
         visibility:
           - condition: state
             entity: input_boolean.req_cd16
-            state: 'on'
+            state: "on"
           - condition: state
             entity: input_text.b04_mac
-            state_not: '0'
+            state_not: "0"
       - square: false
         type: grid
         cards:
@@ -3375,9 +3381,9 @@ views:
                   - type: entities
                     entities:
                       - entity: sensor.b2500_05_cd16m2
-                        name: ' PV2'
+                        name: " PV2"
                       - entity: sensor.b2500_05_cd16c2
-                        name: ' PV2'
+                        name: " PV2"
                       - entity: sensor.b2500_05_w2
                         name: PV2
                     show_header_toggle: false
@@ -3421,10 +3427,10 @@ views:
         visibility:
           - condition: state
             entity: input_boolean.req_cd16
-            state: 'on'
+            state: "on"
           - condition: state
             entity: input_text.b05_mac
-            state_not: '0'
+            state_not: "0"
       - square: false
         type: grid
         cards:
@@ -3447,9 +3453,9 @@ views:
                   - type: entities
                     entities:
                       - entity: sensor.b2500_06_cd16m2
-                        name: ' PV2'
+                        name: " PV2"
                       - entity: sensor.b2500_06_cd16c2
-                        name: ' PV2'
+                        name: " PV2"
                       - entity: sensor.b2500_06_w2
                         name: PV2
                     show_header_toggle: false
@@ -3493,10 +3499,10 @@ views:
         visibility:
           - condition: state
             entity: input_boolean.req_cd16
-            state: 'on'
+            state: "on"
           - condition: state
             entity: input_text.b06_mac
-            state_not: '0'
+            state_not: "0"
       - square: false
         type: grid
         cards:
@@ -3519,9 +3525,9 @@ views:
                   - type: entities
                     entities:
                       - entity: sensor.b2500_07_cd16m2
-                        name: ' PV2'
+                        name: " PV2"
                       - entity: sensor.b2500_07_cd16c2
-                        name: ' PV2'
+                        name: " PV2"
                       - entity: sensor.b2500_07_w2
                         name: PV2
                     show_header_toggle: false
@@ -3565,10 +3571,10 @@ views:
         visibility:
           - condition: state
             entity: input_boolean.req_cd16
-            state: 'on'
+            state: "on"
           - condition: state
             entity: input_text.b07_mac
-            state_not: '0'
+            state_not: "0"
       - square: false
         type: grid
         cards:
@@ -3591,9 +3597,9 @@ views:
                   - type: entities
                     entities:
                       - entity: sensor.b2500_08_cd16m2
-                        name: ' PV2'
+                        name: " PV2"
                       - entity: sensor.b2500_08_cd16c2
-                        name: ' PV2'
+                        name: " PV2"
                       - entity: sensor.b2500_08_w2
                         name: PV2
                     show_header_toggle: false
@@ -3637,10 +3643,10 @@ views:
         visibility:
           - condition: state
             entity: input_boolean.req_cd16
-            state: 'on'
+            state: "on"
           - condition: state
             entity: input_text.b08_mac
-            state_not: '0'
+            state_not: "0"
       - square: false
         type: grid
         cards:
@@ -3663,9 +3669,9 @@ views:
                   - type: entities
                     entities:
                       - entity: sensor.b2500_09_cd16m2
-                        name: ' PV2'
+                        name: " PV2"
                       - entity: sensor.b2500_09_cd16c2
-                        name: ' PV2'
+                        name: " PV2"
                       - entity: sensor.b2500_09_w2
                         name: PV2
                     show_header_toggle: false
@@ -3709,10 +3715,10 @@ views:
         visibility:
           - condition: state
             entity: input_boolean.req_cd16
-            state: 'on'
+            state: "on"
           - condition: state
             entity: input_text.b09_mac
-            state_not: '0'
+            state_not: "0"
     type: masonry
     sections: []
     title: Info CD16
@@ -3774,7 +3780,7 @@ views:
         visibility:
           - condition: state
             entity: binary_sensor.b2500_01_b1
-            state: 'on'
+            state: "on"
       - type: grid
         cards:
           - type: heading
@@ -3828,7 +3834,7 @@ views:
         visibility:
           - condition: state
             entity: binary_sensor.b2500_02_b1
-            state: 'on'
+            state: "on"
       - type: grid
         cards:
           - type: heading
@@ -3882,7 +3888,7 @@ views:
         visibility:
           - condition: state
             entity: binary_sensor.b2500_03_b1
-            state: 'on'
+            state: "on"
       - type: grid
         cards:
           - type: heading
@@ -3936,7 +3942,7 @@ views:
         visibility:
           - condition: state
             entity: binary_sensor.b2500_04_b1
-            state: 'on'
+            state: "on"
       - type: grid
         cards:
           - type: heading
@@ -3990,7 +3996,7 @@ views:
         visibility:
           - condition: state
             entity: binary_sensor.b2500_05_b1
-            state: 'on'
+            state: "on"
       - type: grid
         cards:
           - type: heading
@@ -4044,7 +4050,7 @@ views:
         visibility:
           - condition: state
             entity: binary_sensor.b2500_06_b1
-            state: 'on'
+            state: "on"
       - type: grid
         cards:
           - type: heading
@@ -4098,7 +4104,7 @@ views:
         visibility:
           - condition: state
             entity: binary_sensor.b2500_07_b1
-            state: 'on'
+            state: "on"
       - type: grid
         cards:
           - type: heading
@@ -4152,7 +4158,7 @@ views:
         visibility:
           - condition: state
             entity: binary_sensor.b2500_08_b1
-            state: 'on'
+            state: "on"
       - type: grid
         cards:
           - type: heading
@@ -4206,7 +4212,7 @@ views:
         visibility:
           - condition: state
             entity: binary_sensor.b2500_09_b1
-            state: 'on'
+            state: "on"
     cards: []
   - type: sections
     max_columns: 4
@@ -4265,7 +4271,7 @@ views:
         visibility:
           - condition: state
             entity: binary_sensor.b2500_01_b2
-            state: 'on'
+            state: "on"
       - type: grid
         cards:
           - type: heading
@@ -4318,7 +4324,7 @@ views:
         visibility:
           - condition: state
             entity: binary_sensor.b2500_02_b2
-            state: 'on'
+            state: "on"
       - type: grid
         cards:
           - type: heading
@@ -4371,7 +4377,7 @@ views:
         visibility:
           - condition: state
             entity: binary_sensor.b2500_03_b2
-            state: 'on'
+            state: "on"
       - type: grid
         cards:
           - type: heading
@@ -4424,7 +4430,7 @@ views:
         visibility:
           - condition: state
             entity: binary_sensor.b2500_04_b2
-            state: 'on'
+            state: "on"
       - type: grid
         cards:
           - type: heading
@@ -4477,7 +4483,7 @@ views:
         visibility:
           - condition: state
             entity: binary_sensor.b2500_05_b2
-            state: 'on'
+            state: "on"
       - type: grid
         cards:
           - type: heading
@@ -4530,7 +4536,7 @@ views:
         visibility:
           - condition: state
             entity: binary_sensor.b2500_06_b2
-            state: 'on'
+            state: "on"
       - type: grid
         cards:
           - type: heading
@@ -4583,7 +4589,7 @@ views:
         visibility:
           - condition: state
             entity: binary_sensor.b2500_07_b2
-            state: 'on'
+            state: "on"
       - type: grid
         cards:
           - type: heading
@@ -4636,7 +4642,7 @@ views:
         visibility:
           - condition: state
             entity: binary_sensor.b2500_08_b2
-            state: 'on'
+            state: "on"
       - type: grid
         cards:
           - type: heading
@@ -4689,5 +4695,5 @@ views:
         visibility:
           - condition: state
             entity: binary_sensor.b2500_09_b2
-            state: 'on'
+            state: "on"
     cards: []
