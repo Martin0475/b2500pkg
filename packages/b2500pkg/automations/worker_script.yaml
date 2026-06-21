@@ -139,7 +139,7 @@ script:
             {% endif %}
           sensor_entity: "{{ 'sensor.b2500_01_' ~ expected_field_clean if expected_field_clean != '' else '' }}"
           sensor_entity_2: "{{ 'sensor.b2500_01_' ~ expected_field_2_clean if expected_field_2_clean != '' else '' }}"
-          text_fields: ['e1','e2','e3','e4','e5','f1','f2','f3','f4','f5','md']
+          text_fields: ['e1','e2','e3','e4','e5','f1','f2','f3','f4','f5','md','tc_dis']
 
       - if:
           - condition: template
@@ -382,7 +382,7 @@ script:
             {% endif %}
           sensor_entity: "{{ 'sensor.b2500_02_' ~ expected_field_clean if expected_field_clean != '' else '' }}"
           sensor_entity_2: "{{ 'sensor.b2500_02_' ~ expected_field_2_clean if expected_field_2_clean != '' else '' }}"
-          text_fields: ['e1','e2','e3','e4','e5','f1','f2','f3','f4','f5','md']
+          text_fields: ['e1','e2','e3','e4','e5','f1','f2','f3','f4','f5','md','tc_dis']
 
       - if:
           - condition: template
@@ -625,7 +625,7 @@ script:
             {% endif %}
           sensor_entity: "{{ 'sensor.b2500_03_' ~ expected_field_clean if expected_field_clean != '' else '' }}"
           sensor_entity_2: "{{ 'sensor.b2500_03_' ~ expected_field_2_clean if expected_field_2_clean != '' else '' }}"
-          text_fields: ['e1','e2','e3','e4','e5','f1','f2','f3','f4','f5','md']
+          text_fields: ['e1','e2','e3','e4','e5','f1','f2','f3','f4','f5','md','tc_dis']
 
       - if:
           - condition: template
@@ -868,7 +868,7 @@ script:
             {% endif %}
           sensor_entity: "{{ 'sensor.b2500_04_' ~ expected_field_clean if expected_field_clean != '' else '' }}"
           sensor_entity_2: "{{ 'sensor.b2500_04_' ~ expected_field_2_clean if expected_field_2_clean != '' else '' }}"
-          text_fields: ['e1','e2','e3','e4','e5','f1','f2','f3','f4','f5','md']
+          text_fields: ['e1','e2','e3','e4','e5','f1','f2','f3','f4','f5','md','tc_dis']
 
       - if:
           - condition: template
@@ -1111,7 +1111,7 @@ script:
             {% endif %}
           sensor_entity: "{{ 'sensor.b2500_05_' ~ expected_field_clean if expected_field_clean != '' else '' }}"
           sensor_entity_2: "{{ 'sensor.b2500_05_' ~ expected_field_2_clean if expected_field_2_clean != '' else '' }}"
-          text_fields: ['e1','e2','e3','e4','e5','f1','f2','f3','f4','f5','md']
+          text_fields: ['e1','e2','e3','e4','e5','f1','f2','f3','f4','f5','md','tc_dis']
 
       - if:
           - condition: template
@@ -1354,7 +1354,7 @@ script:
             {% endif %}
           sensor_entity: "{{ 'sensor.b2500_06_' ~ expected_field_clean if expected_field_clean != '' else '' }}"
           sensor_entity_2: "{{ 'sensor.b2500_06_' ~ expected_field_2_clean if expected_field_2_clean != '' else '' }}"
-          text_fields: ['e1','e2','e3','e4','e5','f1','f2','f3','f4','f5','md']
+          text_fields: ['e1','e2','e3','e4','e5','f1','f2','f3','f4','f5','md','tc_dis']
 
       - if:
           - condition: template
@@ -1597,7 +1597,7 @@ script:
             {% endif %}
           sensor_entity: "{{ 'sensor.b2500_07_' ~ expected_field_clean if expected_field_clean != '' else '' }}"
           sensor_entity_2: "{{ 'sensor.b2500_07_' ~ expected_field_2_clean if expected_field_2_clean != '' else '' }}"
-          text_fields: ['e1','e2','e3','e4','e5','f1','f2','f3','f4','f5','md']
+          text_fields: ['e1','e2','e3','e4','e5','f1','f2','f3','f4','f5','md','tc_dis']
 
       - if:
           - condition: template
@@ -1840,7 +1840,7 @@ script:
             {% endif %}
           sensor_entity: "{{ 'sensor.b2500_08_' ~ expected_field_clean if expected_field_clean != '' else '' }}"
           sensor_entity_2: "{{ 'sensor.b2500_08_' ~ expected_field_2_clean if expected_field_2_clean != '' else '' }}"
-          text_fields: ['e1','e2','e3','e4','e5','f1','f2','f3','f4','f5','md']
+          text_fields: ['e1','e2','e3','e4','e5','f1','f2','f3','f4','f5','md','tc_dis']
 
       - if:
           - condition: template
@@ -2083,7 +2083,7 @@ script:
             {% endif %}
           sensor_entity: "{{ 'sensor.b2500_09_' ~ expected_field_clean if expected_field_clean != '' else '' }}"
           sensor_entity_2: "{{ 'sensor.b2500_09_' ~ expected_field_2_clean if expected_field_2_clean != '' else '' }}"
-          text_fields: ['e1','e2','e3','e4','e5','f1','f2','f3','f4','f5','md']
+          text_fields: ['e1','e2','e3','e4','e5','f1','f2','f3','f4','f5','md','tc_dis']
 
       - if:
           - condition: template

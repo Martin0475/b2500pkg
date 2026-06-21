@@ -1,106 +1,64 @@
 input_select:
   surplus:
     name: Surplus Modus
-    options: 
+    options:
       - "Überschusseinspeisung an"
       - "Überschusseinspeisung aus"
-      
-input_button:
-  surplus_set:
-    name: Surplus Modus setzen     
 
-automation:
-  alias: B2500PKG_Set_Surplus
-  description: |+
-  
-  triggers:
-    - trigger: state
-      entity_id:
-        - input_button.surplus_set
+script:
+  b2500pkg_set_surplus:
+    alias: B2500PKG_Set_Surplus
+    description: "Setzt den Surplus-/Überschusseinspeisungsmodus für einen oder alle B2500-Speicher."
+    fields:
+      speicher:
+        description: Speicher-ID, z. B. b2500_01 oder Alle_Speicher. Wenn leer, wird input_select.speicherauswahl verwendet.
+        required: false
+        example: "b2500_01"
+      surplus:
+        description: Surplus Modus. Wenn leer, wird input_select.surplus verwendet.
+        required: false
+        example: "Überschusseinspeisung an"
+    sequence:
+      - variables:
+          speicher: "{{ speicher | default(states('input_select.speicherauswahl'), true) }}"
+          surplus_mode: "{{ surplus | default(states('input_select.surplus'), true) }}"
+          surplus_value: >-
+            {% if surplus_mode == 'Überschusseinspeisung an' %}
+              0
+            {% else %}
+              1
+            {% endif %}
+          surplus_expected: >-
+            {% if surplus_mode == 'Überschusseinspeisung an' %}
+              Surplus Modus aktiv
+            {% else %}
+              Surplus Modus deaktiviert
+            {% endif %}  
+          surplus_payload: "cd=31,touchuan_disa={{ surplus_value | int }}"
+          all_speicher: "{{ states('input_text.b2500_all') | from_json }}"
+          targets: >
+            {% if speicher == 'Alle_Speicher' %}
+              {{ all_speicher }}
+            {% else %}
+              {{ [speicher] }}
+            {% endif %}
 
-  conditions: []
-  actions:
-    - variables:
-        b2500_mac: >-
-          {{ states('input_text.b01_mac') if states('input_select.speicherauswahl') == 'b2500_01' else
-             states('input_text.b02_mac') if states('input_select.speicherauswahl') == 'b2500_02' else
-             states('input_text.b03_mac') if states('input_select.speicherauswahl') == 'b2500_03' else
-             states('input_text.b04_mac') if states('input_select.speicherauswahl') == 'b2500_04' else
-             states('input_text.b05_mac') if states('input_select.speicherauswahl') == 'b2500_05' else
-             states('input_text.b06_mac') if states('input_select.speicherauswahl') == 'b2500_06' else
-             states('input_text.b07_mac') if states('input_select.speicherauswahl') == 'b2500_07' else
-             states('input_text.b08_mac') if states('input_select.speicherauswahl') == 'b2500_08' else
-             states('input_text.b09_mac') if states('input_select.speicherauswahl') == 'b2500_09' else
-             'unknown'
-          }}
-        b2500_typ: >-
-          {{ states('input_text.b01_typ') if states('input_select.speicherauswahl') == 'b2500_01' else
-             states('input_text.b02_typ') if states('input_select.speicherauswahl') == 'b2500_02' else
-             states('input_text.b03_typ') if states('input_select.speicherauswahl') == 'b2500_03' else
-             states('input_text.b04_typ') if states('input_select.speicherauswahl') == 'b2500_04' else
-             states('input_text.b05_typ') if states('input_select.speicherauswahl') == 'b2500_05' else
-             states('input_text.b06_typ') if states('input_select.speicherauswahl') == 'b2500_06' else
-             states('input_text.b07_typ') if states('input_select.speicherauswahl') == 'b2500_07' else
-             states('input_text.b08_typ') if states('input_select.speicherauswahl') == 'b2500_08' else
-             states('input_text.b09_typ') if states('input_select.speicherauswahl') == 'b2500_09' else
-             'unknown'
-          }}
-        b2500_topic: >-
-          {{ states('input_text.b01_topic') if states('input_select.speicherauswahl') == 'b2500_01' else
-             states('input_text.b02_topic') if states('input_select.speicherauswahl') == 'b2500_02' else
-             states('input_text.b03_topic') if states('input_select.speicherauswahl') == 'b2500_03' else
-             states('input_text.b04_topic') if states('input_select.speicherauswahl') == 'b2500_04' else
-             states('input_text.b05_topic') if states('input_select.speicherauswahl') == 'b2500_05' else
-             states('input_text.b06_topic') if states('input_select.speicherauswahl') == 'b2500_06' else
-             states('input_text.b07_topic') if states('input_select.speicherauswahl') == 'b2500_07' else
-             states('input_text.b08_topic') if states('input_select.speicherauswahl') == 'b2500_08' else
-             states('input_text.b09_topic') if states('input_select.speicherauswahl') == 'b2500_09' else
-             'unknown'
-          }}
-    - choose:
-        - conditions:
-            - condition: state
-              entity_id: input_select.surplus
-              state: "Überschusseinspeisung an"
+      - repeat:
+          for_each: "{{ targets }}"
           sequence:
-            - action: mqtt.publish
-              metadata: {}
+            - action: script.turn_on
+              target:
+                entity_id: "script.{{ repeat.item }}_worker"
               data:
-                evaluate_payload: false
-                qos: 0
-                retain: false
-                topic: "{{ b2500_topic }}/{{ b2500_typ }}/App/{{ b2500_mac }}/ctrl"
-                payload: |-
-                  {% raw %}
-                    cd=31,touchuan_disa=0
-                  {% endraw %}
-        - conditions:
-            - condition: state
-              entity_id: input_select.surplus
-              state: "Überschusseinspeisung aus"
-          sequence:
-            - action: mqtt.publish
-              metadata: {}
-              data:
-                evaluate_payload: false
-                qos: 0
-                retain: false
-                topic: "{{ b2500_topic }}/{{ b2500_typ }}/App/{{ b2500_mac }}/ctrl"
-                payload: |-
-                  {% raw %}
-                    cd=31,touchuan_disa=1
-                  {% endraw %}        
-    - delay:
-        hours: 0
-        minutes: 0
-        seconds: 2
-    - action: mqtt.publish
-      metadata: {}
-      data:
-        evaluate_payload: false
-        qos: 0
-        retain: false
-        topic: "{{ b2500_topic }}/{{ b2500_typ }}/App/{{ b2500_mac }}/ctrl"
-        payload: cd=01
-  mode: queued
-  max: 10
+                variables:
+                  payload: "{{ surplus_payload }}"
+                  followup_payload: "cd=01"
+                  no_check: false
+                  expected_field: "tc_dis"
+                  expected_value: "{{ surplus_expected }}"
+
+            - delay:
+                seconds: 1
+
+    mode: queued
+    max: 10
