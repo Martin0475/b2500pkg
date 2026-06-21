@@ -5,7 +5,7 @@ views:
         cards:
           - type: heading
             heading_style: title
-            heading: B2500 Package 2026-05-13 (Zeropower erweitert)
+            heading: B2500 Package 2026-06-21 (Set Surplus auf Worker umgestellt)
             grid_options:
               columns: 12
               rows: 1
