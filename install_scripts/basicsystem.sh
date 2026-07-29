@@ -5,6 +5,7 @@ mkdir /config/packages/b2500pkg/automations
 rm -f /config/packages/b2500pkg/automations/request_infos.yaml
 rm -f /config/packages/b2500pkg/automations/repost_cd01_cd13.yaml
 
+rm -f /config/packages/b2500pkg/automations/delete_discovery.yaml
 rm -f /config/packages/b2500pkg/automations/b01_sensor_discovery.yaml
 rm -f /config/packages/b2500pkg/automations/b02_sensor_discovery.yaml
 rm -f /config/packages/b2500pkg/automations/b03_sensor_discovery.yaml
@@ -80,6 +81,8 @@ sleep 5
 test ! -f "/config/packages/b2500pkg/basic_settings.yaml" && wget -q -O /config/packages/b2500pkg/basic_settings.yaml https://raw.githubusercontent.com/Martin0475/b2500pkg/main/packages/b2500pkg/basic_settings.yaml
 wget -q -O /config/packages/b2500pkg/automations/request_infos.yaml https://raw.githubusercontent.com/Martin0475/b2500pkg/main/packages/b2500pkg/automations/request_infos.yaml
 wget -q -O /config/packages/b2500pkg/automations/repost_cd01_cd13.yaml https://raw.githubusercontent.com/Martin0475/b2500pkg/main/packages/b2500pkg/automations/repost_cd01_cd13.yaml
+
+wget -q -O /config/packages/b2500pkg/automations/delete_discovery.yaml https://raw.githubusercontent.com/Martin0475/b2500pkg/main/packages/b2500pkg/automations/delete_discovery.yaml
 
 wget -q -O /config/packages/b2500pkg/automations/b01_sensor_discovery.yaml https://raw.githubusercontent.com/Martin0475/b2500pkg/main/packages/b2500pkg/automations/b01_sensor_discovery.yaml
 wget -q -O /config/packages/b2500pkg/automations/b02_sensor_discovery.yaml https://raw.githubusercontent.com/Martin0475/b2500pkg/main/packages/b2500pkg/automations/b02_sensor_discovery.yaml
