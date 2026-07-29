@@ -5,7 +5,7 @@ views:
         cards:
           - type: heading
             heading_style: title
-            heading: B2500 Package 2026-06-21 (Set Surplus auf Worker umgestellt)
+            heading: B2500 Package 2026-07-30 (MQTT Discovery Einträge löschen)
             grid_options:
               columns: 12
               rows: 1
@@ -236,6 +236,10 @@ views:
               - condition: state
                 entity: input_text.b09_mac
                 state_not: "0"
+          - type: tile
+            entity: script.b2500pkg_discovery_loschen
+            grid_options:
+              columns: full
     type: sections
     max_columns: 4
     cards: []
@@ -2381,7 +2385,7 @@ views:
             entities:
               - entity: sensor.b01_spannungsdifferenz
             min_y_axis: 0
-            max_y_axis: 100
+            max_y_axis: 250
         column_span: 1
         visibility:
           - condition: state
@@ -2421,7 +2425,7 @@ views:
             entities:
               - entity: sensor.b02_spannungsdifferenz
             min_y_axis: 0
-            max_y_axis: 100
+            max_y_axis: 250
         visibility:
           - condition: state
             entity: input_text.b02_mac
@@ -2460,7 +2464,7 @@ views:
             entities:
               - entity: sensor.b03_spannungsdifferenz
             min_y_axis: 0
-            max_y_axis: 100
+            max_y_axis: 250
         visibility:
           - condition: state
             entity: input_text.b03_mac
@@ -2499,7 +2503,7 @@ views:
             entities:
               - entity: sensor.b04_spannungsdifferenz
             min_y_axis: 0
-            max_y_axis: 100
+            max_y_axis: 250
         visibility:
           - condition: state
             entity: input_text.b04_mac
@@ -2538,7 +2542,7 @@ views:
             entities:
               - entity: sensor.b05_spannungsdifferenz
             min_y_axis: 0
-            max_y_axis: 100
+            max_y_axis: 250
         visibility:
           - condition: state
             entity: input_text.b05_mac
@@ -2577,7 +2581,7 @@ views:
             entities:
               - entity: sensor.b06_spannungsdifferenz
             min_y_axis: 0
-            max_y_axis: 100
+            max_y_axis: 250
         visibility:
           - condition: state
             entity: input_text.b06_mac
@@ -2616,7 +2620,7 @@ views:
             entities:
               - entity: sensor.b07_spannungsdifferenz
             min_y_axis: 0
-            max_y_axis: 100
+            max_y_axis: 250
         visibility:
           - condition: state
             entity: input_text.b07_mac
@@ -2655,7 +2659,7 @@ views:
             entities:
               - entity: sensor.b08_spannungsdifferenz
             min_y_axis: 0
-            max_y_axis: 100
+            max_y_axis: 250
         visibility:
           - condition: state
             entity: input_text.b08_mac
@@ -2694,7 +2698,7 @@ views:
             entities:
               - entity: sensor.b09_spannungsdifferenz
             min_y_axis: 0
-            max_y_axis: 100
+            max_y_axis: 250
         visibility:
           - condition: state
             entity: input_text.b09_mac
