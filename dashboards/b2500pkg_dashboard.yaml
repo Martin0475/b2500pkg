@@ -264,6 +264,11 @@ views:
               - entity: input_button.b2500_leistung_setzen
             show_header_toggle: false
             title: Timer Einstellungen
+            footer:
+              type: buttons
+              entities:
+                - entity: script.b2500pkg_set_timer
+                  name: Timer einstellen
       - type: grid
         cards:
           - type: heading
@@ -659,8 +664,12 @@ views:
             entities:
               - entity: input_select.speicherauswahl
               - entity: input_number.b2500_dod
-              - entity: input_button.b2500_dod_setzen
             title: B2500_ DOD setzen
+            footer:
+              type: buttons
+              entities:
+                - entity: script.b2500pkg_set_dod
+                  name: DOD setzen
           - type: vertical-stack
             cards:
               - type: conditional
@@ -4701,3 +4710,23 @@ views:
             entity: binary_sensor.b2500_09_b2
             state: "on"
     cards: []
+  - type: sections
+    max_columns: 4
+    title: Kalibrierung/Optimierung
+    path: kalibrierung-optimierung
+    sections:
+      - type: grid
+        cards:
+          - type: heading
+            heading: Neuer Abschnitt
+          - type: markdown
+            title: B2500PKG Speicheroptimierung
+            content: |-
+              {{ state_attr('sensor.b2500pkg_optimierungslog', 'log')
+                 | default('Noch kein Optimierungslauf gestartet.', true) }}
+            grid_options:
+              rows: auto
+          - type: tile
+            entity: script.b2500pkg_speicher_optimieren
+            grid_options:
+              columns: full
