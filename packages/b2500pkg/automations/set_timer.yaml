@@ -104,20 +104,55 @@ script:
             {{ speicher | default('', true) | string | trim }}
           timerslot_auswahl: >-
             {{ timerslot | default('', true) | string | trim }}
+          erlaubte_speicher:
+            - "b2500_01"
+            - "b2500_02"
+            - "b2500_03"
+            - "b2500_04"
+            - "b2500_05"
+            - "b2500_06"
+            - "b2500_07"
+            - "b2500_08"
+            - "b2500_09"
+            - "Alle_Speicher"
 
       - if:
           - condition: template
             value_template: "{{ speicher_auswahl == '' }}"
         then:
-          - stop: "Pflichtfeld 'speicher' wurde nicht übergeben."
-            error: true
+          - variables:
+              response:
+                success: false
+                code: "MISSING_STORAGE"
+                message: "Abbruch: Pflichtfeld 'speicher' wurde nicht übergeben."
+          - stop: "Pflichtfeld 'speicher' fehlt."
+            response_variable: response
+
+      - if:
+          - condition: template
+            value_template: "{{ speicher_auswahl not in erlaubte_speicher }}"
+        then:
+          - variables:
+              response:
+                success: false
+                code: "INVALID_STORAGE"
+                message: >-
+                  Abbruch: Speicher '{{ speicher_auswahl }}' ist ungültig.
+                  Erlaubt sind b2500_01 bis b2500_09 sowie Alle_Speicher.
+          - stop: "Ungültiger Speicher."
+            response_variable: response
 
       - if:
           - condition: template
             value_template: "{{ timerslot_auswahl == '' }}"
         then:
-          - stop: "Pflichtfeld 'timerslot' wurde nicht übergeben."
-            error: true
+          - variables:
+              response:
+                success: false
+                code: "MISSING_TIMERSLOT"
+                message: "Abbruch: Pflichtfeld 'timerslot' wurde nicht übergeben."
+          - stop: "Pflichtfeld 'timerslot' fehlt."
+            response_variable: response
 
       - if:
           - condition: template
@@ -125,10 +160,15 @@ script:
               {{ (timerslot_auswahl | string | trim)
                  not in ['1', '2', '3', '4', '5', 'Alle_Timer'] }}
         then:
-          - stop: >-
-              Ungültiger Timerslot '{{ timerslot_auswahl }}'.
-              Erlaubt sind 1 bis 5 sowie Alle_Timer.
-            error: true
+          - variables:
+              response:
+                success: false
+                code: "INVALID_TIMERSLOT"
+                message: >-
+                  Abbruch: Timerslot '{{ timerslot_auswahl }}' ist ungültig.
+                  Erlaubt sind 1 bis 5 sowie Alle_Timer.
+          - stop: "Ungültiger Timerslot."
+            response_variable: response
 
       - variables:
 
@@ -192,6 +232,13 @@ script:
           leistung_value: >-
             {{ leistung | int if set_leistung else 0 }}
 
+          status_gueltig: >-
+            {{ not set_status or (timer_aktiv | string | trim) in ['0', '1'] }}
+          leistung_gueltig: >-
+            {{ not set_leistung or
+               ((leistung | string | trim) | regex_match('^\\d+$') and
+                0 <= (leistung | int) <= 800) }}
+
           all_speicher: "{{ states('input_text.b2500_all') | from_json }}"
 
           targets: >-
@@ -208,28 +255,74 @@ script:
 
       - if:
           - condition: template
+            value_template: "{{ set_status and not status_gueltig }}"
+        then:
+          - variables:
+              response:
+                success: false
+                code: "INVALID_STATUS"
+                message: >-
+                  Abbruch: Timerstatus '{{ timer_aktiv }}' ist ungültig.
+                  Erlaubt sind 0 (deaktiviert) und 1 (aktiv).
+          - stop: "Ungültiger Timerstatus."
+            response_variable: response
+
+      - if:
+          - condition: template
             value_template: "{{ set_start and not start_gueltig }}"
         then:
-          - stop: >-
-              Ungültige Startzeit '{{ start_roh }}'.
-              Erlaubt sind 0:0 bis 23:59.
-              Bei Sekunden ist nur :00 zulässig.
-            error: true
+          - variables:
+              response:
+                success: false
+                code: "INVALID_START_TIME"
+                message: >-
+                  Abbruch: Startzeit '{{ start_roh }}' ist ungültig.
+                  Erlaubt sind 0:0 bis 23:59; Sekunden müssen 00 sein.
+          - stop: "Ungültige Startzeit."
+            response_variable: response
 
       - if:
           - condition: template
             value_template: "{{ set_ende and not ende_gueltig }}"
         then:
-          - stop: >-
-              Ungültige Endzeit '{{ ende_roh }}'.
-              Erlaubt sind 0:0 bis 23:59.
-              Bei Sekunden ist nur :00 zulässig.
-            error: true
+          - variables:
+              response:
+                success: false
+                code: "INVALID_END_TIME"
+                message: >-
+                  Abbruch: Endzeit '{{ ende_roh }}' ist ungültig.
+                  Erlaubt sind 0:0 bis 23:59; Sekunden müssen 00 sein.
+          - stop: "Ungültige Endzeit."
+            response_variable: response
 
-      - condition: template
-        value_template: >-
-          {{ set_status or set_start or set_ende or set_leistung }}
-        alias: Mindestens einen Timerwert übergeben
+      - if:
+          - condition: template
+            value_template: "{{ set_leistung and not leistung_gueltig }}"
+        then:
+          - variables:
+              response:
+                success: false
+                code: "INVALID_POWER"
+                message: >-
+                  Abbruch: Leistung '{{ leistung }}' ist ungültig.
+                  Erlaubt sind ganzzahlige Werte von 0 bis 800 W.
+          - stop: "Ungültige Leistung."
+            response_variable: response
+
+      - if:
+          - condition: template
+            value_template: >-
+              {{ not (set_status or set_start or set_ende or set_leistung) }}
+        then:
+          - variables:
+              response:
+                success: false
+                code: "NO_CHANGE_PARAMETER"
+                message: >-
+                  Abbruch: Es wurde kein zu ändernder Timerwert übergeben.
+                  Übergib mindestens timer_aktiv, startzeit, endzeit oder leistung.
+          - stop: "Kein Änderungsparameter übergeben."
+            response_variable: response
 
       - repeat:
           for_each: "{{ targets }}"
@@ -367,6 +460,23 @@ script:
 
             - delay:
                 seconds: 1
+
+      - variables:
+          response:
+            success: true
+            code: "WORKER_STARTED"
+            message: >-
+              Timerauftrag wurde für {{ targets | count }} Speicher gestartet.
+            speicher: "{{ speicher_auswahl }}"
+            timerslot: "{{ timerslot_auswahl }}"
+            geaendert:
+              timer_aktiv: "{{ set_status }}"
+              startzeit: "{{ set_start }}"
+              endzeit: "{{ set_ende }}"
+              leistung: "{{ set_leistung }}"
+
+      - stop: "Timerauftrag gestartet."
+        response_variable: response
 
     mode: queued
     max: 20
