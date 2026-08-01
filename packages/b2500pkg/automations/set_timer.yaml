@@ -1,281 +1,445 @@
-automation:
-  alias: B2500PKG Set Timer
-  description: |+
-  id: "0007"
+script:
+  b2500pkg_set_timer:
+    alias: B2500PKG_Set_Timer
+    description: >
+      Setzt Status, Startzeit, Endzeit und/oder Leistung eines Timers oder aller
+      Timer. Nicht übergebene Timerwerte werden aus den aktuellen Sensoren
+      übernommen. Speicher und Timerslot müssen beim Aufruf angegeben werden.
 
-  triggers:
-    - trigger: state
-      entity_id:
-        - input_button.b2500_leistung_setzen
-      id: leistung_setzen
-    - trigger: state
-      entity_id:
-        - input_button.b2500_timer_status_setzen
-      id: timer_status_setzen
-    - trigger: state
-      entity_id:
-        - input_button.zeit_setzen
-      id: zeit_setzen
-    - trigger: state
-      entity_id:
-        - input_button.b2500_selbstanpassung
-      id: selbstanpassung_setzen
+    fields:
+      speicher:
+        name: Speicher
+        description: Muss beim Aufruf übergeben werden.
+        required: true
+        example: "b2500_01"
+        selector:
+          select:
+            options:
+              - label: "B01"
+                value: "b2500_01"
+              - label: "B02"
+                value: "b2500_02"
+              - label: "B03"
+                value: "b2500_03"
+              - label: "B04"
+                value: "b2500_04"
+              - label: "B05"
+                value: "b2500_05"
+              - label: "B06"
+                value: "b2500_06"
+              - label: "B07"
+                value: "b2500_07"
+              - label: "B08"
+                value: "b2500_08"
+              - label: "B09"
+                value: "b2500_09"
+              - label: "Alle Speicher"
+                value: "Alle_Speicher"
 
-  conditions: []
+      timerslot:
+        name: Timer
+        description: Muss beim Aufruf übergeben werden.
+        required: true
+        example: "2"
+        selector:
+          select:
+            options:
+              - label: "Timer 1"
+                value: "1"
+              - label: "Timer 2"
+                value: "2"
+              - label: "Timer 3"
+                value: "3"
+              - label: "Timer 4"
+                value: "4"
+              - label: "Timer 5"
+                value: "5"
+              - label: "Alle Timer"
+                value: "Alle_Timer"
 
-  actions:
-    - variables:
-        speicher: "{{ states('input_select.speicherauswahl') }}"
-        all_speicher: "{{ states('input_text.b2500_all') | from_json }}"
-        targets: >
-          {% if speicher == 'Alle_Speicher' %}
-            {{ all_speicher }}
-          {% else %}
-            {{ [speicher] }}
-          {% endif %}
-        timerslot: "{{ states('input_select.timerslot') | int }}"
-        timer_leistung: "{{ states('input_number.timer_leistung') | int }}"
-        timer_status_value: "{{ 1 if is_state('input_boolean.timer_aktiv', 'on') else 0 }}"
-        startzeit: "{{ states('input_datetime.timer_beginn') }}"
-        endzeit: "{{ states('input_datetime.timer_ende') }}"
-        
-    - choose:
-        - conditions:
-            - condition: trigger
-              id:
-                - leistung_setzen
+      timer_aktiv:
+        name: Timerstatus
+        description: Optional. Nicht übergeben bedeutet aktuellen Sensorwert beibehalten.
+        required: false
+        selector:
+          select:
+            options:
+              - label: "Aktiv"
+                value: "1"
+              - label: "Deaktiviert"
+                value: "0"
+
+      startzeit:
+        name: Startzeit
+        description: Optional. Nicht übergeben bedeutet aktuellen Sensorwert beibehalten.
+        required: false
+        example: "03:05"
+        selector:
+          time:
+
+      endzeit:
+        name: Endzeit
+        description: Optional. Nicht übergeben bedeutet aktuellen Sensorwert beibehalten.
+        required: false
+        example: "23:59"
+        selector:
+          time:
+
+      leistung:
+        name: Leistung
+        description: Optional. Nicht übergeben bedeutet aktuellen Sensorwert beibehalten.
+        required: false
+        example: 300
+        selector:
+          number:
+            min: 0
+            max: 800
+            step: 1
+            unit_of_measurement: W
+            mode: box
+
+    sequence:
+      - variables:
+          speicher_auswahl: >-
+            {{ speicher | default('', true) | string | trim }}
+          timerslot_auswahl: >-
+            {{ timerslot | default('', true) | string | trim }}
+
+      - if:
+          - condition: template
+            value_template: "{{ speicher_auswahl == '' }}"
+        then:
+          - stop: "Pflichtfeld 'speicher' wurde nicht übergeben."
+            error: true
+
+      - if:
+          - condition: template
+            value_template: "{{ timerslot_auswahl == '' }}"
+        then:
+          - stop: "Pflichtfeld 'timerslot' wurde nicht übergeben."
+            error: true
+
+      - if:
+          - condition: template
+            value_template: >-
+              {{ timerslot_auswahl not in ['1', '2', '3', '4', '5', 'Alle_Timer'] }}
+        then:
+          - stop: >-
+              Ungültiger Timerslot '{{ timerslot_auswahl }}'.
+              Erlaubt sind 1 bis 5 sowie Alle_Timer.
+            error: true
+
+      - variables:
+
+          set_status: >-
+            {{ timer_aktiv is defined and timer_aktiv | string | trim != '' }}
+          set_start: >-
+            {{ startzeit is defined and startzeit | string | trim != '' }}
+          set_ende: >-
+            {{ endzeit is defined and endzeit | string | trim != '' }}
+          set_leistung: >-
+            {{ leistung is defined and leistung | string | trim != '' }}
+
+          status_value: >-
+            {{ timer_aktiv | int if set_status else 0 }}
+
+          start_roh: >-
+            {{ startzeit | string | trim if set_start else '' }}
+          ende_roh: >-
+            {{ endzeit | string | trim if set_ende else '' }}
+
+          start_format_ok: >-
+            {{ not set_start or
+               (start_roh | regex_match('^\\d{1,2}:\\d{1,2}(:\\d{1,2})?$')) }}
+          ende_format_ok: >-
+            {{ not set_ende or
+               (ende_roh | regex_match('^\\d{1,2}:\\d{1,2}(:\\d{1,2})?$')) }}
+
+          start_stunde: >-
+            {{ start_roh.split(':')[0] | int if start_format_ok and set_start else 0 }}
+          start_minute: >-
+            {{ start_roh.split(':')[1] | int if start_format_ok and set_start else 0 }}
+          start_sekunde: >-
+            {{ start_roh.split(':')[2] | int
+               if start_format_ok and set_start and start_roh.split(':') | count == 3
+               else 0 }}
+
+          ende_stunde: >-
+            {{ ende_roh.split(':')[0] | int if ende_format_ok and set_ende else 0 }}
+          ende_minute: >-
+            {{ ende_roh.split(':')[1] | int if ende_format_ok and set_ende else 0 }}
+          ende_sekunde: >-
+            {{ ende_roh.split(':')[2] | int
+               if ende_format_ok and set_ende and ende_roh.split(':') | count == 3
+               else 0 }}
+
+          start_gueltig: >-
+            {{ not set_start or
+               (start_format_ok and start_sekunde == 0 and
+                (0 <= start_stunde <= 23 and 0 <= start_minute <= 59)) }}
+
+          ende_gueltig: >-
+            {{ not set_ende or
+               (ende_format_ok and ende_sekunde == 0 and
+                (0 <= ende_stunde <= 23 and 0 <= ende_minute <= 59)) }}
+
+          start_value: >-
+            {{ start_stunde ~ ':' ~ start_minute if set_start and start_gueltig else '' }}
+          ende_value: >-
+            {{ ende_stunde ~ ':' ~ ende_minute if set_ende and ende_gueltig else '' }}
+
+          leistung_value: >-
+            {{ leistung | int if set_leistung else 0 }}
+
+          all_speicher: "{{ states('input_text.b2500_all') | from_json }}"
+
+          targets: >-
+            {% if speicher_auswahl == 'Alle_Speicher' %}
+              {{ all_speicher }}
+            {% else %}
+              {{ [speicher_auswahl] }}
+            {% endif %}
+
+          slot_all: "{{ timerslot_auswahl == 'Alle_Timer' }}"
+          slot_nummer: >-
+            {{ 0 if slot_all else timerslot_auswahl | int }}
+
+      - if:
+          - condition: template
+            value_template: "{{ set_start and not start_gueltig }}"
+        then:
+          - stop: >-
+              Ungültige Startzeit '{{ start_roh }}'.
+              Erlaubt sind 0:0 bis 23:59.
+              Bei Sekunden ist nur :00 zulässig.
+            error: true
+
+      - if:
+          - condition: template
+            value_template: "{{ set_ende and not ende_gueltig }}"
+        then:
+          - stop: >-
+              Ungültige Endzeit '{{ ende_roh }}'.
+              Erlaubt sind 0:0 bis 23:59.
+              Bei Sekunden ist nur :00 zulässig.
+            error: true
+
+      - condition: template
+        value_template: >-
+          {{ set_status or set_start or set_ende or set_leistung }}
+        alias: Mindestens einen Timerwert übergeben
+
+      - repeat:
+          for_each: "{{ targets }}"
           sequence:
-            - repeat:
-                for_each: "{{ targets }}"
-                sequence:
-                  - variables:
-                      num: "{{ repeat.item.split('_')[-1] }}"
+            - variables:
+                num: "{{ repeat.item.split('_')[-1] }}"
 
-                      a1: "{{ 1 if is_state('binary_sensor.b2500_' ~ num ~ '_d1','on') else 0 }}"
-                      a2: "{{ 1 if is_state('binary_sensor.b2500_' ~ num ~ '_d2','on') else 0 }}"
-                      a3: "{{ 1 if is_state('binary_sensor.b2500_' ~ num ~ '_d3','on') else 0 }}"
-                      a4: "{{ 1 if is_state('binary_sensor.b2500_' ~ num ~ '_d4','on') else 0 }}"
-                      a5: "{{ 1 if is_state('binary_sensor.b2500_' ~ num ~ '_d5','on') else 0 }}"
+                a1: >-
+                  {{ status_value | int
+                     if set_status and (slot_all or slot_nummer == 1)
+                     else (1 if is_state('binary_sensor.b2500_' ~ num ~ '_d1', 'on') else 0) }}
+                a2: >-
+                  {{ status_value | int
+                     if set_status and (slot_all or slot_nummer == 2)
+                     else (1 if is_state('binary_sensor.b2500_' ~ num ~ '_d2', 'on') else 0) }}
+                a3: >-
+                  {{ status_value | int
+                     if set_status and (slot_all or slot_nummer == 3)
+                     else (1 if is_state('binary_sensor.b2500_' ~ num ~ '_d3', 'on') else 0) }}
+                a4: >-
+                  {{ status_value | int
+                     if set_status and (slot_all or slot_nummer == 4)
+                     else (1 if is_state('binary_sensor.b2500_' ~ num ~ '_d4', 'on') else 0) }}
+                a5: >-
+                  {{ status_value | int
+                     if set_status and (slot_all or slot_nummer == 5)
+                     else (1 if is_state('binary_sensor.b2500_' ~ num ~ '_d5', 'on') else 0) }}
 
-                      b1: "{{ states('sensor.b2500_' ~ num ~ '_e1') }}"
-                      b2: "{{ states('sensor.b2500_' ~ num ~ '_e2') }}"
-                      b3: "{{ states('sensor.b2500_' ~ num ~ '_e3') }}"
-                      b4: "{{ states('sensor.b2500_' ~ num ~ '_e4') }}"
-                      b5: "{{ states('sensor.b2500_' ~ num ~ '_e5') }}"
+                b1: >-
+                  {{ start_value
+                     if set_start and (slot_all or slot_nummer == 1)
+                     else states('sensor.b2500_' ~ num ~ '_e1') }}
+                b2: >-
+                  {{ start_value
+                     if set_start and (slot_all or slot_nummer == 2)
+                     else states('sensor.b2500_' ~ num ~ '_e2') }}
+                b3: >-
+                  {{ start_value
+                     if set_start and (slot_all or slot_nummer == 3)
+                     else states('sensor.b2500_' ~ num ~ '_e3') }}
+                b4: >-
+                  {{ start_value
+                     if set_start and (slot_all or slot_nummer == 4)
+                     else states('sensor.b2500_' ~ num ~ '_e4') }}
+                b5: >-
+                  {{ start_value
+                     if set_start and (slot_all or slot_nummer == 5)
+                     else states('sensor.b2500_' ~ num ~ '_e5') }}
 
-                      e1: "{{ states('sensor.b2500_' ~ num ~ '_f1') }}"
-                      e2: "{{ states('sensor.b2500_' ~ num ~ '_f2') }}"
-                      e3: "{{ states('sensor.b2500_' ~ num ~ '_f3') }}"
-                      e4: "{{ states('sensor.b2500_' ~ num ~ '_f4') }}"
-                      e5: "{{ states('sensor.b2500_' ~ num ~ '_f5') }}"
+                e1: >-
+                  {{ ende_value
+                     if set_ende and (slot_all or slot_nummer == 1)
+                     else states('sensor.b2500_' ~ num ~ '_f1') }}
+                e2: >-
+                  {{ ende_value
+                     if set_ende and (slot_all or slot_nummer == 2)
+                     else states('sensor.b2500_' ~ num ~ '_f2') }}
+                e3: >-
+                  {{ ende_value
+                     if set_ende and (slot_all or slot_nummer == 3)
+                     else states('sensor.b2500_' ~ num ~ '_f3') }}
+                e4: >-
+                  {{ ende_value
+                     if set_ende and (slot_all or slot_nummer == 4)
+                     else states('sensor.b2500_' ~ num ~ '_f4') }}
+                e5: >-
+                  {{ ende_value
+                     if set_ende and (slot_all or slot_nummer == 5)
+                     else states('sensor.b2500_' ~ num ~ '_f5') }}
 
-                      v1: >-
-                        {{ timer_leistung if timerslot == 1
-                        else states('sensor.b2500_' ~ num ~ '_h1') | int }}
-                      v2: >-
-                        {{ timer_leistung if timerslot == 2
-                        else states('sensor.b2500_' ~ num ~ '_h2') | int }}
-                      v3: >-
-                        {{ timer_leistung if timerslot == 3
-                        else states('sensor.b2500_' ~ num ~ '_h3') | int }}
-                      v4: >-
-                        {{ timer_leistung if timerslot == 4
-                        else states('sensor.b2500_' ~ num ~ '_h4') | int }}
-                      v5: >-
-                        {{ timer_leistung if timerslot == 5
-                        else states('sensor.b2500_' ~ num ~ '_h5') | int }}
+                v1: >-
+                  {{ leistung_value | int
+                     if set_leistung and (slot_all or slot_nummer == 1)
+                     else states('sensor.b2500_' ~ num ~ '_h1') | int }}
+                v2: >-
+                  {{ leistung_value | int
+                     if set_leistung and (slot_all or slot_nummer == 2)
+                     else states('sensor.b2500_' ~ num ~ '_h2') | int }}
+                v3: >-
+                  {{ leistung_value | int
+                     if set_leistung and (slot_all or slot_nummer == 3)
+                     else states('sensor.b2500_' ~ num ~ '_h3') | int }}
+                v4: >-
+                  {{ leistung_value | int
+                     if set_leistung and (slot_all or slot_nummer == 4)
+                     else states('sensor.b2500_' ~ num ~ '_h4') | int }}
+                v5: >-
+                  {{ leistung_value | int
+                     if set_leistung and (slot_all or slot_nummer == 5)
+                     else states('sensor.b2500_' ~ num ~ '_h5') | int }}
 
-                      expected_field: "h{{ timerslot }}"
-                      expected_value: "{{ timer_leistung }}"
+                timer_payload: >-
+                  cd=20,md=0,
+                  a1={{ a1 }},b1={{ b1 }},e1={{ e1 }},v1={{ v1 }},
+                  a2={{ a2 }},b2={{ b2 }},e2={{ e2 }},v2={{ v2 }},
+                  a3={{ a3 }},b3={{ b3 }},e3={{ e3 }},v3={{ v3 }},
+                  a4={{ a4 }},b4={{ b4 }},e4={{ e4 }},v4={{ v4 }},
+                  a5={{ a5 }},b5={{ b5 }},e5={{ e5 }},v5={{ v5 }}
 
-                      timer_payload: >-
-                        cd=20,md=0,a1={{ a1 }},b1={{ b1 }},e1={{ e1 }},v1={{ v1 }},a2={{ a2 }},b2={{ b2 }},e2={{ e2 }},v2={{ v2 }},a3={{ a3 }},b3={{ b3 }},e3={{ e3 }},v3={{ v3 }},a4={{ a4 }},b4={{ b4 }},e4={{ e4 }},v4={{ v4 }},a5={{ a5 }},b5={{ b5 }},e5={{ e5 }},v5={{ v5 }}
+                expected_answer: >-
+                  {{
+                    {
+                      'd1': a1 | int,
+                      'e1': b1 | string,
+                      'f1': e1 | string,
+                      'h1': v1 | int,
+                      'd2': a2 | int,
+                      'e2': b2 | string,
+                      'f2': e2 | string,
+                      'h2': v2 | int,
+                      'd3': a3 | int,
+                      'e3': b3 | string,
+                      'f3': e3 | string,
+                      'h3': v3 | int,
+                      'd4': a4 | int,
+                      'e4': b4 | string,
+                      'f4': e4 | string,
+                      'h4': v4 | int,
+                      'd5': a5 | int,
+                      'e5': b5 | string,
+                      'f5': e5 | string,
+                      'h5': v5 | int
+                    }
+                  }}
 
-                  - action: script.turn_on
-                    target:
-                      entity_id: "script.{{ repeat.item }}_worker"
-                    data:
-                      variables:
-                        payload: "{{ timer_payload }}"
-                        followup_payload: "cd=01"
-                        no_check: false
-                        expected_field: "{{ expected_field }}"
-                        expected_value: "{{ expected_value }}"
+            - action: script.turn_on
+              target:
+                entity_id: "script.{{ repeat.item }}_worker"
+              data:
+                variables:
+                  payload: "{{ timer_payload | replace('\n', '') | replace(' ', '') }}"
+                  followup_payload: "cd=01"
+                  no_check: false
+                  expected_answer: "{{ expected_answer }}"
 
-                  - delay:
-                      seconds: 1
-          
-        - conditions:
-            - condition: trigger
-              id:
-                - timer_status_setzen
+            - delay:
+                seconds: 1
+
+    mode: queued
+    max: 20
+
+
+  b2500pkg_set_selbstanpassung:
+    alias: B2500PKG_Set_Selbstanpassung
+    description: >
+      Aktiviert die Selbstanpassung für einen oder alle Speicher. Leeres
+      Aktionsfeld verwendet input_select.speicherauswahl.
+
+    fields:
+      speicher:
+        name: Speicher
+        description: Optional. Wenn leer, wird input_select.speicherauswahl verwendet.
+        required: false
+        example: "b2500_01"
+        selector:
+          select:
+            options:
+              - label: "B01"
+                value: "b2500_01"
+              - label: "B02"
+                value: "b2500_02"
+              - label: "B03"
+                value: "b2500_03"
+              - label: "B04"
+                value: "b2500_04"
+              - label: "B05"
+                value: "b2500_05"
+              - label: "B06"
+                value: "b2500_06"
+              - label: "B07"
+                value: "b2500_07"
+              - label: "B08"
+                value: "b2500_08"
+              - label: "B09"
+                value: "b2500_09"
+              - label: "Alle Speicher"
+                value: "Alle_Speicher"
+
+    sequence:
+      - variables:
+          speicher_auswahl: >-
+            {% if speicher is defined and speicher | string | trim != '' %}
+              {{ speicher }}
+            {% else %}
+              {{ states('input_select.speicherauswahl') }}
+            {% endif %}
+
+          all_speicher: "{{ states('input_text.b2500_all') | from_json }}"
+
+          targets: >-
+            {% if speicher_auswahl == 'Alle_Speicher' %}
+              {{ all_speicher }}
+            {% else %}
+              {{ [speicher_auswahl] }}
+            {% endif %}
+
+      - repeat:
+          for_each: "{{ targets }}"
           sequence:
-            - repeat:
-                for_each: "{{ targets }}"
-                sequence:
-                  - variables:
-                      num: "{{ repeat.item.split('_')[-1] }}"
-        
-                      a1: "{{ timer_status_value if timerslot == 1 else (1 if is_state('binary_sensor.b2500_' ~ num ~ '_d1','on') else 0) }}"
-                      a2: "{{ timer_status_value if timerslot == 2 else (1 if is_state('binary_sensor.b2500_' ~ num ~ '_d2','on') else 0) }}"
-                      a3: "{{ timer_status_value if timerslot == 3 else (1 if is_state('binary_sensor.b2500_' ~ num ~ '_d3','on') else 0) }}"
-                      a4: "{{ timer_status_value if timerslot == 4 else (1 if is_state('binary_sensor.b2500_' ~ num ~ '_d4','on') else 0) }}"
-                      a5: "{{ timer_status_value if timerslot == 5 else (1 if is_state('binary_sensor.b2500_' ~ num ~ '_d5','on') else 0) }}"
-        
-                      b1: "{{ states('sensor.b2500_' ~ num ~ '_e1') }}"
-                      b2: "{{ states('sensor.b2500_' ~ num ~ '_e2') }}"
-                      b3: "{{ states('sensor.b2500_' ~ num ~ '_e3') }}"
-                      b4: "{{ states('sensor.b2500_' ~ num ~ '_e4') }}"
-                      b5: "{{ states('sensor.b2500_' ~ num ~ '_e5') }}"
-        
-                      e1: "{{ states('sensor.b2500_' ~ num ~ '_f1') }}"
-                      e2: "{{ states('sensor.b2500_' ~ num ~ '_f2') }}"
-                      e3: "{{ states('sensor.b2500_' ~ num ~ '_f3') }}"
-                      e4: "{{ states('sensor.b2500_' ~ num ~ '_f4') }}"
-                      e5: "{{ states('sensor.b2500_' ~ num ~ '_f5') }}"
-        
-                      v1: "{{ states('sensor.b2500_' ~ num ~ '_h1') | int }}"
-                      v2: "{{ states('sensor.b2500_' ~ num ~ '_h2') | int }}"
-                      v3: "{{ states('sensor.b2500_' ~ num ~ '_h3') | int }}"
-                      v4: "{{ states('sensor.b2500_' ~ num ~ '_h4') | int }}"
-                      v5: "{{ states('sensor.b2500_' ~ num ~ '_h5') | int }}"
-        
-                      expected_field: "d{{ timerslot }}"
-                      expected_value: "{{ timer_status_value }}"
-        
-                      timer_payload: >-
-                        cd=20,md=0,
-                        a1={{ a1 }},b1={{ b1 }},e1={{ e1 }},v1={{ v1 }},
-                        a2={{ a2 }},b2={{ b2 }},e2={{ e2 }},v2={{ v2 }},
-                        a3={{ a3 }},b3={{ b3 }},e3={{ e3 }},v3={{ v3 }},
-                        a4={{ a4 }},b4={{ b4 }},e4={{ e4 }},v4={{ v4 }},
-                        a5={{ a5 }},b5={{ b5 }},e5={{ e5 }},v5={{ v5 }}
-        
-                  - action: script.turn_on
-                    target:
-                      entity_id: "script.{{ repeat.item }}_worker"
-                    data:
-                      variables:
-                        payload: "{{ timer_payload }}"
-                        followup_payload: "cd=01"
-                        no_check: false
-                        expected_field: "{{ expected_field }}"
-                        expected_value: "{{ expected_value }}"
-        
-                  - delay:
-                      seconds: 1
+            - action: script.turn_on
+              target:
+                entity_id: "script.{{ repeat.item }}_worker"
+              data:
+                variables:
+                  payload: "cd=20,md=1"
+                  followup_payload: "cd=01"
+                  no_check: false
+                  expected_answer: >-
+                    {{ {'md': 'Selbstanpassung'} }}
 
-        - conditions:
-            - condition: trigger
-              id:
-                - zeit_setzen
-          sequence:
-            - repeat:
-                for_each: "{{ targets }}"
-                sequence:
-                  - variables:
-                      num: "{{ repeat.item.split('_')[-1] }}"
+            - delay:
+                seconds: 1
 
-                      a1: "{{ 1 if is_state('binary_sensor.b2500_' ~ num ~ '_d1','on') else 0 }}"
-                      a2: "{{ 1 if is_state('binary_sensor.b2500_' ~ num ~ '_d2','on') else 0 }}"
-                      a3: "{{ 1 if is_state('binary_sensor.b2500_' ~ num ~ '_d3','on') else 0 }}"
-                      a4: "{{ 1 if is_state('binary_sensor.b2500_' ~ num ~ '_d4','on') else 0 }}"
-                      a5: "{{ 1 if is_state('binary_sensor.b2500_' ~ num ~ '_d5','on') else 0 }}"
-
-                      b1: "{{ states('sensor.b2500_' ~ num ~ '_e1') }}"
-                      b2: "{{ states('sensor.b2500_' ~ num ~ '_e2') }}"
-                      b3: "{{ states('sensor.b2500_' ~ num ~ '_e3') }}"
-                      b4: "{{ states('sensor.b2500_' ~ num ~ '_e4') }}"
-                      b5: "{{ states('sensor.b2500_' ~ num ~ '_e5') }}"
-
-                      e1: "{{ states('sensor.b2500_' ~ num ~ '_f1') }}"
-                      e2: "{{ states('sensor.b2500_' ~ num ~ '_f2') }}"
-                      e3: "{{ states('sensor.b2500_' ~ num ~ '_f3') }}"
-                      e4: "{{ states('sensor.b2500_' ~ num ~ '_f4') }}"
-                      e5: "{{ states('sensor.b2500_' ~ num ~ '_f5') }}"
-
-                      v1: "{{ states('sensor.b2500_' ~ num ~ '_h1') | int }}"
-                      v2: "{{ states('sensor.b2500_' ~ num ~ '_h2') | int }}"
-                      v3: "{{ states('sensor.b2500_' ~ num ~ '_h3') | int }}"
-                      v4: "{{ states('sensor.b2500_' ~ num ~ '_h4') | int }}"
-                      v5: "{{ states('sensor.b2500_' ~ num ~ '_h5') | int }}"
-
-                      start_h: "{{ startzeit.split(':')[0] | int }}"
-                      start_m: "{{ startzeit.split(':')[1] | int }}"
-                      end_h: "{{ endzeit.split(':')[0] | int }}"
-                      end_m: "{{ endzeit.split(':')[1] | int }}"
-
-                      new_b: "{{ start_h ~ ':' ~ start_m }}"
-                      new_e: "{{ end_h ~ ':' ~ end_m }}"
-
-                      b1_new: "{{ new_b if timerslot == 1 else states('sensor.b2500_' ~ num ~ '_e1') }}"
-                      b2_new: "{{ new_b if timerslot == 2 else states('sensor.b2500_' ~ num ~ '_e2') }}"
-                      b3_new: "{{ new_b if timerslot == 3 else states('sensor.b2500_' ~ num ~ '_e3') }}"
-                      b4_new: "{{ new_b if timerslot == 4 else states('sensor.b2500_' ~ num ~ '_e4') }}"
-                      b5_new: "{{ new_b if timerslot == 5 else states('sensor.b2500_' ~ num ~ '_e5') }}"
-
-                      e1_new: "{{ new_e if timerslot == 1 else states('sensor.b2500_' ~ num ~ '_f1') }}"
-                      e2_new: "{{ new_e if timerslot == 2 else states('sensor.b2500_' ~ num ~ '_f2') }}"
-                      e3_new: "{{ new_e if timerslot == 3 else states('sensor.b2500_' ~ num ~ '_f3') }}"
-                      e4_new: "{{ new_e if timerslot == 4 else states('sensor.b2500_' ~ num ~ '_f4') }}"
-                      e5_new: "{{ new_e if timerslot == 5 else states('sensor.b2500_' ~ num ~ '_f5') }}"
-
-                      expected_field: "e{{ timerslot }}"
-                      expected_value: "{{ new_b }}"
-                      expected_field_2: "f{{ timerslot }}"
-                      expected_value_2: "{{ new_e }}"
-
-                      timer_payload: >-
-                        cd=20,md=0,
-                        a1={{ a1 }},b1={{ b1_new }},e1={{ e1_new }},v1={{ v1 }},
-                        a2={{ a2 }},b2={{ b2_new }},e2={{ e2_new }},v2={{ v2 }},
-                        a3={{ a3 }},b3={{ b3_new }},e3={{ e3_new }},v3={{ v3 }},
-                        a4={{ a4 }},b4={{ b4_new }},e4={{ e4_new }},v4={{ v4 }},
-                        a5={{ a5 }},b5={{ b5_new }},e5={{ e5_new }},v5={{ v5 }}
-
-                  - action: script.turn_on
-                    target:
-                      entity_id: "script.{{ repeat.item }}_worker"
-                    data:
-                      variables:
-                        payload: "{{ timer_payload }}"
-                        followup_payload: "cd=01"
-                        no_check: false
-                        expected_field: "{{ expected_field }}"
-                        expected_value: "{{ expected_value }}"
-                        expected_field_2: "{{ expected_field_2 }}"
-                        expected_value_2: "{{ expected_value_2 }}"
-
-                  - delay:
-                      seconds: 1
-
-
-        - conditions:
-            - condition: trigger
-              id:
-                - selbstanpassung_setzen
-          sequence:
-            - repeat:
-                for_each: "{{ targets }}"
-                sequence:
-                  - variables:
-                      expected_field: "md"
-                      expected_value: "Selbstanpassung"
-
-                  - action: script.turn_on
-                    target:
-                      entity_id: "script.{{ repeat.item }}_worker"
-                    data:
-                      variables:
-                        payload: "cd=20,md=1"
-                        followup_payload: "cd=01"
-                        no_check: false
-                        expected_field: "{{ expected_field }}"
-                        expected_value: "{{ expected_value }}"
-
-                  - delay:
-                      seconds: 1
-              
-              
-  mode: queued
-  max: 20
+    mode: queued
+    max: 10
