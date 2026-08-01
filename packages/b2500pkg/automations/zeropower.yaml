@@ -915,8 +915,8 @@ script:
                                       variables:
                                         payload: "cd=20,md=0,a1=1,b1=0:0,e1=24:00,v1={{ current_v1 | int }}"
                                         followup_payload: "cd=01"
-                                        expected_field: "h1"
-                                        expected_value: "{{ current_v1 | int }}"
+                                        expected_answer: >-
+                                          {{ {'h1': current_v1 | int} }}
                                   - delay:
                                       milliseconds: 300
                   enabled: true
