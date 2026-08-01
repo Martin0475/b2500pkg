@@ -122,7 +122,8 @@ script:
       - if:
           - condition: template
             value_template: >-
-              {{ timerslot_auswahl not in ['1', '2', '3', '4', '5', 'Alle_Timer'] }}
+              {{ (timerslot_auswahl | string | trim)
+                 not in ['1', '2', '3', '4', '5', 'Alle_Timer'] }}
         then:
           - stop: >-
               Ungültiger Timerslot '{{ timerslot_auswahl }}'.
@@ -200,9 +201,10 @@ script:
               {{ [speicher_auswahl] }}
             {% endif %}
 
-          slot_all: "{{ timerslot_auswahl == 'Alle_Timer' }}"
+          slot_all: >-
+            {{ (timerslot_auswahl | string | trim) == 'Alle_Timer' }}
           slot_nummer: >-
-            {{ 0 if slot_all else timerslot_auswahl | int }}
+            {{ 0 if slot_all else (timerslot_auswahl | string | trim) | int }}
 
       - if:
           - condition: template
