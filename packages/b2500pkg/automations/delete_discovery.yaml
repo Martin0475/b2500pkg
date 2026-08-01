@@ -1,6 +1,6 @@
 script:
   b2500pkg_delete_discovery:
-    alias: MQTT Discovery Einträge löschen
+    alias: B2500PKG_Delete_Discovery
     description: "Löscht alle retained MQTT-Discovery-Einträge des ausgewählten Speichers."
     fields:
       speicher:
