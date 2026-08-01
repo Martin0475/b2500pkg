@@ -8,39 +8,87 @@ input_select:
 script:
   b2500pkg_set_surplus:
     alias: B2500PKG_Set_Surplus
-    description: "Setzt den Surplus-/Überschusseinspeisungsmodus für einen oder alle B2500-Speicher."
+    description: "Setzt den Surplus-/Überschusseinspeisungsmodus für einen oder alle B2500-Speicher. Leere Aktionsfelder verwenden die vorhandenen Input-Helper."
+
     fields:
       speicher:
-        description: Speicher-ID, z. B. b2500_01 oder Alle_Speicher. Wenn leer, wird input_select.speicherauswahl verwendet.
+        name: Speicher
+        description: Optional. Wenn leer, wird input_select.speicherauswahl verwendet.
         required: false
         example: "b2500_01"
+        selector:
+          select:
+            options:
+              - label: "B01"
+                value: "b2500_01"
+              - label: "B02"
+                value: "b2500_02"
+              - label: "B03"
+                value: "b2500_03"
+              - label: "B04"
+                value: "b2500_04"
+              - label: "B05"
+                value: "b2500_05"
+              - label: "B06"
+                value: "b2500_06"
+              - label: "B07"
+                value: "b2500_07"
+              - label: "B08"
+                value: "b2500_08"
+              - label: "B09"
+                value: "b2500_09"
+              - label: "Alle Speicher"
+                value: "Alle_Speicher"
+
       surplus:
-        description: Surplus Modus. Wenn leer, wird input_select.surplus verwendet.
+        name: Surplus-Modus
+        description: Optional. Wenn leer, wird input_select.surplus verwendet.
         required: false
         example: "Überschusseinspeisung an"
+        selector:
+          select:
+            options:
+              - "Überschusseinspeisung an"
+              - "Überschusseinspeisung aus"
+
     sequence:
       - variables:
-          speicher: "{{ speicher | default(states('input_select.speicherauswahl'), true) }}"
-          surplus_mode: "{{ surplus | default(states('input_select.surplus'), true) }}"
+          speicher_auswahl: >-
+            {% if speicher is defined and speicher | string | trim != '' %}
+              {{ speicher }}
+            {% else %}
+              {{ states('input_select.speicherauswahl') }}
+            {% endif %}
+
+          surplus_mode: >-
+            {% if surplus is defined and surplus | string | trim != '' %}
+              {{ surplus }}
+            {% else %}
+              {{ states('input_select.surplus') }}
+            {% endif %}
+
           surplus_value: >-
             {% if surplus_mode == 'Überschusseinspeisung an' %}
               0
             {% else %}
               1
             {% endif %}
+
           surplus_expected: >-
             {% if surplus_mode == 'Überschusseinspeisung an' %}
               Surplus Modus aktiv
             {% else %}
               Surplus Modus deaktiviert
-            {% endif %}  
+            {% endif %}
+
           surplus_payload: "cd=31,touchuan_disa={{ surplus_value | int }}"
           all_speicher: "{{ states('input_text.b2500_all') | from_json }}"
-          targets: >
-            {% if speicher == 'Alle_Speicher' %}
+
+          targets: >-
+            {% if speicher_auswahl == 'Alle_Speicher' %}
               {{ all_speicher }}
             {% else %}
-              {{ [speicher] }}
+              {{ [speicher_auswahl] }}
             {% endif %}
 
       - repeat:
@@ -54,8 +102,8 @@ script:
                   payload: "{{ surplus_payload }}"
                   followup_payload: "cd=01"
                   no_check: false
-                  expected_field: "tc_dis"
-                  expected_value: "{{ surplus_expected }}"
+                  expected_answer:
+                    tc_dis: "{{ surplus_expected }}"
 
             - delay:
                 seconds: 1
