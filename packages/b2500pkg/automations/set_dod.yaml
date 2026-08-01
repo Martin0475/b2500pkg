@@ -1,44 +1,93 @@
-automation:
-  alias: B2500PKG Set DOD
-  description: ""
+script:
+  b2500pkg_set_dod:
+    alias: B2500PKG_Set_DOD
+    description: "Setzt die Entladetiefe (DOD) für einen oder alle B2500-Speicher. Leere Aktionsfelder verwenden die vorhandenen Input-Helper."
 
-  triggers:
-    - trigger: state
-      entity_id:
-        - input_button.b2500_dod_setzen
+    fields:
+      speicher:
+        name: Speicher
+        description: Optional. Wenn leer, wird input_select.speicherauswahl verwendet.
+        required: false
+        example: "b2500_01"
+        selector:
+          select:
+            options:
+              - label: "B01"
+                value: "b2500_01"
+              - label: "B02"
+                value: "b2500_02"
+              - label: "B03"
+                value: "b2500_03"
+              - label: "B04"
+                value: "b2500_04"
+              - label: "B05"
+                value: "b2500_05"
+              - label: "B06"
+                value: "b2500_06"
+              - label: "B07"
+                value: "b2500_07"
+              - label: "B08"
+                value: "b2500_08"
+              - label: "B09"
+                value: "b2500_09"
+              - label: "Alle Speicher"
+                value: "Alle_Speicher"
 
-  conditions: []
+      dod:
+        name: DOD
+        description: Optional. Wenn leer, wird input_number.b2500_dod verwendet.
+        required: false
+        example: 100
+        selector:
+          number:
+            min: 0
+            max: 100
+            step: 1
+            unit_of_measurement: "%"
+            mode: box
 
-  actions:
-    - variables:
-        speicher: "{{ states('input_select.speicherauswahl') }}"
-        dod_value: "{{ states('input_number.b2500_dod') | int }}"
-        dod_payload: "cd=19,md={{ dod_value }}"
-        all_speicher: "{{ states('input_text.b2500_all') | from_json }}"
-        targets: >
-          {% if speicher == 'Alle_Speicher' %}
-            {{ all_speicher }}
-          {% else %}
-            {{ [speicher] }}
-          {% endif %}
+    sequence:
+      - variables:
+          speicher_auswahl: >-
+            {% if speicher is defined and speicher | string | trim != '' %}
+              {{ speicher }}
+            {% else %}
+              {{ states('input_select.speicherauswahl') }}
+            {% endif %}
 
-    - repeat:
-        for_each: "{{ targets }}"
-        sequence:
-          - action: script.turn_on
-            target:
-              entity_id: "script.{{ repeat.item }}_worker"
-            data:
-              variables:
-                payload: "{{ dod_payload }}"
-                followup_payload: "cd=01"
-                no_check: false
-                expected_field: "do"
-                expected_value: "{{ dod_value }}"
+          dod_value: >-
+            {% if dod is defined and dod | string | trim != '' %}
+              {{ dod | int }}
+            {% else %}
+              {{ states('input_number.b2500_dod') | int }}
+            {% endif %}
 
-          - delay:
-              seconds: 1
+          dod_payload: "cd=19,md={{ dod_value | int }}"
+          all_speicher: "{{ states('input_text.b2500_all') | from_json }}"
 
-  mode: queued
-  max: 10
+          targets: >-
+            {% if speicher_auswahl == 'Alle_Speicher' %}
+              {{ all_speicher }}
+            {% else %}
+              {{ [speicher_auswahl] }}
+            {% endif %}
 
+      - repeat:
+          for_each: "{{ targets }}"
+          sequence:
+            - action: script.turn_on
+              target:
+                entity_id: "script.{{ repeat.item }}_worker"
+              data:
+                variables:
+                  payload: "{{ dod_payload }}"
+                  followup_payload: "cd=01"
+                  no_check: false
+                  expected_answer: >-
+                    {{ {'do': dod_value | int} }}
+
+            - delay:
+                seconds: 1
+
+    mode: queued
+    max: 10
