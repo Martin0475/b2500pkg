@@ -18,10 +18,27 @@ input_select:
       - 4
       - 5
       - Alle_Timer
-      
+
 input_boolean:
-  timer_aktiv:
-    name: Timer aktiv
+  b2500_timer_ein:
+    name: Timer einschalten
+    icon: mdi:timer-check
+
+  b2500_timer_aus:
+    name: Timer ausschalten
+    icon: mdi:timer-cancel
+
+  b2500_timer_startzeit_aendern:
+    name: Startzeit ändern
+    icon: mdi:clock-start
+
+  b2500_timer_endzeit_aendern:
+    name: Endzeit ändern
+    icon: mdi:clock-end
+
+  b2500_timer_leistung_aendern:
+    name: Leistung ändern
+    icon: mdi:flash      
 
 input_datetime:
   timer_beginn:
