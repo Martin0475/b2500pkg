@@ -17,6 +17,7 @@ input_select:
       - 3
       - 4
       - 5
+      - Alle_Timer
       
 input_boolean:
   timer_aktiv:
@@ -53,7 +54,5 @@ input_button:
     name: B2500 Zeit setzen    
   b2500_leistung_setzen:
     name: B2500 Leistung setzen
-  b2500_dod_setzen:
-    name: B2500 DOD setzen
   b2500_selbstanpassung:
     name: B2500 auf Selbstanpassung stellen
