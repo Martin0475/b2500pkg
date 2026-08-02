@@ -42,11 +42,11 @@ input_boolean:
 
 input_datetime:
   timer_beginn:
-    name: Timer Einschaltzeit
+    name: Start
     has_date: false
     has_time: true
   timer_ende:
-    name: Timer Ausschaltzeit
+    name: Ende
     has_date: false
     has_time: true
 
