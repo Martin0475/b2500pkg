@@ -555,3 +555,134 @@ script:
 
     mode: queued
     max: 10
+
+
+  b2500pkg_timer_dashboard:
+    alias: B2500PKG Timer Dashboard
+    description: >
+      Liest die Timer-Helper des Dashboards und ruft das universelle
+      Script b2500pkg_set_timer nur mit den ausgewählten Änderungswerten auf.
+    icon: mdi:timer-edit
+
+    sequence:
+      - variables:
+          speicher_auswahl: "{{ states('input_select.speicherauswahl') }}"
+          timerslot_auswahl: "{{ states('input_select.timerslot') }}"
+
+          timer_ein: "{{ is_state('input_boolean.b2500_timer_ein', 'on') }}"
+          timer_aus: "{{ is_state('input_boolean.b2500_timer_aus', 'on') }}"
+
+          startzeit_aendern: >-
+            {{ is_state('input_boolean.b2500_timer_startzeit_aendern', 'on') }}
+          endzeit_aendern: >-
+            {{ is_state('input_boolean.b2500_timer_endzeit_aendern', 'on') }}
+          leistung_aendern: >-
+            {{ is_state('input_boolean.b2500_timer_leistung_aendern', 'on') }}
+
+      - if:
+          - condition: template
+            value_template: "{{ timer_ein and timer_aus }}"
+        then:
+          - variables:
+              response:
+                success: false
+                code: "CONFLICTING_TIMER_STATUS"
+                message: >-
+                  Abbruch: „Timer einschalten“ und „Timer ausschalten“
+                  sind gleichzeitig ausgewählt.
+          - stop: "Widersprüchliche Timerstatus-Auswahl."
+            response_variable: response
+
+      - if:
+          - condition: template
+            value_template: >-
+              {{ not (
+                   timer_ein
+                   or timer_aus
+                   or startzeit_aendern
+                   or endzeit_aendern
+                   or leistung_aendern
+                 ) }}
+        then:
+          - variables:
+              response:
+                success: false
+                code: "NO_CHANGE_SELECTED"
+                message: >-
+                  Abbruch: Es wurde kein zu ändernder Timerwert ausgewählt.
+          - stop: "Keine Änderung ausgewählt."
+            response_variable: response
+
+      - variables:
+          timer_daten: >-
+            {% set ns = namespace(data={
+              'speicher': speicher_auswahl,
+              'timerslot': timerslot_auswahl
+            }) %}
+
+            {% if timer_ein %}
+              {% set ns.data = dict(ns.data, timer_aktiv=1) %}
+            {% elif timer_aus %}
+              {% set ns.data = dict(ns.data, timer_aktiv=0) %}
+            {% endif %}
+
+            {% if startzeit_aendern %}
+              {% set ns.data = dict(
+                ns.data,
+                startzeit=states('input_datetime.timer_beginn')
+              ) %}
+            {% endif %}
+
+            {% if endzeit_aendern %}
+              {% set ns.data = dict(
+                ns.data,
+                endzeit=states('input_datetime.timer_ende')
+              ) %}
+            {% endif %}
+
+            {% if leistung_aendern %}
+              {% set ns.data = dict(
+                ns.data,
+                leistung=states('input_number.timer_leistung') | int
+              ) %}
+            {% endif %}
+
+            {{ ns.data }}
+
+      - action: script.b2500pkg_set_timer
+        data: "{{ timer_daten }}"
+        response_variable: timer_response
+
+      - if:
+          - condition: template
+            value_template: >-
+              {{ timer_response is mapping
+                 and timer_response.success | default(false) }}
+        then:
+          - action: input_boolean.turn_off
+            target:
+              entity_id:
+                - input_boolean.b2500_timer_ein
+                - input_boolean.b2500_timer_aus
+                - input_boolean.b2500_timer_startzeit_aendern
+                - input_boolean.b2500_timer_endzeit_aendern
+                - input_boolean.b2500_timer_leistung_aendern
+
+      - variables:
+          response: >-
+            {% if timer_response is mapping %}
+              {{ timer_response }}
+            {% else %}
+              {{
+                {
+                  'success': false,
+                  'code': 'NO_TIMER_RESPONSE',
+                  'message': 'Das Timer-Script hat keine gültige Response geliefert.'
+                }
+              }}
+            {% endif %}
+
+      - stop: "Dashboard-Timerauftrag abgeschlossen."
+        response_variable: response
+
+    mode: single
