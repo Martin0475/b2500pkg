@@ -5,7 +5,9 @@ views:
         cards:
           - type: heading
             heading_style: title
-            heading: B2500 Package 2026-07-30 (MQTT Discovery Einträge löschen)
+            heading: >-
+              B2500 Package 2026-08-02 (Seite DoD und Timer auf Script
+              umgestellt)
             grid_options:
               columns: 12
               rows: 1
@@ -237,7 +239,7 @@ views:
                 entity: input_text.b09_mac
                 state_not: "0"
           - type: tile
-            entity: script.b2500pkg_discovery_loschen
+            entity: script.b2500pkg_delete_discovery
             grid_options:
               columns: full
     type: sections
@@ -249,26 +251,146 @@ views:
     cards: []
     sections:
       - type: grid
+        coloums: 2
+        square: false
         cards:
-          - type: entities
-            entities:
-              - entity: input_button.b2500_selbstanpassung
-              - entity: input_select.speicherauswahl
-              - entity: input_select.timerslot
-              - entity: input_boolean.timer_aktiv
-              - entity: input_button.b2500_timer_status_setzen
-              - entity: input_datetime.timer_beginn
-              - entity: input_datetime.timer_ende
-              - entity: input_button.zeit_setzen
-              - entity: input_number.timer_leistung
-              - entity: input_button.b2500_leistung_setzen
-            show_header_toggle: false
-            title: Timer Einstellungen
-            footer:
-              type: buttons
-              entities:
-                - entity: script.b2500pkg_set_timer
-                  name: Timer einstellen
+          - type: vertical-stack
+            cards:
+              - type: markdown
+                content: >
+                  ## B2500 Timersteuerung
+
+                  Wähle Speicher und Timer. Aktiviere anschließend nur die
+                  Werte, die geändert werden sollen.
+              - type: entities
+                show_header_toggle: false
+                entities:
+                  - entity: input_select.speicherauswahl
+                    name: Speicher
+                    icon: mdi:battery
+                  - entity: input_select.timerslot
+                    name: Timer
+                    icon: mdi:timer-cog
+              - show_name: true
+                show_icon: true
+                type: button
+                name: Timerwerte übernehmen
+                icon: mdi:content-save-cog
+                show_state: true
+                tap_action:
+                  action: perform-action
+                  perform_action: script.b2500pkg_timer_dashboard
+                  target: {}
+                icon_height: 160px
+          - type: vertical-stack
+            cards:
+              - type: markdown
+                content: |
+                  ### Timerstatus
+                  Beide Schalter aus: Status bleibt unverändert.
+              - type: grid
+                columns: 2
+                square: false
+                cards:
+                  - type: tile
+                    entity: input_boolean.b2500_timer_ein
+                    name: Einschalten
+                    icon: mdi:timer-check
+                    hide_state: true
+                    vertical: false
+                    tap_action:
+                      action: toggle
+                    features_position: bottom
+                  - type: tile
+                    entity: input_boolean.b2500_timer_aus
+                    name: Ausschalten
+                    icon: mdi:timer-cancel
+                    show_entity_picture: false
+                    hide_state: true
+                    vertical: false
+                    tap_action:
+                      action: toggle
+                    features_position: bottom
+              - type: markdown
+                content: |
+                  ### Zeiten
+                text_only: true
+              - square: false
+                type: grid
+                columns: 1
+                cards:
+                  - type: horizontal-stack
+                    cards:
+                      - type: tile
+                        entity: input_boolean.b2500_timer_startzeit_aendern
+                        name: Startzeit ändern
+                        icon: mdi:clock-start
+                        hide_state: true
+                        vertical: true
+                        tap_action:
+                          action: toggle
+                        features_position: bottom
+                      - type: conditional
+                        conditions:
+                          - entity: input_boolean.b2500_timer_startzeit_aendern
+                            state: "on"
+                        card:
+                          type: entities
+                          entities:
+                            - entity: input_datetime.timer_beginn
+                              name: ""
+                              icon: mdi:clock-start
+                  - type: horizontal-stack
+                    cards:
+                      - type: tile
+                        entity: input_boolean.b2500_timer_endzeit_aendern
+                        name: Endzeit ändern
+                        icon: mdi:clock-end
+                        hide_state: true
+                        vertical: true
+                        tap_action:
+                          action: toggle
+                        features_position: bottom
+                      - type: conditional
+                        conditions:
+                          - entity: input_boolean.b2500_timer_endzeit_aendern
+                            state: "on"
+                        card:
+                          type: entities
+                          entities:
+                            - entity: input_datetime.timer_ende
+                              name: ""
+                              icon: mdi:clock-end
+              - type: markdown
+                content: |
+                  ### Leistung
+                text_only: true
+              - square: false
+                type: grid
+                columns: 1
+                cards:
+                  - type: horizontal-stack
+                    cards:
+                      - type: tile
+                        entity: input_boolean.b2500_timer_leistung_aendern
+                        name: Leistung ändern
+                        icon: mdi:flash
+                        hide_state: true
+                        vertical: true
+                        tap_action:
+                          action: toggle
+                        features_position: bottom
+                      - type: conditional
+                        conditions:
+                          - entity: input_boolean.b2500_timer_leistung_aendern
+                            state: "on"
+                        card:
+                          type: entities
+                          entities:
+                            - entity: input_number.timer_leistung
+                              name: ""
+                              icon: mdi:flash
+        column_span: 2
       - type: grid
         cards:
           - type: heading
