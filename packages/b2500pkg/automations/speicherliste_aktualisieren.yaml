@@ -7,6 +7,9 @@ automation:
       - platform: homeassistant
         event: start
 
+      - platform: event
+        event_type: automation_reloaded
+
       - platform: state
         entity_id:
           - input_text.b01_mac
