@@ -108,9 +108,9 @@ input_number:
 
   zeropower_b2500_eff:
     name: B2500 Wirkungsgrad
-    min: 0.50
-    max: 1.00
-    step: 0.01
+    min: 50
+    max: 100  
+    step: 1
     mode: box
     unit_of_measurement: "%"
     icon: mdi:lightning-bolt
@@ -166,6 +166,15 @@ input_number:
     min: 5
     max: 200
     mode: box
+    
+  zeropower_filter_jump_limit:
+    name: Kurze Leistungsspitzen filtern ab
+    min: 50
+    max: 2000
+    step: 50
+    mode: box
+    unit_of_measurement: W
+    icon: mdi:chart-bell-curve
 
   zeropower_venus_min_limit:
     name: Venus unteres Limit
@@ -186,6 +195,7 @@ input_number:
     icon: mdi:battery-arrow-up
 
 template:
+
   - sensor:
       - name: zeropower_measure_load_raw
         state: >
@@ -197,22 +207,52 @@ template:
         state: >
           {{ states('input_number.zeropower_target_value') | float(0) - states('input_number.zeropower_target_deviation') | float(0) }}
 
-
   - sensor:
       - name: zeropower_target_range_high
         unique_id: zeropower_target_range_high
         state: >
           {{ states('input_number.zeropower_target_value') | float(0) + states('input_number.zeropower_target_deviation') | float(0) }}
-          
-sensor:
-  - platform: filter
-    name: "zeropower_measure_load"
-    entity_id: sensor.zeropower_measure_load_raw
-    filters:
-      - filter: lowpass
-        time_constant: 1   
-        precision: 0
 
+  - triggers:
+      - trigger: state
+        entity_id: sensor.zeropower_measure_load_raw
+    sensor:
+      - name: zeropower_measure_load
+        unique_id: zeropower_measure_load
+        unit_of_measurement: W
+        device_class: power
+        state_class: measurement
+
+        state: >
+          {% set raw = trigger.to_state.state | float(none) %}
+          {% set old = this.state | float(none) %}
+          {% set skip_check = this.attributes.skip_check | default(false) | bool %}
+          {% set limit = states('input_number.zeropower_filter_jump_limit') | float(500) %}
+
+          {% if raw is none %}
+            {{ old if old is not none else 0 }}
+          {% elif old is none or skip_check %}
+            {{ raw | round(0) }}
+          {% elif raw - old > limit %}
+            {{ old | round(0) }}
+          {% else %}
+            {{ raw | round(0) }}
+          {% endif %}
+
+        attributes:
+          skip_check: >
+            {% set raw = trigger.to_state.state | float(none) %}
+            {% set old = this.state | float(none) %}
+            {% set skip_check = this.attributes.skip_check | default(false) | bool %}
+            {% set limit = states('input_number.zeropower_filter_jump_limit') | float(500) %}
+
+            {% if skip_check %}
+              false
+            {% elif raw is not none and old is not none and raw - old > limit %}
+              true
+            {% else %}
+              false
+            {% endif %}
 
 automation:
   id: b2500pkg_zeropower_trigger
@@ -306,7 +346,7 @@ script:
           venus_max_limit: "{{ states('input_number.zeropower_venus_max_limit') | int(2500) }}"
           venus_soc: "{{ states('sensor.venus_battery_soc') | int(0) }}"
           stabilization_time: "{{ states('input_number.zeropower_stabilization_time') | int(0) }}"
-          b2500_eff: "{{ states('input_number.zeropower_b2500_eff') | float(0.90) }}"
+          b2500_eff: "{{ (states('input_number.zeropower_b2500_eff') | float(90)) / 100 }}"
           
           variables_lastrun: >
             {% set txt = states('input_text.zeropower_variables') %} {% if txt not
@@ -996,7 +1036,7 @@ script:
               enabled: true
             - delay:
                 seconds: >
-                  {{ (stabilization_time | float(5) / 2) | round(1) }}
+                  {{ (stabilization_time | float(5) * 2 / 3) | round(1) }}
 
             - wait_template: >
                 {% set load =
@@ -1006,7 +1046,7 @@ script:
 
               timeout:
                 seconds: >
-                  {{ (stabilization_time | float(5) / 2) | round(1) }}
+                  {{ (stabilization_time | float(5) / 3) | round(1) }}
 
               continue_on_timeout: true
           while:

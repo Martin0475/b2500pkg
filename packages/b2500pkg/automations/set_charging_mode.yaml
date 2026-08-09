@@ -5,83 +5,105 @@ input_select:
       - "Laden vor dem Entladen"
       - "Laden und Entladen gleichzeitig"
 
-input_button:
-  b2500_lademodus_setzen:
-    name: Lademodus setzen     
+script:
+  b2500pkg_set_charging_mode:
+    alias: B2500PKG_Set_Charging_Mode
+    description: >
+      Setzt den Lademodus für einen oder alle B2500-Speicher.
+      Leere Aktionsfelder verwenden die vorhandenen Input-Helper.
 
-automation:
-  alias: B2500PKG Set Charging Mode
-  description: |+
+    fields:
+      speicher:
+        name: Speicher
+        description: Optional. Wenn leer, wird input_select.speicherauswahl verwendet.
+        required: false
+        example: "b2500_01"
+        selector:
+          select:
+            options:
+              - label: "B01"
+                value: "b2500_01"
+              - label: "B02"
+                value: "b2500_02"
+              - label: "B03"
+                value: "b2500_03"
+              - label: "B04"
+                value: "b2500_04"
+              - label: "B05"
+                value: "b2500_05"
+              - label: "B06"
+                value: "b2500_06"
+              - label: "B07"
+                value: "b2500_07"
+              - label: "B08"
+                value: "b2500_08"
+              - label: "B09"
+                value: "b2500_09"
+              - label: "Alle Speicher"
+                value: "Alle_Speicher"
 
-  triggers:
-    - trigger: state
-      entity_id:
-        - input_button.b2500_lademodus_setzen
+      lademodus:
+        name: Lademodus
+        description: Optional. Wenn leer, wird input_select.lademodus verwendet.
+        required: false
+        example: "Laden vor dem Entladen"
+        selector:
+          select:
+            options:
+              - "Laden vor dem Entladen"
+              - "Laden und Entladen gleichzeitig"
 
-  conditions: []
+    sequence:
+      - variables:
+          speicher_auswahl: >-
+            {% if speicher is defined and speicher | string | trim != '' %}
+              {{ speicher }}
+            {% else %}
+              {{ states('input_select.speicherauswahl') }}
+            {% endif %}
 
-  actions:
-    - variables:
-        b2500_mac: >-
-          {{ states('input_text.b01_mac') if states('input_select.speicherauswahl') == 'b2500_01' else
-             states('input_text.b02_mac') if states('input_select.speicherauswahl') == 'b2500_02' else
-             states('input_text.b03_mac') if states('input_select.speicherauswahl') == 'b2500_03' else
-             states('input_text.b04_mac') if states('input_select.speicherauswahl') == 'b2500_04' else
-             states('input_text.b05_mac') if states('input_select.speicherauswahl') == 'b2500_05' else
-             states('input_text.b06_mac') if states('input_select.speicherauswahl') == 'b2500_06' else
-             states('input_text.b07_mac') if states('input_select.speicherauswahl') == 'b2500_07' else
-             states('input_text.b08_mac') if states('input_select.speicherauswahl') == 'b2500_08' else
-             states('input_text.b09_mac') if states('input_select.speicherauswahl') == 'b2500_09' else
-             'unknown'
-          }}
-        b2500_typ: >-
-          {{ states('input_text.b01_typ') if states('input_select.speicherauswahl') == 'b2500_01' else
-             states('input_text.b02_typ') if states('input_select.speicherauswahl') == 'b2500_02' else
-             states('input_text.b03_typ') if states('input_select.speicherauswahl') == 'b2500_03' else
-             states('input_text.b04_typ') if states('input_select.speicherauswahl') == 'b2500_04' else
-             states('input_text.b05_typ') if states('input_select.speicherauswahl') == 'b2500_05' else
-             states('input_text.b06_typ') if states('input_select.speicherauswahl') == 'b2500_06' else
-             states('input_text.b07_typ') if states('input_select.speicherauswahl') == 'b2500_07' else
-             states('input_text.b08_typ') if states('input_select.speicherauswahl') == 'b2500_08' else
-             states('input_text.b09_typ') if states('input_select.speicherauswahl') == 'b2500_09' else
-             'unknown'
-          }}
-        b2500_topic: >-
-          {{ states('input_text.b01_topic') if states('input_select.speicherauswahl') == 'b2500_01' else
-             states('input_text.b02_topic') if states('input_select.speicherauswahl') == 'b2500_02' else
-             states('input_text.b03_topic') if states('input_select.speicherauswahl') == 'b2500_03' else
-             states('input_text.b04_topic') if states('input_select.speicherauswahl') == 'b2500_04' else
-             states('input_text.b05_topic') if states('input_select.speicherauswahl') == 'b2500_05' else
-             states('input_text.b06_topic') if states('input_select.speicherauswahl') == 'b2500_06' else
-             states('input_text.b07_topic') if states('input_select.speicherauswahl') == 'b2500_07' else
-             states('input_text.b08_topic') if states('input_select.speicherauswahl') == 'b2500_08' else
-             states('input_text.b09_topic') if states('input_select.speicherauswahl') == 'b2500_09' else
-             'unknown'
-          }}
-    - action: mqtt.publish
-      metadata: {}
-      data:
-        evaluate_payload: false
-        qos: 0
-        retain: false
-        topic: >-
-          {{ b2500_topic }}/{{ b2500_typ }}/App/{{ b2500_mac }}/ctrl
-        payload: cd=17,md={{ states('input_select.lademodus').replace("Laden vor dem Entladen","1").replace("Laden und Entladen gleichzeitig","0") }}
+          lademodus_auswahl: >-
+            {% if lademodus is defined and lademodus | string | trim != '' %}
+              {{ lademodus }}
+            {% else %}
+              {{ states('input_select.lademodus') }}
+            {% endif %}
 
-    - delay:
-        hours: 0
-        minutes: 0
-        seconds: 3
+          lademodus_value: >-
+            {% if lademodus_auswahl == 'Laden vor dem Entladen' %}
+              1
+            {% else %}
+              0
+            {% endif %}
 
-    - action: mqtt.publish
-      metadata: {}
-      data:
-        evaluate_payload: false
-        qos: 0
-        retain: false
-        topic: >-
-          {{ b2500_topic }}/{{ b2500_typ }}/App/{{ b2500_mac }}/ctrl
-        payload: cd=01
+          charging_payload: >-
+            cd=17,md={{ lademodus_value | int }}
 
-  mode: queued
-  max: 10
+          all_speicher: "{{ states('input_text.b2500_all') | from_json }}"
+
+          targets: >-
+            {% if speicher_auswahl == 'Alle_Speicher' %}
+              {{ all_speicher }}
+            {% else %}
+              {{ [speicher_auswahl] }}
+            {% endif %}
+
+      - repeat:
+          for_each: "{{ targets }}"
+          sequence:
+            - action: script.turn_on
+              target:
+                entity_id: "script.{{ repeat.item }}_worker"
+              data:
+                variables:
+                  payload: "{{ charging_payload }}"
+                  followup_payload: "cd=01"
+                  no_check: false
+                  expected_answer:
+                    cs: "{{ lademodus_auswahl }}"
+
+            - delay:
+                seconds: 1
+
+    mode: queued
+    max: 10
