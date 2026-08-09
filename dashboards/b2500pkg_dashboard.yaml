@@ -5,9 +5,7 @@ views:
         cards:
           - type: heading
             heading_style: title
-            heading: >-
-              B2500 Package 2026-08-02 (Seite DoD und Timer auf Script
-              umgestellt)
+            heading: B2500 Package 2026-08-09 (Zeropower Leistungsspitzen filtern)
             grid_options:
               columns: 12
               rows: 1
@@ -315,81 +313,70 @@ views:
                 content: |
                   ### Zeiten
                 text_only: true
-              - square: false
-                type: grid
-                columns: 1
-                cards:
-                  - type: horizontal-stack
-                    cards:
-                      - type: tile
-                        entity: input_boolean.b2500_timer_startzeit_aendern
-                        name: Startzeit ändern
-                        icon: mdi:clock-start
-                        hide_state: true
-                        vertical: true
-                        tap_action:
-                          action: toggle
-                        features_position: bottom
-                      - type: conditional
-                        conditions:
-                          - entity: input_boolean.b2500_timer_startzeit_aendern
-                            state: "on"
-                        card:
-                          type: entities
-                          entities:
-                            - entity: input_datetime.timer_beginn
-                              name: ""
-                              icon: mdi:clock-start
-                  - type: horizontal-stack
-                    cards:
-                      - type: tile
-                        entity: input_boolean.b2500_timer_endzeit_aendern
-                        name: Endzeit ändern
-                        icon: mdi:clock-end
-                        hide_state: true
-                        vertical: true
-                        tap_action:
-                          action: toggle
-                        features_position: bottom
-                      - type: conditional
-                        conditions:
-                          - entity: input_boolean.b2500_timer_endzeit_aendern
-                            state: "on"
-                        card:
-                          type: entities
-                          entities:
-                            - entity: input_datetime.timer_ende
-                              name: ""
-                              icon: mdi:clock-end
+              - type: tile
+                entity: input_boolean.b2500_timer_startzeit_aendern
+                name: Startzeit ändern
+                icon: mdi:clock-start
+                hide_state: true
+                vertical: false
+                tap_action:
+                  action: toggle
+                features_position: bottom
+              - type: conditional
+                conditions:
+                  - entity: input_boolean.b2500_timer_startzeit_aendern
+                    state: "on"
+                card:
+                  type: entities
+                  show_header_toggle: false
+                  entities:
+                    - entity: input_datetime.timer_beginn
+                      name: ""
+                      icon: mdi:clock-start
+              - type: tile
+                entity: input_boolean.b2500_timer_endzeit_aendern
+                name: Endzeit ändern
+                icon: mdi:clock-end
+                hide_state: true
+                vertical: false
+                tap_action:
+                  action: toggle
+                features_position: bottom
+              - type: conditional
+                conditions:
+                  - entity: input_boolean.b2500_timer_endzeit_aendern
+                    state: "on"
+                card:
+                  type: entities
+                  show_header_toggle: false
+                  entities:
+                    - entity: input_datetime.timer_ende
+                      name: ""
+                      icon: mdi:clock-end
               - type: markdown
                 content: |
                   ### Leistung
                 text_only: true
-              - square: false
-                type: grid
-                columns: 1
-                cards:
-                  - type: horizontal-stack
-                    cards:
-                      - type: tile
-                        entity: input_boolean.b2500_timer_leistung_aendern
-                        name: Leistung ändern
-                        icon: mdi:flash
-                        hide_state: true
-                        vertical: true
-                        tap_action:
-                          action: toggle
-                        features_position: bottom
-                      - type: conditional
-                        conditions:
-                          - entity: input_boolean.b2500_timer_leistung_aendern
-                            state: "on"
-                        card:
-                          type: entities
-                          entities:
-                            - entity: input_number.timer_leistung
-                              name: ""
-                              icon: mdi:flash
+              - type: tile
+                entity: input_boolean.b2500_timer_leistung_aendern
+                name: Leistung ändern
+                icon: mdi:flash
+                hide_state: true
+                vertical: false
+                tap_action:
+                  action: toggle
+                features_position: bottom
+              - type: conditional
+                conditions:
+                  - entity: input_boolean.b2500_timer_leistung_aendern
+                    state: "on"
+                card:
+                  type: entities
+                  show_header_toggle: false
+                  entities:
+                    - entity: input_number.timer_leistung
+                      name: ""
+                      icon: mdi:flash
         column_span: 2
       - type: grid
         cards:
@@ -1053,7 +1040,11 @@ views:
             entities:
               - entity: input_select.speicherauswahl
               - entity: input_select.lademodus
-              - entity: input_button.b2500_lademodus_setzen
+            footer:
+              type: buttons
+              entities:
+                - entity: script.b2500pkg_set_charging_mode
+                  name: Lademodus setzen
           - type: vertical-stack
             cards:
               - type: conditional
@@ -1147,6 +1138,9 @@ views:
                     - entity: sensor.b2500_09_cs
                   show_header_toggle: false
     cards: []
+    badges:
+      - type: entity
+        entity: sensor.b2500_status_zeile
   - type: sections
     max_columns: 4
     title: Informationen
@@ -1861,6 +1855,7 @@ views:
             entities:
               - entity: input_number.zeropower_target_value
               - entity: input_number.zeropower_target_deviation
+              - entity: input_number.zeropower_filter_jump_limit
               - entity: input_number.zeropower_stabilization_time
               - entity: input_number.zeropower_b2500_eff
               - entity: input_number.zeropower_min_limit
