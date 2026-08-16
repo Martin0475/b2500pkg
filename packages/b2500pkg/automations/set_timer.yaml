@@ -686,3 +686,80 @@ script:
         response_variable: response
 
     mode: single
+    
+    
+
+  b2500pkg_set_selbstanpassung:
+    alias: B2500PKG_Set_Selbstanpassung
+    description: >
+      Aktiviert die Selbstanpassung für einen oder alle B2500-Speicher.
+      Wenn das Aktionsfeld Speicher leer bleibt, wird
+      input_select.speicherauswahl verwendet.
+
+    fields:
+      speicher:
+        name: Speicher
+        description: Optional. Wenn leer, wird input_select.speicherauswahl verwendet.
+        required: false
+        example: "b2500_01"
+        selector:
+          select:
+            options:
+              - label: "B01"
+                value: "b2500_01"
+              - label: "B02"
+                value: "b2500_02"
+              - label: "B03"
+                value: "b2500_03"
+              - label: "B04"
+                value: "b2500_04"
+              - label: "B05"
+                value: "b2500_05"
+              - label: "B06"
+                value: "b2500_06"
+              - label: "B07"
+                value: "b2500_07"
+              - label: "B08"
+                value: "b2500_08"
+              - label: "B09"
+                value: "b2500_09"
+              - label: "Alle Speicher"
+                value: "Alle_Speicher"
+
+    sequence:
+      - variables:
+          speicher_auswahl: >-
+            {% if speicher is defined and speicher | string | trim != '' %}
+              {{ speicher }}
+            {% else %}
+              {{ states('input_select.speicherauswahl') }}
+            {% endif %}
+
+          all_speicher: "{{ states('input_text.b2500_all') | from_json }}"
+
+          targets: >-
+            {% if speicher_auswahl == 'Alle_Speicher' %}
+              {{ all_speicher }}
+            {% else %}
+              {{ [speicher_auswahl] }}
+            {% endif %}
+
+      - repeat:
+          for_each: "{{ targets }}"
+          sequence:
+            - action: script.turn_on
+              target:
+                entity_id: "script.{{ repeat.item }}_worker"
+              data:
+                variables:
+                  payload: "cd=20,md=1"
+                  followup_payload: "cd=01"
+                  no_check: false
+                  expected_answer:
+                    md: "Selbstanpassung"
+
+            - delay:
+                seconds: 1
+
+    mode: queued
+    max: 10
