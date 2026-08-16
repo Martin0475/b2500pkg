@@ -5,7 +5,7 @@ views:
         cards:
           - type: heading
             heading_style: title
-            heading: B2500 Package 2026-08-09 (Zeropower Leistungsspitzen filtern)
+            heading: B2500 Package 2026-08-17 (Selbstanpassung auf Script umgestellt)
             grid_options:
               columns: 12
               rows: 1
@@ -252,6 +252,17 @@ views:
         coloums: 2
         square: false
         cards:
+          - type: tile
+            entity: script.b2500pkg_set_selbstanpassung
+            icon: mdi:refresh-auto
+            show_entity_picture: false
+            hide_state: true
+            vertical: false
+            features:
+              - type: button
+            features_position: bottom
+            grid_options:
+              columns: full
           - type: vertical-stack
             cards:
               - type: markdown
