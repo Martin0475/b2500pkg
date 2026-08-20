@@ -35,7 +35,7 @@ input_boolean:
     initial: on
 
   req_cd16:
-    name: Erweitere Infos von CD16 abfragen
+    name: Erweiterte Infos von CD16 abfragen
     initial: on
 
 automation:
