@@ -216,13 +216,15 @@ script:
 
           start_gueltig: >-
             {{ not set_start or
-               (start_format_ok and start_sekunde == 0 and
-                (0 <= start_stunde <= 23 and 0 <= start_minute <= 59)) }}
+               (start_format_ok and
+                0 <= start_stunde <= 23 and
+                0 <= start_minute <= 59) }}
 
           ende_gueltig: >-
             {{ not set_ende or
-               (ende_format_ok and ende_sekunde == 0 and
-                (0 <= ende_stunde <= 23 and 0 <= ende_minute <= 59)) }}
+               (ende_format_ok and
+                0 <= ende_stunde <= 23 and
+                0 <= ende_minute <= 59) }}
 
           start_value: >-
             {{ start_stunde ~ ':' ~ start_minute if set_start and start_gueltig else '' }}
