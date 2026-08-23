@@ -1,5 +1,5 @@
 automation:
-  alias: B2500PKG_Repost_CD01_CD15_CD16_und_CD13
+  alias: B2500PKG_Repost_CD01_CD13_CD15_CD16_CD21_CD24_CD30
   description: ""
   triggers:
     - trigger: mqtt
@@ -26,22 +26,56 @@ automation:
       value_template: "{{ value.split(',')[2][0:3] }}"
       id: b2500_cd16
 
+    - trigger: mqtt
+      topic: +/+/device/+/ctrl
+      payload: "cf,df"
+      value_template: >-
+        {% set parts = value.split(',') %}
+        {% if parts | count >= 2 %}
+          {{ parts[0].split('=')[0] | trim }},{{ parts[1].split('=')[0] | trim }}
+        {% else %}
+          unknown
+        {% endif %}
+      id: b2500_cd21
+
+    - trigger: mqtt
+      topic: +/+/device/+/ctrl
+      payload: "id,s,c,i,p"
+      value_template: >-
+        {% set parts = value.split(',') %}
+        {% if parts | count >= 5 %}
+          {{ parts[0].split('=')[0] | trim }},{{ parts[1].split('=')[0] | trim }},{{ parts[2].split('=')[0] | trim }},{{ parts[3].split('=')[0] | trim }},{{ parts[4].split('=')[0] | trim }}
+        {% else %}
+          unknown
+        {% endif %}
+      id: b2500_cd24
+
+    # CD30 wird über die Anfrage zugeordnet.
+    # Die Antwort besteht aus binären 9-Byte-Ereigniseinträgen und
+    # besitzt daher keine sichere key=value-Signatur wie CD21/CD24.
+    - trigger: mqtt
+      topic: +/+/App/+/ctrl
+      payload: "cd=30"
+      id: b2500_cd30_request
+
   conditions: []
 
   actions:
     - variables:
+        device_topic: "{{ trigger.topic | replace('/App/', '/device/') }}"
+
         speicher_nummer: >-
-          {{ 'B2500_01' if trigger.topic == states('input_text.b01_topic') + '/' +
+          {{ 'B2500_01' if device_topic == states('input_text.b01_topic') + '/' +
           states('input_text.b01_typ') + '/device/' + states('input_text.b01_mac')
           + '/ctrl'
-           else 'B2500_02' if trigger.topic == states('input_text.b02_topic') + '/' + states('input_text.b02_typ') + '/device/' + states('input_text.b02_mac') + '/ctrl'
-           else 'B2500_03' if trigger.topic == states('input_text.b03_topic') + '/' + states('input_text.b03_typ') + '/device/' + states('input_text.b03_mac') + '/ctrl'
-           else 'B2500_04' if trigger.topic == states('input_text.b04_topic') + '/' + states('input_text.b04_typ') + '/device/' + states('input_text.b04_mac') + '/ctrl'
-           else 'B2500_05' if trigger.topic == states('input_text.b05_topic') + '/' + states('input_text.b05_typ') + '/device/' + states('input_text.b05_mac') + '/ctrl'
-           else 'B2500_06' if trigger.topic == states('input_text.b06_topic') + '/' + states('input_text.b06_typ') + '/device/' + states('input_text.b06_mac') + '/ctrl'
-           else 'B2500_07' if trigger.topic == states('input_text.b07_topic') + '/' + states('input_text.b07_typ') + '/device/' + states('input_text.b07_mac') + '/ctrl'
-           else 'B2500_08' if trigger.topic == states('input_text.b08_topic') + '/' + states('input_text.b08_typ') + '/device/' + states('input_text.b08_mac') + '/ctrl'
-           else 'B2500_09' if trigger.topic == states('input_text.b09_topic') + '/' + states('input_text.b09_typ') + '/device/' + states('input_text.b09_mac') + '/ctrl'
+           else 'B2500_02' if device_topic == states('input_text.b02_topic') + '/' + states('input_text.b02_typ') + '/device/' + states('input_text.b02_mac') + '/ctrl'
+           else 'B2500_03' if device_topic == states('input_text.b03_topic') + '/' + states('input_text.b03_typ') + '/device/' + states('input_text.b03_mac') + '/ctrl'
+           else 'B2500_04' if device_topic == states('input_text.b04_topic') + '/' + states('input_text.b04_typ') + '/device/' + states('input_text.b04_mac') + '/ctrl'
+           else 'B2500_05' if device_topic == states('input_text.b05_topic') + '/' + states('input_text.b05_typ') + '/device/' + states('input_text.b05_mac') + '/ctrl'
+           else 'B2500_06' if device_topic == states('input_text.b06_topic') + '/' + states('input_text.b06_typ') + '/device/' + states('input_text.b06_mac') + '/ctrl'
+           else 'B2500_07' if device_topic == states('input_text.b07_topic') + '/' + states('input_text.b07_typ') + '/device/' + states('input_text.b07_mac') + '/ctrl'
+           else 'B2500_08' if device_topic == states('input_text.b08_topic') + '/' + states('input_text.b08_typ') + '/device/' + states('input_text.b08_mac') + '/ctrl'
+           else 'B2500_09' if device_topic == states('input_text.b09_topic') + '/' + states('input_text.b09_typ') + '/device/' + states('input_text.b09_mac') + '/ctrl'
            else 'unknown' }}
 
         now_ts: "{{ now().timestamp() }}"
@@ -145,6 +179,97 @@ automation:
                     qos: 0
                     retain: false
                     topic: B2500PKG/{{ speicher_nummer }}/CD16/last_updated
+                    payload: "{{ now_ts }}"
+
+            - conditions:
+                - condition: trigger
+                  id:
+                    - b2500_cd21
+              sequence:
+                - action: mqtt.publish
+                  metadata: {}
+                  data:
+                    qos: 0
+                    retain: true
+                    topic: B2500PKG/{{ speicher_nummer }}/CD21
+                    payload: "{{ trigger.payload }},end21"
+
+                - delay:
+                    seconds: 1
+
+                - action: mqtt.publish
+                  metadata: {}
+                  data:
+                    qos: 0
+                    retain: false
+                    topic: B2500PKG/{{ speicher_nummer }}/CD21/last_updated
+                    payload: "{{ now_ts }}"
+
+            - conditions:
+                - condition: trigger
+                  id:
+                    - b2500_cd24
+              sequence:
+                - action: mqtt.publish
+                  metadata: {}
+                  data:
+                    qos: 0
+                    retain: true
+                    topic: B2500PKG/{{ speicher_nummer }}/CD24
+                    payload: "{{ trigger.payload }},end24"
+
+                - delay:
+                    seconds: 1
+
+                - action: mqtt.publish
+                  metadata: {}
+                  data:
+                    qos: 0
+                    retain: false
+                    topic: B2500PKG/{{ speicher_nummer }}/CD24/last_updated
+                    payload: "{{ now_ts }}"
+
+            - conditions:
+                - condition: trigger
+                  id:
+                    - b2500_cd30_request
+              sequence:
+                # CD30 liefert neben dem eigentlichen Ereignisblock auch
+                # kurze Antworten wie 01ff, 02ff oder 0ff0.
+                # Nur der lange Hauptblock ist für uns relevant:
+                #   - beginnt mit 00
+                #   - muss mindestens 20 Hex-Zeichen lang sein
+                - wait_for_trigger:
+                    - trigger: mqtt
+                      topic: "{{ device_topic }}"
+                      payload: "valid_cd30"
+                      value_template: >-
+                        {% set v = value | string | trim | lower %}
+                        {% if v.startswith('00') and (v | length) >= 20 %}
+                          valid_cd30
+                        {% else %}
+                          ignore
+                        {% endif %}
+                  timeout: "00:00:05"
+                  continue_on_timeout: false
+
+                - action: mqtt.publish
+                  metadata: {}
+                  data:
+                    qos: 0
+                    retain: true
+                    topic: B2500PKG/{{ speicher_nummer }}/CD30
+                    payload: "{{ wait.trigger.payload }}"
+
+                - delay:
+                    seconds: 1
+
+                - action: mqtt.publish
+                  metadata: {}
+                  data:
+                    qos: 0
+                    retain: false
+                    topic: B2500PKG/{{ speicher_nummer }}/CD30/last_updated
                     payload: "{{ now_ts }}"
 
   mode: parallel

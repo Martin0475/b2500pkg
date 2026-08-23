@@ -2096,3 +2096,113 @@ script:
                   entity_id: input_number.b2500_09_status
                 data:
                   value: -1
+
+  b2500pkg_worker_sequence:
+    alias: B2500PKG Worker Sequenz
+    description: >
+      Ruft einen ausgewählten B2500-Worker mit mehreren Payloads
+      nacheinander auf.
+    mode: parallel
+    max: 9
+
+    fields:
+      worker:
+        name: Worker
+        description: B2500-Worker, der verwendet werden soll
+        required: true
+        selector:
+          select:
+            options:
+              - label: B01
+                value: script.b2500_01_worker
+              - label: B02
+                value: script.b2500_02_worker
+              - label: B03
+                value: script.b2500_03_worker
+              - label: B04
+                value: script.b2500_04_worker
+              - label: B05
+                value: script.b2500_05_worker
+              - label: B06
+                value: script.b2500_06_worker
+              - label: B07
+                value: script.b2500_07_worker
+              - label: B08
+                value: script.b2500_08_worker
+              - label: B09
+                value: script.b2500_09_worker
+
+      payloads:
+        name: Payloads
+        description: >
+          Payloads, die nacheinander über den Worker gesendet werden.
+          Beispiel: ["cd=16", "cd=13"]
+        required: true
+        selector:
+          object:
+
+    sequence:
+      # --------------------------------------------------
+      # Eingaben aufbereiten
+      # --------------------------------------------------
+      - variables:
+          worker_clean: "{{ worker | string | trim }}"
+
+          allowed_workers:
+            - script.b2500_01_worker
+            - script.b2500_02_worker
+            - script.b2500_03_worker
+            - script.b2500_04_worker
+            - script.b2500_05_worker
+            - script.b2500_06_worker
+            - script.b2500_07_worker
+            - script.b2500_08_worker
+            - script.b2500_09_worker
+
+          payload_list: >-
+            {% if payloads is string %}
+              {{
+                payloads.splitlines()
+                | map('trim')
+                | reject('eq', '')
+                | list
+              }}
+            {% else %}
+              {{ payloads | list }}
+            {% endif %}
+
+      # --------------------------------------------------
+      # Prüfung
+      # --------------------------------------------------
+      - if:
+          - condition: template
+            value_template: >-
+              {{
+                worker_clean not in allowed_workers
+                or payload_list | count == 0
+              }}
+        then:
+          - stop: "Ungültiger Worker oder keine Payloads angegeben"
+
+      # --------------------------------------------------
+      # Payloads nacheinander an den Worker geben
+      # --------------------------------------------------
+      - repeat:
+          for_each: "{{ payload_list }}"
+          sequence:
+
+            - action: "{{ worker_clean }}"
+              data:
+                payload: "{{ repeat.item | string | trim }}"
+                followup_payload: ""
+                no_check: true
+                expected_answer: {}
+
+            # Gleicher Abstand wie bisher zwischen
+            # Payload und Followup im Worker
+            - if:
+                - condition: template
+                  value_template: "{{ not repeat.last }}"
+              then:
+                - delay:
+                    seconds: 2
