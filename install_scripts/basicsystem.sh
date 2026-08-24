@@ -69,7 +69,6 @@ done <<'EOF'
 
 EOF
 
-exit 1
 # ============================================================
 # Aktuelle Dateien direkt in b2500pkg
 # ============================================================
@@ -118,7 +117,7 @@ done
 
 rm -f /config/dashboards/b2500pkg_dashboard.yaml
 
-
+exit 1
 sleep 5
 
 
