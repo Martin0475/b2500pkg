@@ -5,6 +5,7 @@ mkdir /config/packages/b2500pkg/automations
 rm -f /config/packages/b2500pkg/automations/request_infos.yaml
 rm -f /config/packages/b2500pkg/automations/repost_cd01_cd13.yaml
 
+rm -f /config/packages/b2500pkg/automations/mqtt_discovery_script.yaml
 rm -f /config/packages/b2500pkg/automations/delete_discovery.yaml
 rm -f /config/packages/b2500pkg/automations/b01_sensor_discovery.yaml
 rm -f /config/packages/b2500pkg/automations/b02_sensor_discovery.yaml
@@ -132,7 +133,7 @@ wget -q -O /config/packages/b2500pkg/automations/b05e2_voltage_discovery.yaml ht
 wget -q -O /config/packages/b2500pkg/automations/b06e2_voltage_discovery.yaml https://raw.githubusercontent.com/Martin0475/b2500pkg/main/packages/b2500pkg/automations/b06e2_voltage_discovery.yaml
 wget -q -O /config/packages/b2500pkg/automations/b07e2_voltage_discovery.yaml https://raw.githubusercontent.com/Martin0475/b2500pkg/main/packages/b2500pkg/automations/b07e2_voltage_discovery.yaml
 wget -q -O /config/packages/b2500pkg/automations/b08e2_voltage_discovery.yaml https://raw.githubusercontent.com/Martin0475/b2500pkg/main/packages/b2500pkg/automations/b08e2_voltage_discovery.yaml
-wget -q -O /config/packages/b2500pkg/automations/b09e2_voltage_discovery.yaml https://raw.githubusercontent.com/Martin0475/b2500pkg/main/packages/b2500pkg/automations/b09e2_voltage_discovery.yaml
+wget -q -O /config/packages/b2500pkg/automations/mqtt_discovery_script.yaml https://raw.githubusercontent.com/Martin0475/b2500pkg/main/packages/b2500pkg/automations/mqtt_discovery_script.yaml
 
 wget -q -O /config/packages/b2500pkg/automations/set_timer.yaml https://raw.githubusercontent.com/Martin0475/b2500pkg/main/packages/b2500pkg/automations/set_timer.yaml
 wget -q -O /config/packages/b2500pkg/automations/set_outputs.yaml https://raw.githubusercontent.com/Martin0475/b2500pkg/main/packages/b2500pkg/automations/set_outputs.yaml
