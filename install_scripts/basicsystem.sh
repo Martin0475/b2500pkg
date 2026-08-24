@@ -117,7 +117,6 @@ done
 
 rm -f /config/dashboards/b2500pkg_dashboard.yaml
 
-exit 1
 sleep 5
 
 
