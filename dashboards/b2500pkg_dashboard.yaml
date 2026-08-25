@@ -34,24 +34,6 @@ views:
               - entity: input_boolean.req_start
             show_header_toggle: false
             title: Abfrageeinstellungen
-        column_span: 1
-      - type: grid
-        cards:
-          - type: entities
-            entities:
-              - entity: input_select.speicherauswahl
-              - entity: input_button.test_config
-            title: Konfiguration testen
-            footer:
-              type: buttons
-              entities:
-                - entity: automation.b2500pkg_speicherliste_aktualisieren
-                  name: Speicherliste aktualisieren
-                  tap_action:
-                    action: call-service
-                    service: automation.trigger
-                    service_data:
-                      entity_id: automation.b2500pkg_speicherliste_aktualisieren
           - type: entities
             entities:
               - entity: input_text.b01_topic
@@ -115,22 +97,91 @@ views:
               - entity: input_text.b09_mac
             show_header_toggle: false
             title: B09 Einstellungen
+        column_span: 1
       - type: grid
         cards:
+          - type: entities
+            entities:
+              - entity: input_select.speicherauswahl
+            title: Speicherliste
+            footer:
+              type: buttons
+              entities:
+                - entity: automation.b2500pkg_speicherliste_aktualisieren
+                  name: Speicherliste aktualisieren
+                  tap_action:
+                    action: call-service
+                    service: automation.trigger
+                    service_data:
+                      entity_id: automation.b2500pkg_speicherliste_aktualisieren
           - type: heading
             heading: MQTT Entitäten anlegen / löschen
             heading_style: title
-          - type: tile
-            grid_options:
-              columns: full
+          - show_name: true
+            show_icon: true
+            type: button
             entity: script.b2500pkg_discovery_script
-            icon: mdi:reload
-            show_entity_picture: false
-            hide_state: true
-            vertical: false
+            icon: mdi:refresh-auto
+          - show_name: true
+            show_icon: true
+            type: button
+            name: Test starten
+            icon: mdi:test-tube
+            tap_action:
+              action: perform-action
+              perform_action: script.b2500pkg_test_config
+            show_state: false
+          - type: heading
+            icon: mdi:test-tube
+            heading: Konfiguration testen
+            heading_style: title
+          - type: tile
+            entity: input_select.b2500pkg_test_speicher
             features:
-              - type: button
-            features_position: bottom
+              - type: select-options
+          - type: tile
+            entity: input_select.b2500pkg_test_befehl
+            features:
+              - type: select-options
+          - type: markdown
+            title: B2500PKG Status
+            grid_options:
+              columns: 12
+              rows: 12
+            content: >-
+              {% set e = 'sensor.b2500pkg_status' %} {% set status = states(e) |
+              upper %} {% set titel = state_attr(e, 'titel') or 'B2500PKG' %} {%
+              set untertitel = state_attr(e, 'untertitel') or '' %} {% set
+              meldung = state_attr(e, 'meldung') or '' %} {% set details =
+              state_attr(e, 'details') or '' %} {% set telegramm = state_attr(e,
+              'telegramm') or '' %} {% set topic = state_attr(e, 'topic') or ''
+              %} {% set quelle = state_attr(e, 'quelle') or '' %}
+
+              <center> <b>{{ titel }}</b> {% if untertitel %}<br>{{ untertitel
+              }}{% endif %} </center> <br>
+
+              {% if status in ['OK', 'ERFOLGREICH', 'SUCCESS'] %} 🟢 <b>{{
+              meldung if meldung else 'Erfolgreich' }}</b> {% elif status in
+              ['LAEUFT', 'RUNNING'] %} 🟡 <b>{{ meldung if meldung else 'Läuft
+              …' }}</b> {% elif status in ['WARNUNG', 'WARNING',
+              'REPOST_FEHLER'] %} 🟠 <b>{{ meldung if meldung else 'Warnung'
+              }}</b> {% elif status in ['FEHLER', 'ERROR', 'KEINE_ANTWORT',
+              'KEINE_PASSENDE_ANTWORT'] %} 🔴 <b>{{ meldung if meldung else
+              'Fehler' }}</b> {% else %} ⚪ <b>{{ meldung if meldung else status
+              }}</b> {% endif %}
+
+              {% if quelle %} <br><br><b>Quelle:</b><br>{{ quelle }} {% endif %}
+
+              {% if details %} <br><br><b>Details:</b><br>{{ details |
+              replace('\n', '<br>') }} {% endif %}
+
+              {% if topic %} <br><br><b>Topic:</b><br><code>{{ topic }}</code>
+              {% endif %}
+
+              {% if telegramm %} <br><br><b>Telegramm:</b><br> <pre>{{ telegramm
+              }}</pre> {% endif %}
+      - type: grid
+        cards: []
     type: sections
     max_columns: 4
     cards:
