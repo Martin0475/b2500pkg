@@ -1,90 +1,328 @@
-input_button:
-  test_config:
-    name: Konfiguration testen
+input_select:
+  b2500pkg_test_speicher:
+    name: Speicher
+    options:
+      - b2500_01
+      - b2500_02
+      - b2500_03
+      - b2500_04
+      - b2500_05
+      - b2500_06
+      - b2500_07
+      - b2500_08
+      - b2500_09
 
-automation:
-  alias: B2500PKG_Test_Config
-  description: ""
-  triggers:
-    - trigger: state
-      entity_id:
-        - input_button.test_config
-      to: null
-  conditions: []
-  actions:
+  b2500pkg_test_befehl:
+    name: Befehl
+    options:
+      - cd01
+      - cd13
+      - cd15
+      - cd16
+      - cd21
+      - cd30
+
+script:
+  b2500pkg_test_config:
+    alias: B2500PKG Test Config
+    description: Testet einen B2500-Abfragebefehl. Startet zuerst einen Rohdaten-Capture, sendet danach den Befehl und prüft anschließend sowohl die passende Geräteantwort
+      als auch die Einsortierung durch den Repost.
+    mode: single
+    fields:
+      speicher:
+        name: Speicherauswahl
+        description: Zu testender B2500 Speicher
+        required: true
+        selector:
+          select:
+            options:
+            - label: B01
+              value: b2500_01
+            - label: B02
+              value: b2500_02
+            - label: B03
+              value: b2500_03
+            - label: B04
+              value: b2500_04
+            - label: B05
+              value: b2500_05
+            - label: B06
+              value: b2500_06
+            - label: B07
+              value: b2500_07
+            - label: B08
+              value: b2500_08
+            - label: B09
+              value: b2500_09
+      befehl:
+        name: Zu testender Befehl
+        description: B2500-Abfrage, die getestet werden soll
+        required: true
+        selector:
+          select:
+            options:
+            - label: CD01
+              value: cd01
+            - label: CD13
+              value: cd13
+            - label: CD15
+              value: cd15
+            - label: CD16
+              value: cd16
+            - label: CD21
+              value: cd21
+            - label: CD30
+              value: cd30
+    sequence:
     - variables:
-        b2500_mac: >-
-          {{ states('input_text.b01_mac') if states('input_select.speicherauswahl') == 'b2500_01' else
-             states('input_text.b02_mac') if states('input_select.speicherauswahl') == 'b2500_02' else
-             states('input_text.b03_mac') if states('input_select.speicherauswahl') == 'b2500_03' else
-             states('input_text.b04_mac') if states('input_select.speicherauswahl') == 'b2500_04' else
-             states('input_text.b05_mac') if states('input_select.speicherauswahl') == 'b2500_05' else
-             states('input_text.b06_mac') if states('input_select.speicherauswahl') == 'b2500_06' else
-             states('input_text.b07_mac') if states('input_select.speicherauswahl') == 'b2500_07' else
-             states('input_text.b08_mac') if states('input_select.speicherauswahl') == 'b2500_08' else
-             states('input_text.b09_mac') if states('input_select.speicherauswahl') == 'b2500_09' else
-             'unknown'
+        speicher_clean: >-
+          {{
+            speicher
+            | default(states('input_select.b2500pkg_test_speicher'), true)
+            | string
+            | trim
           }}
-        b2500_typ: >-
-          {{ states('input_text.b01_typ') if states('input_select.speicherauswahl') == 'b2500_01' else
-             states('input_text.b02_typ') if states('input_select.speicherauswahl') == 'b2500_02' else
-             states('input_text.b03_typ') if states('input_select.speicherauswahl') == 'b2500_03' else
-             states('input_text.b04_typ') if states('input_select.speicherauswahl') == 'b2500_04' else
-             states('input_text.b05_typ') if states('input_select.speicherauswahl') == 'b2500_05' else
-             states('input_text.b06_typ') if states('input_select.speicherauswahl') == 'b2500_06' else
-             states('input_text.b07_typ') if states('input_select.speicherauswahl') == 'b2500_07' else
-             states('input_text.b08_typ') if states('input_select.speicherauswahl') == 'b2500_08' else
-             states('input_text.b09_typ') if states('input_select.speicherauswahl') == 'b2500_09' else
-             'unknown'
-          }}
-        b2500_topic: >-
-          {{ states('input_text.b01_topic') if states('input_select.speicherauswahl') == 'b2500_01' else
-             states('input_text.b02_topic') if states('input_select.speicherauswahl') == 'b2500_02' else
-             states('input_text.b03_topic') if states('input_select.speicherauswahl') == 'b2500_03' else
-             states('input_text.b04_topic') if states('input_select.speicherauswahl') == 'b2500_04' else
-             states('input_text.b05_topic') if states('input_select.speicherauswahl') == 'b2500_05' else
-             states('input_text.b06_topic') if states('input_select.speicherauswahl') == 'b2500_06' else
-             states('input_text.b07_topic') if states('input_select.speicherauswahl') == 'b2500_07' else
-             states('input_text.b08_topic') if states('input_select.speicherauswahl') == 'b2500_08' else
-             states('input_text.b09_topic') if states('input_select.speicherauswahl') == 'b2500_09' else
-             'unknown'
-          }}
-            
+
+        befehl_clean: >-
+          {{
+            befehl
+            | default(states('input_select.b2500pkg_test_befehl'), true)
+            | string
+            | lower
+            | trim
+          }}        
+        speicher_nummer: '{{ speicher_clean[-2:] }}'
+        allowed_speicher:
+        - b2500_01
+        - b2500_02
+        - b2500_03
+        - b2500_04
+        - b2500_05
+        - b2500_06
+        - b2500_07
+        - b2500_08
+        - b2500_09
+        allowed_befehle:
+        - cd01
+        - cd13
+        - cd15
+        - cd16
+        - cd21
+        - cd30
+        cd_nummer: '{{ befehl_clean[2:] }}'
+        cd_name: '{{ befehl_clean | upper }}'
+        payload: cd={{ befehl_clean[2:] }}
+        b2500_mac: '{{ states(''input_text.b'' ~ speicher_nummer ~ ''_mac'') | trim }}'
+        b2500_typ: '{{ states(''input_text.b'' ~ speicher_nummer ~ ''_typ'') | trim }}'
+        b2500_topic: '{{ states(''input_text.b'' ~ speicher_nummer ~ ''_topic'') | trim }}'
+    - variables:
+        request_topic: '{{ b2500_topic }}/{{ b2500_typ }}/App/{{ b2500_mac }}/ctrl'
+        device_topic: '{{ b2500_topic }}/{{ b2500_typ }}/device/{{ b2500_mac }}/ctrl'
+        repost_topic: B2500PKG/B2500_{{ speicher_nummer }}/{{ cd_name }}
+        capture_topic: B2500PKG/TEST/B2500_{{ speicher_nummer }}/RAW
+    - if:
+      - condition: template
+        value_template: "{{\n  speicher_clean not in allowed_speicher\n  or befehl_clean not in allowed_befehle\n  or b2500_mac | lower in ['0', '', 'unknown', 'unavailable',\
+          \ 'none']\n  or b2500_typ | lower in ['', 'unknown', 'unavailable', 'none']\n  or b2500_topic | lower in ['', 'unknown', 'unavailable', 'none']\n}}"
+      then:
+      - event: b2500pkg_status
+        event_data:
+          status: FEHLER
+          titel: B2500PKG Test
+          untertitel: '{{ speicher_clean | upper | replace(''B2500_'', ''B'') }} – {{ cd_name }}'
+          meldung: Ungültige Speicher-Konfiguration oder Eingabe
+          details: 'Speicher: {{ speicher_clean }}
+
+            Befehl: {{ cd_name }}'
+          telegramm: ''
+          topic: '{{ repost_topic }}'
+          quelle: script.b2500pkg_test_config
+      - stop: Ungültige Speicher-Konfiguration oder Eingabe
     - action: mqtt.publish
-      metadata: {}
+      data:
+        topic: '{{ repost_topic }}'
+        payload: ''
+        retain: true
+        qos: 0
+    - action: mqtt.publish
+      data:
+        topic: '{{ capture_topic }}'
+        payload: ''
+        retain: true
+        qos: 0
+    - event: b2500pkg_status
+      event_data:
+        status: LAEUFT
+        titel: B2500PKG Test
+        untertitel: '{{ speicher_clean | upper | replace(''B2500_'', ''B'') }} – {{ cd_name }}'
+        meldung: Test läuft
+        details: 'Sende {{ payload }}
+
+          Rohantwort und Repost werden geprüft'
+        telegramm: ''
+        topic: '{{ repost_topic }}'
+        quelle: script.b2500pkg_test_config
+    - action: script.turn_on
+      target:
+        entity_id: script.b2500pkg_test_raw_capture
+      data:
+        variables:
+          device_topic: '{{ device_topic }}'
+          capture_topic: '{{ capture_topic }}'
+          befehl: '{{ befehl_clean }}'
+    - delay:
+        milliseconds: 250
+    - action: mqtt.publish
       data:
         evaluate_payload: false
         qos: 0
         retain: false
-        topic: "{{ b2500_topic }}/{{ b2500_typ }}/App/{{ b2500_mac }}/ctrl"
-        payload: cd=01
-    - action: notify.persistent_notification
-      metadata: {}
-      data:
-        message: >-
-          Teste ob Speicher {{ states('input_select.speicherauswahl') }} auf {{
-          b2500_topic }}, {{ b2500_typ }} und {{ b2500_mac }} antwortet.
-        title: B2500PKG_test_config
+        topic: '{{ request_topic }}'
+        payload: '{{ payload }}'
     - wait_for_trigger:
-        - trigger: mqtt
-          topic: "{{ b2500_topic }}/{{ b2500_typ }}/device/{{ b2500_mac }}/ctrl"
+      - trigger: mqtt
+        topic: '{{ capture_topic }}'
       timeout:
-        hours: 0
-        minutes: 0
         seconds: 10
-        milliseconds: 0
+      continue_on_timeout: true
+    - variables:
+        raw_received: '{{ wait.trigger is not none }}'
+        raw_payload: '{{ wait.trigger.payload if wait.trigger is not none else '''' }}'
+    - wait_for_trigger:
+      - trigger: mqtt
+        topic: '{{ repost_topic }}'
+      timeout:
+        seconds: 5
+      continue_on_timeout: true
+    - variables:
+        repost_received: '{{ wait.trigger is not none }}'
+        repost_payload: '{{ wait.trigger.payload if wait.trigger is not none else '''' }}'
+    - variables:
+        test_result: "{{ 'ERFOLGREICH' if raw_received and repost_received\n  else 'REPOST_FEHLER' if raw_received and not repost_received\n  else 'RAW_CAPTURE_FEHLER'\
+          \ if (not raw_received) and repost_received\n  else 'KEINE_PASSENDE_ANTWORT' }}"
+    - event: b2500pkg_status
+      event_data:
+        status: '{{ test_result | trim }}'
+        titel: B2500PKG Test
+        untertitel: '{{ speicher_clean | upper | replace(''B2500_'', ''B'') }} – {{ cd_name }}'
+        meldung: '{% if test_result == ''ERFOLGREICH'' %}
+
+          Test erfolgreich
+
+          {% elif test_result == ''REPOST_FEHLER'' %}
+
+          Rohantwort empfangen, aber Repost nicht erkannt
+
+          {% elif test_result == ''RAW_CAPTURE_FEHLER'' %}
+
+          Repost erkannt, Rohdaten-Capture fehlgeschlagen
+
+          {% else %}
+
+          Keine passende Antwort empfangen
+
+          {% endif %}'
+        details: 'Rohantwort: {{ ''Ja'' if raw_received else ''Nein'' }}
+
+          Repost erkannt: {{ ''Ja'' if repost_received else ''Nein'' }}
+
+          Request: {{ request_topic }}
+
+          Repost: {{ repost_topic }}'
+        telegramm: '{{ raw_payload if raw_payload else repost_payload }}'
+        topic: '{{ repost_topic }}'
+        quelle: script.b2500pkg_test_config
+  b2500pkg_test_raw_capture:
+    alias: B2500PKG Test Raw Capture
+    description: 'Interner Helfer für test_config: wartet vor dem Senden auf die passende Rohantwort und legt sie temporär retained ab.'
+    mode: parallel
+    max: 10
+    sequence:
     - choose:
-        - conditions:
-            - condition: template
-              value_template: "{{ wait.trigger is not none }}"
-          sequence:
-            - data:
-                title: B2500PKG_test_config
-                message: "Empfangen: {{ wait.trigger.payload }}"
-              action: notify.persistent_notification
-      default:
-        - data:
-            title: B2500PKG_test_config
-            message: Keine Antwort empfangen.
-          action: notify.persistent_notification
-  mode: single
+      - conditions:
+        - condition: template
+          value_template: '{{ befehl == ''cd01'' }}'
+        sequence:
+        - wait_for_trigger:
+          - trigger: mqtt
+            topic: '{{ device_topic }}'
+            payload: w1
+            value_template: '{{- (value.split('','')[2].split(''='')[0] | trim) if (value.split('','') | count >= 3) else ''unknown'' -}}'
+          timeout:
+            seconds: 10
+          continue_on_timeout: true
+      - conditions:
+        - condition: template
+          value_template: '{{ befehl == ''cd13'' }}'
+        sequence:
+        - wait_for_trigger:
+          - trigger: mqtt
+            topic: '{{ device_topic }}'
+            payload: a0
+            value_template: '{{- (value.split('','')[0].split(''='')[0] | trim) if value else ''unknown'' -}}'
+          timeout:
+            seconds: 10
+          continue_on_timeout: true
+      - conditions:
+        - condition: template
+          value_template: '{{ befehl == ''cd15'' }}'
+        sequence:
+        - wait_for_trigger:
+          - trigger: mqtt
+            topic: '{{ device_topic }}'
+            payload: pe
+            value_template: '{{- (value.split('','')[0].split(''='')[0] | trim) if value else ''unknown'' -}}'
+          timeout:
+            seconds: 10
+          continue_on_timeout: true
+      - conditions:
+        - condition: template
+          value_template: '{{ befehl == ''cd16'' }}'
+        sequence:
+        - wait_for_trigger:
+          - trigger: mqtt
+            topic: '{{ device_topic }}'
+            payload: m1
+            value_template: '{{- (value.split('','')[2].split(''='')[0] | trim) if (value.split('','') | count >= 3) else ''unknown'' -}}'
+          timeout:
+            seconds: 10
+          continue_on_timeout: true
+      - conditions:
+        - condition: template
+          value_template: '{{ befehl == ''cd21'' }}'
+        sequence:
+        - wait_for_trigger:
+          - trigger: mqtt
+            topic: '{{ device_topic }}'
+            payload: cf,df
+            value_template: '{{- ((value.split('','')[0].split(''='')[0] | trim) ~ '','' ~ (value.split('','')[1].split(''='')[0] | trim)) if (value.split('','')
+              | count >= 2) else ''unknown'' -}}'
+          timeout:
+            seconds: 10
+          continue_on_timeout: true
+      - conditions:
+        - condition: template
+          value_template: '{{ befehl == ''cd30'' }}'
+        sequence:
+        - wait_for_trigger:
+          - trigger: mqtt
+            topic: '{{ device_topic }}'
+            payload: valid_cd30
+            value_template: '{{- ''valid_cd30'' if ((value | string | trim | lower).startswith(''00'') and ((value | string | trim) | length) >= 20) else ''ignore''
+              -}}'
+          timeout:
+            seconds: 10
+          continue_on_timeout: true
+    - variables:
+        capture_received: '{{ wait.trigger is not none }}'
+        capture_payload: '{{ wait.trigger.payload if wait.trigger is not none else '''' }}'
+    - if:
+      - condition: template
+        value_template: '{{ capture_received }}'
+      then:
+      - action: mqtt.publish
+        data:
+          topic: '{{ capture_topic }}'
+          payload: '{{ capture_payload }}'
+          retain: true
+          qos: 0
