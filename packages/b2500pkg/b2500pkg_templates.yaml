@@ -160,22 +160,6 @@ template:
           {% set w1 = states('sensor.b2500_09_w1') | float(0) %}
           {% set w2 = states('sensor.b2500_09_w2') | float(0) %}
           {{ (w1 + w2) | round(2) }}
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   - sensor:
       - name: "B2500 Status Zeile"
@@ -218,36 +202,6 @@ template:
 
             {{ result.items | join(' | ') if result.items else 'Keine Speicher' }}
           {% endif %}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   - sensor:
       - name: "B01_min_Spannung"
@@ -709,6 +663,30 @@ template:
           0
         {% endif %}
         
+  - trigger:
+      - platform: event
+        event_type: b2500pkg_status
+    sensor:
+      - name: B2500PKG Status
+        unique_id: b2500pkg_status
+        icon: mdi:information-outline
+        state: >-
+          {{ trigger.event.data.status | default('INFO') }}
+        attributes:
+          titel: >-
+            {{ trigger.event.data.titel | default('B2500PKG') }}
+          untertitel: >-
+            {{ trigger.event.data.untertitel | default('') }}
+          meldung: >-
+            {{ trigger.event.data.meldung | default('') }}
+          details: >-
+            {{ trigger.event.data.details | default('') }}
+          telegramm: >-
+            {{ trigger.event.data.telegramm | default('') }}
+          topic: >-
+            {{ trigger.event.data.topic | default('') }}
+          quelle: >-
+            {{ trigger.event.data.quelle | default('') }}
         
         
   
