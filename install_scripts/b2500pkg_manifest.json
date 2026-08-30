@@ -22,7 +22,7 @@
     "low_voltage_protection.yaml",
     "worker_script.yaml",
     "speicherliste_aktualisieren.yaml",
-    "speichererkennung1.yaml"
+    "speichererkennung.yaml"
   ],
   "dashboards": [
     "b2500pkg_dashboard.yaml"
