@@ -1,3 +1,587 @@
+# ============================================================
+# B2500PKG - interner Repost-Cache
+#
+# Pro Speicher ein Cache-Sensor.
+# Die Attribute cd01/cd13/... enthalten jeweils das zuletzt
+# vollständig repostete JSON-Dictionary.
+#
+# Diese Sensoren werden nicht vom Recorder aufgezeichnet.
+# ============================================================
+
+template:
+
+  - triggers:
+      - trigger: mqtt
+        topic: "B2500PKG/B2500_01/CD01"
+        id: cd01
+      - trigger: mqtt
+        topic: "B2500PKG/B2500_01/CD13"
+        id: cd13
+      - trigger: mqtt
+        topic: "B2500PKG/B2500_01/CD15"
+        id: cd15
+      - trigger: mqtt
+        topic: "B2500PKG/B2500_01/CD16"
+        id: cd16
+      - trigger: mqtt
+        topic: "B2500PKG/B2500_01/CD21"
+        id: cd21
+      - trigger: mqtt
+        topic: "B2500PKG/B2500_01/CD24"
+        id: cd24
+
+    sensor:
+      - name: B2500 Cache 01
+        unique_id: b2500_cache_01
+        icon: mdi:database
+        state: "OK"
+        attributes:
+          cd01: >-
+            {% if trigger.id == 'cd01' %}
+              {{ trigger.payload_json }}
+            {% else %}
+              {{ this.attributes.get('cd01', {}) }}
+            {% endif %}
+          cd13: >-
+            {% if trigger.id == 'cd13' %}
+              {{ trigger.payload_json }}
+            {% else %}
+              {{ this.attributes.get('cd13', {}) }}
+            {% endif %}
+          cd15: >-
+            {% if trigger.id == 'cd15' %}
+              {{ trigger.payload_json }}
+            {% else %}
+              {{ this.attributes.get('cd15', {}) }}
+            {% endif %}
+          cd16: >-
+            {% if trigger.id == 'cd16' %}
+              {{ trigger.payload_json }}
+            {% else %}
+              {{ this.attributes.get('cd16', {}) }}
+            {% endif %}
+          cd21: >-
+            {% if trigger.id == 'cd21' %}
+              {{ trigger.payload_json }}
+            {% else %}
+              {{ this.attributes.get('cd21', {}) }}
+            {% endif %}
+          cd24: >-
+            {% if trigger.id == 'cd24' %}
+              {{ trigger.payload_json }}
+            {% else %}
+              {{ this.attributes.get('cd24', {}) }}
+            {% endif %}
+
+  - triggers:
+      - trigger: mqtt
+        topic: "B2500PKG/B2500_02/CD01"
+        id: cd01
+      - trigger: mqtt
+        topic: "B2500PKG/B2500_02/CD13"
+        id: cd13
+      - trigger: mqtt
+        topic: "B2500PKG/B2500_02/CD15"
+        id: cd15
+      - trigger: mqtt
+        topic: "B2500PKG/B2500_02/CD16"
+        id: cd16
+      - trigger: mqtt
+        topic: "B2500PKG/B2500_02/CD21"
+        id: cd21
+      - trigger: mqtt
+        topic: "B2500PKG/B2500_02/CD24"
+        id: cd24
+
+    sensor:
+      - name: B2500 Cache 02
+        unique_id: b2500_cache_02
+        icon: mdi:database
+        state: "OK"
+        attributes:
+          cd01: >-
+            {% if trigger.id == 'cd01' %}
+              {{ trigger.payload_json }}
+            {% else %}
+              {{ this.attributes.get('cd01', {}) }}
+            {% endif %}
+          cd13: >-
+            {% if trigger.id == 'cd13' %}
+              {{ trigger.payload_json }}
+            {% else %}
+              {{ this.attributes.get('cd13', {}) }}
+            {% endif %}
+          cd15: >-
+            {% if trigger.id == 'cd15' %}
+              {{ trigger.payload_json }}
+            {% else %}
+              {{ this.attributes.get('cd15', {}) }}
+            {% endif %}
+          cd16: >-
+            {% if trigger.id == 'cd16' %}
+              {{ trigger.payload_json }}
+            {% else %}
+              {{ this.attributes.get('cd16', {}) }}
+            {% endif %}
+          cd21: >-
+            {% if trigger.id == 'cd21' %}
+              {{ trigger.payload_json }}
+            {% else %}
+              {{ this.attributes.get('cd21', {}) }}
+            {% endif %}
+          cd24: >-
+            {% if trigger.id == 'cd24' %}
+              {{ trigger.payload_json }}
+            {% else %}
+              {{ this.attributes.get('cd24', {}) }}
+            {% endif %}
+
+  - triggers:
+      - trigger: mqtt
+        topic: "B2500PKG/B2500_03/CD01"
+        id: cd01
+      - trigger: mqtt
+        topic: "B2500PKG/B2500_03/CD13"
+        id: cd13
+      - trigger: mqtt
+        topic: "B2500PKG/B2500_03/CD15"
+        id: cd15
+      - trigger: mqtt
+        topic: "B2500PKG/B2500_03/CD16"
+        id: cd16
+      - trigger: mqtt
+        topic: "B2500PKG/B2500_03/CD21"
+        id: cd21
+      - trigger: mqtt
+        topic: "B2500PKG/B2500_03/CD24"
+        id: cd24
+
+    sensor:
+      - name: B2500 Cache 03
+        unique_id: b2500_cache_03
+        icon: mdi:database
+        state: "OK"
+        attributes:
+          cd01: >-
+            {% if trigger.id == 'cd01' %}
+              {{ trigger.payload_json }}
+            {% else %}
+              {{ this.attributes.get('cd01', {}) }}
+            {% endif %}
+          cd13: >-
+            {% if trigger.id == 'cd13' %}
+              {{ trigger.payload_json }}
+            {% else %}
+              {{ this.attributes.get('cd13', {}) }}
+            {% endif %}
+          cd15: >-
+            {% if trigger.id == 'cd15' %}
+              {{ trigger.payload_json }}
+            {% else %}
+              {{ this.attributes.get('cd15', {}) }}
+            {% endif %}
+          cd16: >-
+            {% if trigger.id == 'cd16' %}
+              {{ trigger.payload_json }}
+            {% else %}
+              {{ this.attributes.get('cd16', {}) }}
+            {% endif %}
+          cd21: >-
+            {% if trigger.id == 'cd21' %}
+              {{ trigger.payload_json }}
+            {% else %}
+              {{ this.attributes.get('cd21', {}) }}
+            {% endif %}
+          cd24: >-
+            {% if trigger.id == 'cd24' %}
+              {{ trigger.payload_json }}
+            {% else %}
+              {{ this.attributes.get('cd24', {}) }}
+            {% endif %}
+
+  - triggers:
+      - trigger: mqtt
+        topic: "B2500PKG/B2500_04/CD01"
+        id: cd01
+      - trigger: mqtt
+        topic: "B2500PKG/B2500_04/CD13"
+        id: cd13
+      - trigger: mqtt
+        topic: "B2500PKG/B2500_04/CD15"
+        id: cd15
+      - trigger: mqtt
+        topic: "B2500PKG/B2500_04/CD16"
+        id: cd16
+      - trigger: mqtt
+        topic: "B2500PKG/B2500_04/CD21"
+        id: cd21
+      - trigger: mqtt
+        topic: "B2500PKG/B2500_04/CD24"
+        id: cd24
+
+    sensor:
+      - name: B2500 Cache 04
+        unique_id: b2500_cache_04
+        icon: mdi:database
+        state: "OK"
+        attributes:
+          cd01: >-
+            {% if trigger.id == 'cd01' %}
+              {{ trigger.payload_json }}
+            {% else %}
+              {{ this.attributes.get('cd01', {}) }}
+            {% endif %}
+          cd13: >-
+            {% if trigger.id == 'cd13' %}
+              {{ trigger.payload_json }}
+            {% else %}
+              {{ this.attributes.get('cd13', {}) }}
+            {% endif %}
+          cd15: >-
+            {% if trigger.id == 'cd15' %}
+              {{ trigger.payload_json }}
+            {% else %}
+              {{ this.attributes.get('cd15', {}) }}
+            {% endif %}
+          cd16: >-
+            {% if trigger.id == 'cd16' %}
+              {{ trigger.payload_json }}
+            {% else %}
+              {{ this.attributes.get('cd16', {}) }}
+            {% endif %}
+          cd21: >-
+            {% if trigger.id == 'cd21' %}
+              {{ trigger.payload_json }}
+            {% else %}
+              {{ this.attributes.get('cd21', {}) }}
+            {% endif %}
+          cd24: >-
+            {% if trigger.id == 'cd24' %}
+              {{ trigger.payload_json }}
+            {% else %}
+              {{ this.attributes.get('cd24', {}) }}
+            {% endif %}
+
+  - triggers:
+      - trigger: mqtt
+        topic: "B2500PKG/B2500_05/CD01"
+        id: cd01
+      - trigger: mqtt
+        topic: "B2500PKG/B2500_05/CD13"
+        id: cd13
+      - trigger: mqtt
+        topic: "B2500PKG/B2500_05/CD15"
+        id: cd15
+      - trigger: mqtt
+        topic: "B2500PKG/B2500_05/CD16"
+        id: cd16
+      - trigger: mqtt
+        topic: "B2500PKG/B2500_05/CD21"
+        id: cd21
+      - trigger: mqtt
+        topic: "B2500PKG/B2500_05/CD24"
+        id: cd24
+
+    sensor:
+      - name: B2500 Cache 05
+        unique_id: b2500_cache_05
+        icon: mdi:database
+        state: "OK"
+        attributes:
+          cd01: >-
+            {% if trigger.id == 'cd01' %}
+              {{ trigger.payload_json }}
+            {% else %}
+              {{ this.attributes.get('cd01', {}) }}
+            {% endif %}
+          cd13: >-
+            {% if trigger.id == 'cd13' %}
+              {{ trigger.payload_json }}
+            {% else %}
+              {{ this.attributes.get('cd13', {}) }}
+            {% endif %}
+          cd15: >-
+            {% if trigger.id == 'cd15' %}
+              {{ trigger.payload_json }}
+            {% else %}
+              {{ this.attributes.get('cd15', {}) }}
+            {% endif %}
+          cd16: >-
+            {% if trigger.id == 'cd16' %}
+              {{ trigger.payload_json }}
+            {% else %}
+              {{ this.attributes.get('cd16', {}) }}
+            {% endif %}
+          cd21: >-
+            {% if trigger.id == 'cd21' %}
+              {{ trigger.payload_json }}
+            {% else %}
+              {{ this.attributes.get('cd21', {}) }}
+            {% endif %}
+          cd24: >-
+            {% if trigger.id == 'cd24' %}
+              {{ trigger.payload_json }}
+            {% else %}
+              {{ this.attributes.get('cd24', {}) }}
+            {% endif %}
+
+  - triggers:
+      - trigger: mqtt
+        topic: "B2500PKG/B2500_06/CD01"
+        id: cd01
+      - trigger: mqtt
+        topic: "B2500PKG/B2500_06/CD13"
+        id: cd13
+      - trigger: mqtt
+        topic: "B2500PKG/B2500_06/CD15"
+        id: cd15
+      - trigger: mqtt
+        topic: "B2500PKG/B2500_06/CD16"
+        id: cd16
+      - trigger: mqtt
+        topic: "B2500PKG/B2500_06/CD21"
+        id: cd21
+      - trigger: mqtt
+        topic: "B2500PKG/B2500_06/CD24"
+        id: cd24
+
+    sensor:
+      - name: B2500 Cache 06
+        unique_id: b2500_cache_06
+        icon: mdi:database
+        state: "OK"
+        attributes:
+          cd01: >-
+            {% if trigger.id == 'cd01' %}
+              {{ trigger.payload_json }}
+            {% else %}
+              {{ this.attributes.get('cd01', {}) }}
+            {% endif %}
+          cd13: >-
+            {% if trigger.id == 'cd13' %}
+              {{ trigger.payload_json }}
+            {% else %}
+              {{ this.attributes.get('cd13', {}) }}
+            {% endif %}
+          cd15: >-
+            {% if trigger.id == 'cd15' %}
+              {{ trigger.payload_json }}
+            {% else %}
+              {{ this.attributes.get('cd15', {}) }}
+            {% endif %}
+          cd16: >-
+            {% if trigger.id == 'cd16' %}
+              {{ trigger.payload_json }}
+            {% else %}
+              {{ this.attributes.get('cd16', {}) }}
+            {% endif %}
+          cd21: >-
+            {% if trigger.id == 'cd21' %}
+              {{ trigger.payload_json }}
+            {% else %}
+              {{ this.attributes.get('cd21', {}) }}
+            {% endif %}
+          cd24: >-
+            {% if trigger.id == 'cd24' %}
+              {{ trigger.payload_json }}
+            {% else %}
+              {{ this.attributes.get('cd24', {}) }}
+            {% endif %}
+
+  - triggers:
+      - trigger: mqtt
+        topic: "B2500PKG/B2500_07/CD01"
+        id: cd01
+      - trigger: mqtt
+        topic: "B2500PKG/B2500_07/CD13"
+        id: cd13
+      - trigger: mqtt
+        topic: "B2500PKG/B2500_07/CD15"
+        id: cd15
+      - trigger: mqtt
+        topic: "B2500PKG/B2500_07/CD16"
+        id: cd16
+      - trigger: mqtt
+        topic: "B2500PKG/B2500_07/CD21"
+        id: cd21
+      - trigger: mqtt
+        topic: "B2500PKG/B2500_07/CD24"
+        id: cd24
+
+    sensor:
+      - name: B2500 Cache 07
+        unique_id: b2500_cache_07
+        icon: mdi:database
+        state: "OK"
+        attributes:
+          cd01: >-
+            {% if trigger.id == 'cd01' %}
+              {{ trigger.payload_json }}
+            {% else %}
+              {{ this.attributes.get('cd01', {}) }}
+            {% endif %}
+          cd13: >-
+            {% if trigger.id == 'cd13' %}
+              {{ trigger.payload_json }}
+            {% else %}
+              {{ this.attributes.get('cd13', {}) }}
+            {% endif %}
+          cd15: >-
+            {% if trigger.id == 'cd15' %}
+              {{ trigger.payload_json }}
+            {% else %}
+              {{ this.attributes.get('cd15', {}) }}
+            {% endif %}
+          cd16: >-
+            {% if trigger.id == 'cd16' %}
+              {{ trigger.payload_json }}
+            {% else %}
+              {{ this.attributes.get('cd16', {}) }}
+            {% endif %}
+          cd21: >-
+            {% if trigger.id == 'cd21' %}
+              {{ trigger.payload_json }}
+            {% else %}
+              {{ this.attributes.get('cd21', {}) }}
+            {% endif %}
+          cd24: >-
+            {% if trigger.id == 'cd24' %}
+              {{ trigger.payload_json }}
+            {% else %}
+              {{ this.attributes.get('cd24', {}) }}
+            {% endif %}
+
+  - triggers:
+      - trigger: mqtt
+        topic: "B2500PKG/B2500_08/CD01"
+        id: cd01
+      - trigger: mqtt
+        topic: "B2500PKG/B2500_08/CD13"
+        id: cd13
+      - trigger: mqtt
+        topic: "B2500PKG/B2500_08/CD15"
+        id: cd15
+      - trigger: mqtt
+        topic: "B2500PKG/B2500_08/CD16"
+        id: cd16
+      - trigger: mqtt
+        topic: "B2500PKG/B2500_08/CD21"
+        id: cd21
+      - trigger: mqtt
+        topic: "B2500PKG/B2500_08/CD24"
+        id: cd24
+
+    sensor:
+      - name: B2500 Cache 08
+        unique_id: b2500_cache_08
+        icon: mdi:database
+        state: "OK"
+        attributes:
+          cd01: >-
+            {% if trigger.id == 'cd01' %}
+              {{ trigger.payload_json }}
+            {% else %}
+              {{ this.attributes.get('cd01', {}) }}
+            {% endif %}
+          cd13: >-
+            {% if trigger.id == 'cd13' %}
+              {{ trigger.payload_json }}
+            {% else %}
+              {{ this.attributes.get('cd13', {}) }}
+            {% endif %}
+          cd15: >-
+            {% if trigger.id == 'cd15' %}
+              {{ trigger.payload_json }}
+            {% else %}
+              {{ this.attributes.get('cd15', {}) }}
+            {% endif %}
+          cd16: >-
+            {% if trigger.id == 'cd16' %}
+              {{ trigger.payload_json }}
+            {% else %}
+              {{ this.attributes.get('cd16', {}) }}
+            {% endif %}
+          cd21: >-
+            {% if trigger.id == 'cd21' %}
+              {{ trigger.payload_json }}
+            {% else %}
+              {{ this.attributes.get('cd21', {}) }}
+            {% endif %}
+          cd24: >-
+            {% if trigger.id == 'cd24' %}
+              {{ trigger.payload_json }}
+            {% else %}
+              {{ this.attributes.get('cd24', {}) }}
+            {% endif %}
+
+  - triggers:
+      - trigger: mqtt
+        topic: "B2500PKG/B2500_09/CD01"
+        id: cd01
+      - trigger: mqtt
+        topic: "B2500PKG/B2500_09/CD13"
+        id: cd13
+      - trigger: mqtt
+        topic: "B2500PKG/B2500_09/CD15"
+        id: cd15
+      - trigger: mqtt
+        topic: "B2500PKG/B2500_09/CD16"
+        id: cd16
+      - trigger: mqtt
+        topic: "B2500PKG/B2500_09/CD21"
+        id: cd21
+      - trigger: mqtt
+        topic: "B2500PKG/B2500_09/CD24"
+        id: cd24
+
+    sensor:
+      - name: B2500 Cache 09
+        unique_id: b2500_cache_09
+        icon: mdi:database
+        state: "OK"
+        attributes:
+          cd01: >-
+            {% if trigger.id == 'cd01' %}
+              {{ trigger.payload_json }}
+            {% else %}
+              {{ this.attributes.get('cd01', {}) }}
+            {% endif %}
+          cd13: >-
+            {% if trigger.id == 'cd13' %}
+              {{ trigger.payload_json }}
+            {% else %}
+              {{ this.attributes.get('cd13', {}) }}
+            {% endif %}
+          cd15: >-
+            {% if trigger.id == 'cd15' %}
+              {{ trigger.payload_json }}
+            {% else %}
+              {{ this.attributes.get('cd15', {}) }}
+            {% endif %}
+          cd16: >-
+            {% if trigger.id == 'cd16' %}
+              {{ trigger.payload_json }}
+            {% else %}
+              {{ this.attributes.get('cd16', {}) }}
+            {% endif %}
+          cd21: >-
+            {% if trigger.id == 'cd21' %}
+              {{ trigger.payload_json }}
+            {% else %}
+              {{ this.attributes.get('cd21', {}) }}
+            {% endif %}
+          cd24: >-
+            {% if trigger.id == 'cd24' %}
+              {{ trigger.payload_json }}
+            {% else %}
+              {{ this.attributes.get('cd24', {}) }}
+            {% endif %}
+
+recorder:
+  exclude:
+    entity_globs:
+      - sensor.b2500_cache_*
+
 automation:
   alias: B2500PKG_Repost_CD01_CD13_CD15_CD16_CD21_CD24_CD30
   description: ""
@@ -80,10 +664,130 @@ automation:
 
         now_ts: "{{ now().timestamp() }}"
 
+        # ------------------------------------------------------
+        # Aktuelles Telegramm einmal in ein Dictionary zerlegen
+        #
+        # Beispiel:
+        #   p1=1,p2=1,w1=110,pe=91
+        #
+        # ergibt:
+        #   {
+        #     "p1": "1",
+        #     "p2": "1",
+        #     "w1": "110",
+        #     "pe": "91"
+        #   }
+        #
+        # Alle Werte bleiben absichtlich Strings.
+        # CD30 wird hier nicht geparst, da dessen Antwort kein
+        # key=value-Telegramm ist.
+        # ------------------------------------------------------
+        current_dict: >-
+          {% if trigger.id != 'b2500_cd30_request' %}
+            {% set ns = namespace(items=[]) %}
+            {% for part in trigger.payload.split(',') %}
+              {% if '=' in part %}
+                {% set kv = part.split('=', 1) %}
+                {% set key = kv[0] | trim %}
+                {% set value = kv[1] | trim %}
+                {% if key != '' %}
+                  {% set ns.items = ns.items + [(key, value)] %}
+                {% endif %}
+              {% endif %}
+            {% endfor %}
+            {{ dict(ns.items) }}
+          {% else %}
+            {{ {} }}
+          {% endif %}
+
+    # --------------------------------------------------------
+    # Cache-Zuordnung für das aktuelle Telegramm
+    # --------------------------------------------------------
+    - variables:
+        cd_cache_key: >-
+          {{ 'cd01' if trigger.id == 'b2500_cd01'
+             else 'cd13' if trigger.id == 'b2500_cd13'
+             else 'cd15' if trigger.id == 'b2500_cd15'
+             else 'cd16' if trigger.id == 'b2500_cd16'
+             else 'cd21' if trigger.id == 'b2500_cd21'
+             else 'cd24' if trigger.id == 'b2500_cd24'
+             else '' }}
+
+        cache_entity: >-
+          {{ 'sensor.b2500_cache_' ~ speicher_nummer[-2:]
+             if speicher_nummer != 'unknown'
+             else '' }}
+
+    - variables:
+        cd_topic: >-
+          {{ cd_cache_key | upper if cd_cache_key != '' else '' }}
+
+    # --------------------------------------------------------
+    # Letztes vollständig repostetes Dictionary lesen
+    # --------------------------------------------------------
+    - variables:
+        old_dict: >-
+          {% if cache_entity != '' and cd_cache_key != '' %}
+            {{ state_attr(cache_entity, cd_cache_key) or {} }}
+          {% else %}
+            {{ {} }}
+          {% endif %}
+
+    # --------------------------------------------------------
+    # Delta bilden:
+    # nur Keys, deren Wert gegenüber old_dict neu/geändert ist.
+    # Im neuen Telegramm fehlende Keys werden nicht gelöscht.
+    # --------------------------------------------------------
+    - variables:
+        changed_dict: >-
+          {% set ns = namespace(items=[]) %}
+          {% for key, value in current_dict.items() %}
+            {% if old_dict.get(key) != value %}
+              {% set ns.items = ns.items + [(key, value)] %}
+            {% endif %}
+          {% endfor %}
+          {{ dict(ns.items) }}
+
+    - variables:
+        changed_keys: "{{ changed_dict.keys() | list }}"
+        changed_count: "{{ changed_dict | count }}"
+
     - if:
         - condition: template
           value_template: "{{ speicher_nummer != 'unknown' }}"
       then:
+
+        # ----------------------------------------------------
+        # Nur geänderte Einzelwerte veröffentlichen
+        #
+        # Beispiel:
+        #   B2500PKG/B2500_01/CD01/pe
+        #   B2500PKG/B2500_01/CD01/w1
+        #
+        # retain=true, damit ein später per Discovery erzeugter
+        # MQTT-Sensor sofort den letzten Wert erhält.
+        # ----------------------------------------------------
+        - if:
+            - condition: template
+              value_template: >-
+                {{ cd_topic != '' and changed_count | int(0) > 0 }}
+          then:
+            - repeat:
+                for_each: "{{ changed_keys }}"
+                sequence:
+                  - action: mqtt.publish
+                    metadata: {}
+                    data:
+                      qos: 0
+                      retain: true
+                      topic: >-
+                        B2500PKG/{{ speicher_nummer }}/{{ cd_topic }}/{{ repeat.item }}
+                      payload: "{{ changed_dict[repeat.item] }}"
+
+        # ----------------------------------------------------
+        # Danach vollständiges Dictionary repostieren und
+        # zuletzt last_updated setzen.
+        # ----------------------------------------------------
         - choose:
             - conditions:
                 - condition: trigger
@@ -96,7 +800,7 @@ automation:
                     qos: 0
                     retain: true
                     topic: B2500PKG/{{ speicher_nummer }}/CD01
-                    payload: "{{ trigger.payload }},end01"
+                    payload: "{{ current_dict | to_json }}"
                 
                 - delay:
                     seconds: 0
@@ -120,7 +824,7 @@ automation:
                     qos: 0
                     retain: true
                     topic: B2500PKG/{{ speicher_nummer }}/CD13
-                    payload: "{{ trigger.payload }},end13"
+                    payload: "{{ current_dict | to_json }}"
 
                 - delay:
                     seconds: 1
@@ -144,7 +848,7 @@ automation:
                     qos: 0
                     retain: true
                     topic: B2500PKG/{{ speicher_nummer }}/CD15
-                    payload: "{{ trigger.payload }},end15"
+                    payload: "{{ current_dict | to_json }}"
 
                 - delay:
                     seconds: 1
@@ -168,7 +872,7 @@ automation:
                     qos: 0
                     retain: true
                     topic: B2500PKG/{{ speicher_nummer }}/CD16
-                    payload: "{{ trigger.payload }},end16"
+                    payload: "{{ current_dict | to_json }}"
 
                 - delay:
                     seconds: 1
@@ -192,7 +896,7 @@ automation:
                     qos: 0
                     retain: true
                     topic: B2500PKG/{{ speicher_nummer }}/CD21
-                    payload: "{{ trigger.payload }},end21"
+                    payload: "{{ current_dict | to_json }}"
 
                 - delay:
                     seconds: 1
@@ -216,7 +920,7 @@ automation:
                     qos: 0
                     retain: true
                     topic: B2500PKG/{{ speicher_nummer }}/CD24
-                    payload: "{{ trigger.payload }},end24"
+                    payload: "{{ current_dict | to_json }}"
 
                 - delay:
                     seconds: 1
