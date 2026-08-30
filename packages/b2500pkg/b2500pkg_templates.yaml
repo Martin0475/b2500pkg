@@ -693,8 +693,8 @@ template:
             {% else %}
               {{ neu }}
             {% endif %}
-          telegramm: >-
-            {{ trigger.event.data.telegramm | default('') }}
+          rueckmeldung: >-
+            {{ trigger.event.data.rueckmeldung | default('') }}
           topic: >-
             {{ trigger.event.data.topic | default('') }}
           quelle: >-
