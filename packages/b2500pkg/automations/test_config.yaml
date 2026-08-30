@@ -134,7 +134,7 @@ script:
           details: 'Speicher: {{ speicher_clean }}
 
             Befehl: {{ cd_name }}'
-          telegramm: ''
+          rueckmeldung: ''
           topic: '{{ repost_topic }}'
           quelle: script.b2500pkg_test_config
       - stop: Ungültige Speicher-Konfiguration oder Eingabe
@@ -159,7 +159,7 @@ script:
         details: 'Sende {{ payload }}
 
           Rohantwort und Repost werden geprüft'
-        telegramm: ''
+        rueckmeldung: ''
         topic: '{{ repost_topic }}'
         quelle: script.b2500pkg_test_config
     - action: script.turn_on
@@ -229,7 +229,7 @@ script:
           Request: {{ request_topic }}
 
           Repost: {{ repost_topic }}'
-        telegramm: '{{ raw_payload if raw_payload else repost_payload }}'
+        rueckmeldung: '{{ raw_payload if raw_payload else repost_payload }}'
         topic: '{{ repost_topic }}'
         quelle: script.b2500pkg_test_config
   b2500pkg_test_raw_capture:
