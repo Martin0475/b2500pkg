@@ -1,6 +1,6 @@
 {
   "version": "31.08.2026",
-  "changes": "Fehlertest defektes json",
+  "changes": "Fehlertest fehlende datei",
   "b2500pkg": [
     "b2500pkg_input.yaml",
     "b2500pkg_templates.yaml"
@@ -21,7 +21,7 @@
     "send_restart.yaml",
     "low_voltage_protection.yaml",
     "worker_script.yaml",
-    "speicherliste_aktualisieren.yaml"
+    "speicherliste_aktualisieren.yaml",
     "speichererkennung.yaml"
   ],
   "dashboards": [
