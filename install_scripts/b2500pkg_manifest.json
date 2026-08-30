@@ -1,6 +1,6 @@
 {
   "version": "31.08.2026",
-  "changes": "Update-System wird vorbereitet",
+  "changes": "Fehlertest defektes json",
   "b2500pkg": [
     "b2500pkg_input.yaml",
     "b2500pkg_templates.yaml"
