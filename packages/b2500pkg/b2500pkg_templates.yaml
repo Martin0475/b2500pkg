@@ -663,6 +663,7 @@ template:
           0
         {% endif %}
         
+
   - trigger:
       - platform: event
         event_type: b2500pkg_status
@@ -680,13 +681,21 @@ template:
           meldung: >-
             {{ trigger.event.data.meldung | default('') }}
           details: >-
-            {{ trigger.event.data.details | default('') }}
+            {% set neu = trigger.event.data.details | default('') %}
+            {% set anhaengen = trigger.event.data.append | default(false) %}
+            {% if anhaengen %}
+              {% set alt = this.attributes.get('details', '') | default('', true) %}
+              {% if alt | trim %}
+                {{ alt ~ '\n' ~ neu }}
+              {% else %}
+                {{ neu }}
+              {% endif %}
+            {% else %}
+              {{ neu }}
+            {% endif %}
           telegramm: >-
             {{ trigger.event.data.telegramm | default('') }}
           topic: >-
             {{ trigger.event.data.topic | default('') }}
           quelle: >-
             {{ trigger.event.data.quelle | default('') }}
-        
-        
-  
