@@ -171,7 +171,7 @@ script:
             {{ speicher_auswahl }} – {{ aktion_auswahl }} – {{ bereich_auswahl }}
           meldung: Discovery läuft
           details: ""
-          telegramm: ""
+          rueckmeldung: ""
           topic: ""
           quelle: script.b2500pkg_discovery_script
 
@@ -902,7 +902,7 @@ script:
                         meldung: Discovery läuft
                         details: "Lösche B{{ current_number }} Hauptspeicher ........ OK"
                         append: true
-                        telegramm: ""
+                        rueckmeldung: ""
                         topic: ""
                         quelle: script.b2500pkg_discovery_script
 
@@ -987,7 +987,7 @@ script:
                         meldung: Discovery läuft
                         details: "Lösche B{{ current_number }} Spannungen ........... OK"
                         append: true
-                        telegramm: ""
+                        rueckmeldung: ""
                         topic: ""
                         quelle: script.b2500pkg_discovery_script
 
@@ -1051,7 +1051,7 @@ script:
                         meldung: Discovery läuft
                         details: "Lösche B{{ current_number }} Timer ................ OK"
                         append: true
-                        telegramm: ""
+                        rueckmeldung: ""
                         topic: ""
                         quelle: script.b2500pkg_discovery_script
 
@@ -1084,7 +1084,7 @@ script:
                         meldung: Discovery läuft
                         details: "Lösche B{{ current_number }} CD16 ................. OK"
                         append: true
-                        telegramm: ""
+                        rueckmeldung: ""
                         topic: ""
                         quelle: script.b2500pkg_discovery_script
 
@@ -1115,7 +1115,7 @@ script:
                         meldung: Discovery läuft
                         details: "Lösche B{{ current_number }} Kalibrierung ......... OK"
                         append: true
-                        telegramm: ""
+                        rueckmeldung: ""
                         topic: ""
                         quelle: script.b2500pkg_discovery_script
 
@@ -1173,7 +1173,7 @@ script:
                         meldung: Discovery läuft
                         details: "Erzeuge B{{ current_number }} Hauptspeicher ....... OK"
                         append: true
-                        telegramm: ""
+                        rueckmeldung: ""
                         topic: ""
                         quelle: script.b2500pkg_discovery_script
 
@@ -1424,7 +1424,7 @@ script:
                         meldung: Discovery läuft
                         details: "Erzeuge B{{ current_number }} Spannungen .......... OK"
                         append: true
-                        telegramm: ""
+                        rueckmeldung: ""
                         topic: ""
                         quelle: script.b2500pkg_discovery_script
 
@@ -1598,7 +1598,7 @@ script:
                         meldung: Discovery läuft
                         details: "Erzeuge B{{ current_number }} Timer ............... OK"
                         append: true
-                        telegramm: ""
+                        rueckmeldung: ""
                         topic: ""
                         quelle: script.b2500pkg_discovery_script
 
@@ -1654,7 +1654,7 @@ script:
                         meldung: Discovery läuft
                         details: "Erzeuge B{{ current_number }} CD16 ................ OK"
                         append: true
-                        telegramm: ""
+                        rueckmeldung: ""
                         topic: ""
                         quelle: script.b2500pkg_discovery_script
 
@@ -1700,7 +1700,7 @@ script:
                         meldung: Discovery läuft
                         details: "Erzeuge B{{ current_number }} Kalibrierung ........ OK"
                         append: true
-                        telegramm: ""
+                        rueckmeldung: ""
                         topic: ""
                         quelle: script.b2500pkg_discovery_script
 
@@ -1716,7 +1716,7 @@ script:
           meldung: Discovery abgeschlossen
           details: "Discovery abgeschlossen ........ OK"
           append: true
-          telegramm: ""
+          rueckmeldung: ""
           topic: ""
           quelle: script.b2500pkg_discovery_script
 
