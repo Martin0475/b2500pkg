@@ -1,0 +1,182 @@
+# ============================================================
+# B2500PKG - automatische Speichererkennung
+#
+# Lauscht auf:
+#   hame_energy/+/device/+/ctrl
+#   marstek_energy/+/device/+/ctrl
+# ============================================================
+
+template:
+
+  - triggers:
+
+      # ------------------------------------------------------
+      # Cache löschen, wenn die Automation eingeschaltet wird
+      # ------------------------------------------------------
+      - trigger: state
+        entity_id: automation.b2500pkg_speichererkennung_status
+        from: "off"
+        to: "on"
+        id: reset
+
+      - trigger: mqtt
+        topic: "hame_energy/+/device/+/ctrl"
+        id: mqtt
+
+      - trigger: mqtt
+        topic: "marstek_energy/+/device/+/ctrl"
+        id: mqtt
+
+    sensor:
+
+      - name: B2500PKG Erkannte Speicher
+        unique_id: b2500pkg_erkannte_speicher
+        icon: mdi:battery-search
+
+        # ----------------------------------------------------
+        # State = Anzahl verschiedener erkannter MACs
+        # ----------------------------------------------------
+        state: >-
+
+          {% if trigger.id == 'reset' %}
+
+            0
+
+          {% else %}
+
+            {% set teile = trigger.topic.split('/') %}
+            {% set mac = teile[3] | lower | trim %}
+
+            {% set alt =
+              this.attributes.get('speicher', [])
+              | list
+            %}
+
+            {% set gefunden =
+              alt
+              | selectattr('mac', 'equalto', mac)
+              | list
+              | count > 0
+            %}
+
+            {{
+              alt | count
+              if gefunden
+              else alt | count + 1
+            }}
+
+          {% endif %}
+
+        # ----------------------------------------------------
+        # Liste der erkannten Speicher
+        # ----------------------------------------------------
+        attributes:
+
+          speicher: >-
+
+            {% if trigger.id == 'reset' %}
+
+              {{ [] }}
+
+            {% else %}
+
+              {% set teile = trigger.topic.split('/') %}
+
+              {% set topic = teile[0] | trim %}
+              {% set typ = teile[1] | trim %}
+              {% set mac = teile[3] | lower | trim %}
+
+              {% set alt =
+                this.attributes.get('speicher', [])
+                | list
+              %}
+
+              {% set gefunden =
+                alt
+                | selectattr('mac', 'equalto', mac)
+                | list
+                | count > 0
+              %}
+
+              {% if gefunden %}
+
+                {{ alt }}
+
+              {% else %}
+
+                {{
+                  alt + [
+                    {
+                      'topic': topic,
+                      'typ': typ,
+                      'mac': mac
+                    }
+                  ]
+                }}
+
+              {% endif %}
+
+            {% endif %}
+
+
+automation:
+
+  # ==========================================================
+  # Statusanzeige aktualisieren
+  # Nur wenn ein neuer Speicher erkannt wurde
+  # ==========================================================
+
+  - id: b2500pkg_speichererkennung_status
+    alias: B2500PKG Speichererkennung Status
+
+    mode: queued
+    max: 10
+
+    triggers:
+
+      - trigger: state
+        entity_id: sensor.b2500pkg_erkannte_speicher
+
+    actions:
+
+      - variables:
+
+          erkannte_speicher: >-
+            {{
+              state_attr(
+                'sensor.b2500pkg_erkannte_speicher',
+                'speicher'
+              ) or []
+            }}
+
+      - event: b2500pkg_status
+        event_data:
+
+          status: ERFOLGREICH
+
+          titel: B2500PKG Speichererkennung
+
+          untertitel: >-
+            {{ erkannte_speicher | count }} Speicher erkannt
+
+          meldung: Speicher automatisch erkannt
+
+          # --------------------------------------------------
+          # Absichtlich schlicht formatiert:
+          # direkt per Copy & Paste verwendbar
+          # --------------------------------------------------
+          details: >-
+            {% for s in erkannte_speicher %}
+            Topic: {{ s.topic }}
+            Typ: {{ s.typ }}
+            Mac: {{ s.mac }}{% if not loop.last %}
+
+
+            {% endif %}
+            {% endfor %}
+
+          rueckmeldung: ""
+
+          topic: ""
+
+          quelle: automation.b2500pkg_speichererkennung_status
