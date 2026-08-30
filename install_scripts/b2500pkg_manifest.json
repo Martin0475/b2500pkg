@@ -21,7 +21,7 @@
     "send_restart.yaml",
     "low_voltage_protection.yaml",
     "worker_script.yaml",
-    "speicherliste_aktualisieren.yaml"
+    "speicherliste_aktualisieren.yaml",
     "speichererkennung.yaml"
   ],
   "dashboards": [
