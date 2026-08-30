@@ -1,58 +1,963 @@
-input_button:
-  b2500pkg_update:
-    name: B2500PKG Update starten
-    icon: mdi:cloud-download
-
 shell_command:
   run_custom_command: '/bin/bash -c "{{ command }}"'
 
 lovelace:
-   dashboards:
-     b2500pkg-dashboard:
-       mode: yaml
-       title: B2500PKG
-       icon: mdi:view-dashboard
-       show_in_sidebar: true
-       filename: dashboards/b2500pkg_dashboard.yaml
- 
- 
-automation:
-  alias: B2500PKG_update
-  description: Lädt Installer-Automation und führt sie aus
-  triggers:
-    - trigger: state
-      entity_id:
-        - input_button.b2500pkg_update
-  conditions: []
-  actions:
-    - data:
-        command: mkdir /config/packages/b2500pkg && sleep 3
-      action: shell_command.run_custom_command
-    - data:
-        command: rm -f /config/packages/b2500pkg/basicsystem.sh && sleep 5
-      action: shell_command.run_custom_command
-    - action: notify.persistent_notification
-      metadata: {}
-      data:
-        message: Update gestartet
-        title: B2500PKG
-    - data:
-        command: >-
-          wget -q -O /config/packages/b2500pkg/basicsystem.sh
-          https://raw.githubusercontent.com/Martin0475/b2500pkg/main/install_scripts/basicsystem.sh &&
-          sh /config/packages/b2500pkg/basicsystem.sh
-      action: shell_command.run_custom_command
-    - action: notify.persistent_notification
-      metadata: {}
-      data:
-        title: B2500PKG
-        message: "Update fertig: yaml-Dateien werden neu geladen"
-    - delay:
-        hours: 0
-        minutes: 0
-        seconds: 10
-        milliseconds: 0
-    - action: homeassistant.reload_all
-      metadata: {}
-      data: {}
-  mode: single   
+  dashboards:
+    b2500pkg-dashboard:
+      mode: yaml
+      title: B2500PKG
+      icon: mdi:view-dashboard
+      show_in_sidebar: true
+      filename: dashboards/b2500pkg_dashboard.yaml
+
+
+script:
+  b2500pkg_update:
+    alias: B2500PKG Update
+    description: >-
+      Lädt zuerst alle im Manifest definierten B2500PKG-Dateien
+      vollständig in temporäre Dateien. Erst wenn alle Downloads
+      erfolgreich waren, werden die neuen Dateien übernommen.
+      Danach werden veraltete Dateien aus "obsolete" gelöscht und
+      die im Manifest angegebenen Bereiche neu geladen.
+    mode: single
+
+    sequence:
+
+      # ========================================================
+      # 1. Start
+      # ========================================================
+      - event: b2500pkg_status
+        event_data:
+          status: LAEUFT
+          titel: B2500PKG Update
+          untertitel: Vorbereitung
+          meldung: Update wird vorbereitet
+          details: "Verzeichnisse prüfen ............ läuft"
+          rueckmeldung: ""
+          adresse: ""
+          quelle: script.b2500pkg_update
+
+      # Verzeichnisse sicherstellen und Reste eines vorherigen
+      # abgebrochenen Updates entfernen.
+      - action: shell_command.run_custom_command
+        data:
+          command: >-
+            mkdir -p
+            "/config/packages/b2500pkg"
+            "/config/packages/b2500pkg/automations"
+            "/config/dashboards"
+            &&
+            find "/config/packages/b2500pkg" "/config/dashboards"
+            -type f -name '*.b2500pkg_update.tmp' -delete
+        response_variable: prepare_response
+
+      - if:
+          - condition: template
+            value_template: >-
+              {{ prepare_response.returncode | default(1) | int(1) != 0 }}
+        then:
+          - event: b2500pkg_status
+            event_data:
+              status: FEHLER
+              titel: B2500PKG Update
+              untertitel: Vorbereitung
+              meldung: Verzeichnisse konnten nicht vorbereitet werden
+              details: "Verzeichnisse prüfen ............ FEHLER"
+              rueckmeldung: "{{ prepare_response.stderr | default('') }}"
+              adresse: ""
+              quelle: script.b2500pkg_update
+          - stop: Vorbereitung fehlgeschlagen.
+
+      # ========================================================
+      # 2. Manifest laden
+      # ========================================================
+      - event: b2500pkg_status
+        event_data:
+          status: LAEUFT
+          titel: B2500PKG Update
+          untertitel: Manifest
+          meldung: Update-Informationen werden geladen
+          details: |-
+            Verzeichnisse prüfen ............ OK
+            Manifest laden .................. läuft
+          rueckmeldung: ""
+          adresse: >-
+            https://raw.githubusercontent.com/Martin0475/b2500pkg/main/install_scripts/b2500pkg_manifest.json
+          quelle: script.b2500pkg_update
+
+      - action: shell_command.run_custom_command
+        data:
+          command: >-
+            wget -q --timeout=15 --tries=1 -O -
+            "https://raw.githubusercontent.com/Martin0475/b2500pkg/main/install_scripts/b2500pkg_manifest.json?ts={{ now().timestamp() | int }}"
+        response_variable: manifest_response
+
+      - variables:
+          manifest_returncode: >-
+            {{ manifest_response.returncode | default(1) | int(1) }}
+
+          manifest: >-
+            {% if manifest_response.returncode | default(1) | int(1) == 0 %}
+              {{ manifest_response.stdout | default('') | from_json(none) }}
+            {% else %}
+              {{ none }}
+            {% endif %}
+
+      - variables:
+          manifest_ok: >-
+            {{
+              manifest_returncode == 0
+              and manifest is mapping
+              and (manifest.get('version', '') | string | trim) != ''
+            }}
+
+          version: >-
+            {{ manifest.get('version', 'unbekannt') if manifest is mapping else 'unbekannt' }}
+
+          changes: >-
+            {{ manifest.get('changes', '') if manifest is mapping else '' }}
+
+          files_b2500pkg: >-
+            {{ manifest.get('b2500pkg', []) if manifest is mapping else [] }}
+
+          files_automations: >-
+            {{ manifest.get('automations', []) if manifest is mapping else [] }}
+
+          files_dashboards: >-
+            {{ manifest.get('dashboards', []) if manifest is mapping else [] }}
+
+          files_install_if_missing: >-
+            {{ manifest.get('install_if_missing', []) if manifest is mapping else [] }}
+
+          files_obsolete: >-
+            {{ manifest.get('obsolete', []) if manifest is mapping else [] }}
+
+          reload_info: >-
+            {{ manifest.get('reload', []) if manifest is mapping else [] }}
+
+      - if:
+          - condition: template
+            value_template: "{{ not manifest_ok }}"
+        then:
+          - event: b2500pkg_status
+            event_data:
+              status: FEHLER
+              titel: B2500PKG Update
+              untertitel: Manifest
+              meldung: Update-Informationen konnten nicht geladen werden
+              details: |-
+                Verzeichnisse prüfen ............ OK
+                Manifest laden .................. FEHLER
+                wget Returncode ................. {{ manifest_returncode }}
+                JSON gültig ..................... {{ 'JA' if manifest is mapping else 'NEIN' }}
+                Version erkannt ................. {{ 'JA' if manifest is mapping and (manifest.get('version', '') | string | trim) != '' else 'NEIN' }}
+              rueckmeldung: "{{ manifest_response.stderr | default('') }}"
+              adresse: >-
+                https://raw.githubusercontent.com/Martin0475/b2500pkg/main/install_scripts/b2500pkg_manifest.json
+              quelle: script.b2500pkg_update
+          - stop: Manifest konnte nicht geladen werden.
+
+      # Listen-Grundprüfung
+      - if:
+          - condition: template
+            value_template: >-
+              {{
+                files_b2500pkg is string
+                or files_b2500pkg is not iterable
+                or files_automations is string
+                or files_automations is not iterable
+                or files_dashboards is string
+                or files_dashboards is not iterable
+                or files_install_if_missing is string
+                or files_install_if_missing is not iterable
+                or files_obsolete is string
+                or files_obsolete is not iterable
+                or reload_info is string
+                or reload_info is not iterable
+              }}
+        then:
+          - event: b2500pkg_status
+            event_data:
+              status: FEHLER
+              titel: B2500PKG Update
+              untertitel: Manifest
+              meldung: Ungültige Dateiliste im Manifest
+              details: "Manifest-Dateilisten ............. FEHLER"
+              rueckmeldung: ""
+              adresse: ""
+              quelle: script.b2500pkg_update
+          - stop: Ungültige Dateiliste im Manifest.
+
+      - event: b2500pkg_status
+        event_data:
+          status: LAEUFT
+          titel: B2500PKG Update
+          untertitel: "GitHub-Version {{ version }}"
+          meldung: Dateien werden zwischengespeichert
+          details: |-
+            Verzeichnisse prüfen ............ OK
+            Manifest laden .................. OK
+            Version ......................... {{ version }}
+            Änderungen ...................... {{ changes if changes else '-' }}
+
+            Downloads:
+          rueckmeldung: ""
+          adresse: ""
+          quelle: script.b2500pkg_update
+
+      # ========================================================
+      # 3. ALLE Dateien zuerst als Temp-Dateien laden
+      # ========================================================
+
+      # --------------------------------------------------------
+      # 3a. Dateien direkt in /config/packages/b2500pkg
+      # --------------------------------------------------------
+      - repeat:
+          for_each: "{{ files_b2500pkg }}"
+          sequence:
+            - variables:
+                current_file: "{{ repeat.item | string | trim }}"
+                current_file_ok: >-
+                  {{
+                    current_file != ''
+                    and current_file.endswith('.yaml')
+                    and '/' not in current_file
+                    and '\\' not in current_file
+                    and '..' not in current_file
+                    and "'" not in current_file
+                    and '"' not in current_file
+                  }}
+
+            - if:
+                - condition: template
+                  value_template: "{{ not current_file_ok }}"
+              then:
+                - action: shell_command.run_custom_command
+                  data:
+                    command: >-
+                      find "/config/packages/b2500pkg" "/config/dashboards"
+                      -type f -name '*.b2500pkg_update.tmp' -delete
+                - event: b2500pkg_status
+                  event_data:
+                    status: FEHLER
+                    titel: B2500PKG Update
+                    untertitel: "GitHub-Version {{ version }}"
+                    meldung: Ungültiger Dateiname im Manifest
+                    details: "Lade {{ current_file }} ........ FEHLER"
+                    append: true
+                    rueckmeldung: ""
+                    adresse: ""
+                    quelle: script.b2500pkg_update
+                - stop: Ungültiger Dateiname im Manifest.
+
+            - action: shell_command.run_custom_command
+              data:
+                command: >-
+                  wget -q --timeout=15 --tries=1
+                  -O "/config/packages/b2500pkg/{{ current_file }}.b2500pkg_update.tmp"
+                  "https://raw.githubusercontent.com/Martin0475/b2500pkg/main/packages/b2500pkg/{{ current_file }}"
+              response_variable: download_response
+
+            - if:
+                - condition: template
+                  value_template: >-
+                    {{ download_response.returncode | default(1) | int(1) != 0 }}
+              then:
+                - action: shell_command.run_custom_command
+                  data:
+                    command: >-
+                      find "/config/packages/b2500pkg" "/config/dashboards"
+                      -type f -name '*.b2500pkg_update.tmp' -delete
+                - event: b2500pkg_status
+                  event_data:
+                    status: FEHLER
+                    titel: B2500PKG Update
+                    untertitel: "GitHub-Version {{ version }}"
+                    meldung: Download fehlgeschlagen
+                    details: "Lade {{ current_file }} ........ FEHLER"
+                    append: true
+                    rueckmeldung: "{{ download_response.stderr | default('') }}"
+                    adresse: >-
+                      https://raw.githubusercontent.com/Martin0475/b2500pkg/main/packages/b2500pkg/{{ current_file }}
+                    quelle: script.b2500pkg_update
+                - stop: Download fehlgeschlagen.
+
+            - event: b2500pkg_status
+              event_data:
+                status: LAEUFT
+                titel: B2500PKG Update
+                untertitel: "GitHub-Version {{ version }}"
+                meldung: Dateien werden zwischengespeichert
+                details: "Lade {{ current_file }} ........ OK"
+                append: true
+                rueckmeldung: ""
+                adresse: ""
+                quelle: script.b2500pkg_update
+
+      # --------------------------------------------------------
+      # 3b. Automationen
+      # --------------------------------------------------------
+      - repeat:
+          for_each: "{{ files_automations }}"
+          sequence:
+            - variables:
+                current_file: "{{ repeat.item | string | trim }}"
+                current_file_ok: >-
+                  {{
+                    current_file != ''
+                    and current_file.endswith('.yaml')
+                    and '/' not in current_file
+                    and '\\' not in current_file
+                    and '..' not in current_file
+                    and "'" not in current_file
+                    and '"' not in current_file
+                  }}
+
+            - if:
+                - condition: template
+                  value_template: "{{ not current_file_ok }}"
+              then:
+                - action: shell_command.run_custom_command
+                  data:
+                    command: >-
+                      find "/config/packages/b2500pkg" "/config/dashboards"
+                      -type f -name '*.b2500pkg_update.tmp' -delete
+                - event: b2500pkg_status
+                  event_data:
+                    status: FEHLER
+                    titel: B2500PKG Update
+                    untertitel: "GitHub-Version {{ version }}"
+                    meldung: Ungültiger Dateiname im Manifest
+                    details: "Lade {{ current_file }} ........ FEHLER"
+                    append: true
+                    rueckmeldung: ""
+                    adresse: ""
+                    quelle: script.b2500pkg_update
+                - stop: Ungültiger Dateiname im Manifest.
+
+            - action: shell_command.run_custom_command
+              data:
+                command: >-
+                  wget -q --timeout=15 --tries=1
+                  -O "/config/packages/b2500pkg/automations/{{ current_file }}.b2500pkg_update.tmp"
+                  "https://raw.githubusercontent.com/Martin0475/b2500pkg/main/packages/b2500pkg/automations/{{ current_file }}"
+              response_variable: download_response
+
+            - if:
+                - condition: template
+                  value_template: >-
+                    {{ download_response.returncode | default(1) | int(1) != 0 }}
+              then:
+                - action: shell_command.run_custom_command
+                  data:
+                    command: >-
+                      find "/config/packages/b2500pkg" "/config/dashboards"
+                      -type f -name '*.b2500pkg_update.tmp' -delete
+                - event: b2500pkg_status
+                  event_data:
+                    status: FEHLER
+                    titel: B2500PKG Update
+                    untertitel: "GitHub-Version {{ version }}"
+                    meldung: Download fehlgeschlagen
+                    details: "Lade {{ current_file }} ........ FEHLER"
+                    append: true
+                    rueckmeldung: "{{ download_response.stderr | default('') }}"
+                    adresse: >-
+                      https://raw.githubusercontent.com/Martin0475/b2500pkg/main/packages/b2500pkg/automations/{{ current_file }}
+                    quelle: script.b2500pkg_update
+                - stop: Download fehlgeschlagen.
+
+            - event: b2500pkg_status
+              event_data:
+                status: LAEUFT
+                titel: B2500PKG Update
+                untertitel: "GitHub-Version {{ version }}"
+                meldung: Dateien werden zwischengespeichert
+                details: "Lade {{ current_file }} ........ OK"
+                append: true
+                rueckmeldung: ""
+                adresse: ""
+                quelle: script.b2500pkg_update
+
+      # --------------------------------------------------------
+      # 3c. Dashboard-Dateien
+      # --------------------------------------------------------
+      - repeat:
+          for_each: "{{ files_dashboards }}"
+          sequence:
+            - variables:
+                current_file: "{{ repeat.item | string | trim }}"
+                current_file_ok: >-
+                  {{
+                    current_file != ''
+                    and current_file.endswith('.yaml')
+                    and '/' not in current_file
+                    and '\\' not in current_file
+                    and '..' not in current_file
+                    and "'" not in current_file
+                    and '"' not in current_file
+                  }}
+
+            - if:
+                - condition: template
+                  value_template: "{{ not current_file_ok }}"
+              then:
+                - action: shell_command.run_custom_command
+                  data:
+                    command: >-
+                      find "/config/packages/b2500pkg" "/config/dashboards"
+                      -type f -name '*.b2500pkg_update.tmp' -delete
+                - event: b2500pkg_status
+                  event_data:
+                    status: FEHLER
+                    titel: B2500PKG Update
+                    untertitel: "GitHub-Version {{ version }}"
+                    meldung: Ungültiger Dateiname im Manifest
+                    details: "Lade {{ current_file }} ........ FEHLER"
+                    append: true
+                    rueckmeldung: ""
+                    adresse: ""
+                    quelle: script.b2500pkg_update
+                - stop: Ungültiger Dateiname im Manifest.
+
+            - action: shell_command.run_custom_command
+              data:
+                command: >-
+                  wget -q --timeout=15 --tries=1
+                  -O "/config/dashboards/{{ current_file }}.b2500pkg_update.tmp"
+                  "https://raw.githubusercontent.com/Martin0475/b2500pkg/main/dashboards/{{ current_file }}"
+              response_variable: download_response
+
+            - if:
+                - condition: template
+                  value_template: >-
+                    {{ download_response.returncode | default(1) | int(1) != 0 }}
+              then:
+                - action: shell_command.run_custom_command
+                  data:
+                    command: >-
+                      find "/config/packages/b2500pkg" "/config/dashboards"
+                      -type f -name '*.b2500pkg_update.tmp' -delete
+                - event: b2500pkg_status
+                  event_data:
+                    status: FEHLER
+                    titel: B2500PKG Update
+                    untertitel: "GitHub-Version {{ version }}"
+                    meldung: Download fehlgeschlagen
+                    details: "Lade {{ current_file }} ........ FEHLER"
+                    append: true
+                    rueckmeldung: "{{ download_response.stderr | default('') }}"
+                    adresse: >-
+                      https://raw.githubusercontent.com/Martin0475/b2500pkg/main/dashboards/{{ current_file }}
+                    quelle: script.b2500pkg_update
+                - stop: Download fehlgeschlagen.
+
+            - event: b2500pkg_status
+              event_data:
+                status: LAEUFT
+                titel: B2500PKG Update
+                untertitel: "GitHub-Version {{ version }}"
+                meldung: Dateien werden zwischengespeichert
+                details: "Lade {{ current_file }} ........ OK"
+                append: true
+                rueckmeldung: ""
+                adresse: ""
+                quelle: script.b2500pkg_update
+
+      # --------------------------------------------------------
+      # 3d. install_if_missing
+      # z.B. basic_settings.yaml:
+      # nur laden, wenn Zieldatei noch nicht vorhanden ist.
+      # --------------------------------------------------------
+      - repeat:
+          for_each: "{{ files_install_if_missing }}"
+          sequence:
+            - variables:
+                current_file: "{{ repeat.item | string | trim }}"
+                current_file_ok: >-
+                  {{
+                    current_file != ''
+                    and current_file.endswith('.yaml')
+                    and '/' not in current_file
+                    and '\\' not in current_file
+                    and '..' not in current_file
+                    and "'" not in current_file
+                    and '"' not in current_file
+                  }}
+
+            - if:
+                - condition: template
+                  value_template: "{{ not current_file_ok }}"
+              then:
+                - action: shell_command.run_custom_command
+                  data:
+                    command: >-
+                      find "/config/packages/b2500pkg" "/config/dashboards"
+                      -type f -name '*.b2500pkg_update.tmp' -delete
+                - event: b2500pkg_status
+                  event_data:
+                    status: FEHLER
+                    titel: B2500PKG Update
+                    untertitel: "GitHub-Version {{ version }}"
+                    meldung: Ungültiger Dateiname im Manifest
+                    details: "Prüfe {{ current_file }} ........ FEHLER"
+                    append: true
+                    rueckmeldung: ""
+                    adresse: ""
+                    quelle: script.b2500pkg_update
+                - stop: Ungültiger Dateiname im Manifest.
+
+            - action: shell_command.run_custom_command
+              data:
+                command: >-
+                  target="/config/packages/b2500pkg/{{ current_file }}";
+                  tmp="${target}.b2500pkg_update.tmp";
+                  if [ -f "$target" ]; then
+                    printf 'VORHANDEN';
+                    exit 0;
+                  fi;
+                  wget -q --timeout=15 --tries=1
+                  -O "$tmp"
+                  "https://raw.githubusercontent.com/Martin0475/b2500pkg/main/packages/b2500pkg/{{ current_file }}"
+              response_variable: missing_response
+
+            - if:
+                - condition: template
+                  value_template: >-
+                    {{ missing_response.returncode | default(1) | int(1) != 0 }}
+              then:
+                - action: shell_command.run_custom_command
+                  data:
+                    command: >-
+                      find "/config/packages/b2500pkg" "/config/dashboards"
+                      -type f -name '*.b2500pkg_update.tmp' -delete
+                - event: b2500pkg_status
+                  event_data:
+                    status: FEHLER
+                    titel: B2500PKG Update
+                    untertitel: "GitHub-Version {{ version }}"
+                    meldung: Download fehlgeschlagen
+                    details: "Lade {{ current_file }} ........ FEHLER"
+                    append: true
+                    rueckmeldung: "{{ missing_response.stderr | default('') }}"
+                    adresse: >-
+                      https://raw.githubusercontent.com/Martin0475/b2500pkg/main/packages/b2500pkg/{{ current_file }}
+                    quelle: script.b2500pkg_update
+                - stop: Download fehlgeschlagen.
+
+            - event: b2500pkg_status
+              event_data:
+                status: LAEUFT
+                titel: B2500PKG Update
+                untertitel: "GitHub-Version {{ version }}"
+                meldung: Dateien werden zwischengespeichert
+                details: >-
+                  {% if 'VORHANDEN' in (missing_response.stdout | default('')) %}
+                    {{ current_file }} ........ VORHANDEN
+                  {% else %}
+                    Lade {{ current_file }} ........ OK
+                  {% endif %}
+                append: true
+                rueckmeldung: ""
+                adresse: ""
+                quelle: script.b2500pkg_update
+
+      # ========================================================
+      # 4. Alle Downloads waren erfolgreich
+      # ========================================================
+      - event: b2500pkg_status
+        event_data:
+          status: LAEUFT
+          titel: B2500PKG Update
+          untertitel: "GitHub-Version {{ version }}"
+          meldung: Neue Dateien werden übernommen
+          details: "Alle Downloads ................... OK"
+          append: true
+          rueckmeldung: ""
+          adresse: ""
+          quelle: script.b2500pkg_update
+
+      # ========================================================
+      # 5. Vorbereitete Dateien übernehmen
+      #    Vorhandene gleichnamige Dateien werden hier ersetzt.
+      # ========================================================
+
+      # 5a. b2500pkg
+      - repeat:
+          for_each: "{{ files_b2500pkg }}"
+          sequence:
+            - variables:
+                current_file: "{{ repeat.item | string | trim }}"
+            - action: shell_command.run_custom_command
+              data:
+                command: >-
+                  mv
+                  "/config/packages/b2500pkg/{{ current_file }}.b2500pkg_update.tmp"
+                  "/config/packages/b2500pkg/{{ current_file }}"
+              response_variable: activate_response
+            - if:
+                - condition: template
+                  value_template: >-
+                    {{ activate_response.returncode | default(1) | int(1) != 0 }}
+              then:
+                - event: b2500pkg_status
+                  event_data:
+                    status: FEHLER
+                    titel: B2500PKG Update
+                    untertitel: "GitHub-Version {{ version }}"
+                    meldung: Datei konnte nicht übernommen werden
+                    details: "Übernehme {{ current_file }} .... FEHLER"
+                    append: true
+                    rueckmeldung: "{{ activate_response.stderr | default('') }}"
+                    adresse: ""
+                    quelle: script.b2500pkg_update
+                - stop: Übernehmen einer Datei fehlgeschlagen.
+
+      # 5b. Automationen
+      - repeat:
+          for_each: "{{ files_automations }}"
+          sequence:
+            - variables:
+                current_file: "{{ repeat.item | string | trim }}"
+            - action: shell_command.run_custom_command
+              data:
+                command: >-
+                  mv
+                  "/config/packages/b2500pkg/automations/{{ current_file }}.b2500pkg_update.tmp"
+                  "/config/packages/b2500pkg/automations/{{ current_file }}"
+              response_variable: activate_response
+            - if:
+                - condition: template
+                  value_template: >-
+                    {{ activate_response.returncode | default(1) | int(1) != 0 }}
+              then:
+                - event: b2500pkg_status
+                  event_data:
+                    status: FEHLER
+                    titel: B2500PKG Update
+                    untertitel: "GitHub-Version {{ version }}"
+                    meldung: Datei konnte nicht übernommen werden
+                    details: "Übernehme {{ current_file }} .... FEHLER"
+                    append: true
+                    rueckmeldung: "{{ activate_response.stderr | default('') }}"
+                    adresse: ""
+                    quelle: script.b2500pkg_update
+                - stop: Übernehmen einer Datei fehlgeschlagen.
+
+      # 5c. Dashboards
+      - repeat:
+          for_each: "{{ files_dashboards }}"
+          sequence:
+            - variables:
+                current_file: "{{ repeat.item | string | trim }}"
+            - action: shell_command.run_custom_command
+              data:
+                command: >-
+                  mv
+                  "/config/dashboards/{{ current_file }}.b2500pkg_update.tmp"
+                  "/config/dashboards/{{ current_file }}"
+              response_variable: activate_response
+            - if:
+                - condition: template
+                  value_template: >-
+                    {{ activate_response.returncode | default(1) | int(1) != 0 }}
+              then:
+                - event: b2500pkg_status
+                  event_data:
+                    status: FEHLER
+                    titel: B2500PKG Update
+                    untertitel: "GitHub-Version {{ version }}"
+                    meldung: Datei konnte nicht übernommen werden
+                    details: "Übernehme {{ current_file }} .... FEHLER"
+                    append: true
+                    rueckmeldung: "{{ activate_response.stderr | default('') }}"
+                    adresse: ""
+                    quelle: script.b2500pkg_update
+                - stop: Übernehmen einer Datei fehlgeschlagen.
+
+      # 5d. install_if_missing
+      # Wenn kein Temp existiert, war die Datei bereits vorhanden.
+      - repeat:
+          for_each: "{{ files_install_if_missing }}"
+          sequence:
+            - variables:
+                current_file: "{{ repeat.item | string | trim }}"
+            - action: shell_command.run_custom_command
+              data:
+                command: >-
+                  tmp="/config/packages/b2500pkg/{{ current_file }}.b2500pkg_update.tmp";
+                  target="/config/packages/b2500pkg/{{ current_file }}";
+                  if [ -f "$tmp" ]; then
+                    mv "$tmp" "$target";
+                  fi
+              response_variable: activate_response
+            - if:
+                - condition: template
+                  value_template: >-
+                    {{ activate_response.returncode | default(1) | int(1) != 0 }}
+              then:
+                - event: b2500pkg_status
+                  event_data:
+                    status: FEHLER
+                    titel: B2500PKG Update
+                    untertitel: "GitHub-Version {{ version }}"
+                    meldung: Datei konnte nicht übernommen werden
+                    details: "Übernehme {{ current_file }} .... FEHLER"
+                    append: true
+                    rueckmeldung: "{{ activate_response.stderr | default('') }}"
+                    adresse: ""
+                    quelle: script.b2500pkg_update
+                - stop: Übernehmen einer Datei fehlgeschlagen.
+
+      - event: b2500pkg_status
+        event_data:
+          status: LAEUFT
+          titel: B2500PKG Update
+          untertitel: "GitHub-Version {{ version }}"
+          meldung: Veraltete Dateien werden entfernt
+          details: "Neue Dateien übernehmen ........... OK"
+          append: true
+          rueckmeldung: ""
+          adresse: ""
+          quelle: script.b2500pkg_update
+
+      # ========================================================
+      # 6. Veraltete Dateien ERST JETZT löschen
+      # ========================================================
+      - repeat:
+          for_each: "{{ files_obsolete }}"
+          sequence:
+            - variables:
+                obsolete_file: "{{ repeat.item | string | trim }}"
+                obsolete_ok: >-
+                  {{
+                    obsolete_file != ''
+                    and obsolete_file.endswith('.yaml')
+                    and '..' not in obsolete_file
+                    and "'" not in obsolete_file
+                    and '"' not in obsolete_file
+                    and (
+                      obsolete_file.startswith('/config/packages/b2500pkg/')
+                      or obsolete_file.startswith('/config/dashboards/')
+                    )
+                  }}
+
+            - if:
+                - condition: template
+                  value_template: "{{ not obsolete_ok }}"
+              then:
+                - event: b2500pkg_status
+                  event_data:
+                    status: FEHLER
+                    titel: B2500PKG Update
+                    untertitel: "GitHub-Version {{ version }}"
+                    meldung: Ungültiger obsolete-Pfad im Manifest
+                    details: "Lösche {{ obsolete_file }} .... FEHLER"
+                    append: true
+                    rueckmeldung: ""
+                    adresse: ""
+                    quelle: script.b2500pkg_update
+                - stop: Ungültiger obsolete-Pfad im Manifest.
+
+            - action: shell_command.run_custom_command
+              data:
+                command: >-
+                  rm -f "{{ obsolete_file }}"
+              response_variable: obsolete_response
+
+            - if:
+                - condition: template
+                  value_template: >-
+                    {{ obsolete_response.returncode | default(1) | int(1) != 0 }}
+              then:
+                - event: b2500pkg_status
+                  event_data:
+                    status: FEHLER
+                    titel: B2500PKG Update
+                    untertitel: "GitHub-Version {{ version }}"
+                    meldung: Veraltete Datei konnte nicht gelöscht werden
+                    details: "Lösche {{ obsolete_file }} .... FEHLER"
+                    append: true
+                    rueckmeldung: "{{ obsolete_response.stderr | default('') }}"
+                    adresse: ""
+                    quelle: script.b2500pkg_update
+                - stop: Löschen einer veralteten Datei fehlgeschlagen.
+
+      # ========================================================
+      # 7. Aufräumen
+      # ========================================================
+      - action: shell_command.run_custom_command
+        data:
+          command: >-
+            find "/config/packages/b2500pkg" "/config/dashboards"
+            -type f -name '*.b2500pkg_update.tmp' -delete
+
+      # ========================================================
+      # 8. Reloads aus dem Manifest
+      #
+      # Beispiele:
+      #   "reload": ["input_number", "input_text", "script"]
+      #   "reload": ["all"]
+      #
+      # "all" hat Vorrang und ignoriert alle anderen Einträge.
+      # "script" / "scripts" wird immer zuletzt ausgeführt, weil
+      # script.reload dieses laufende Update-Script beendet.
+      # Die Abschlussmeldung wird deshalb VOR script.reload bzw.
+      # homeassistant.reload_all gesetzt.
+      # ========================================================
+      - variables:
+          reload_all_requested: >-
+            {{
+              'all' in
+              (reload_info | map('string') | map('lower') | map('trim') | list)
+            }}
+          script_reload_requested: >-
+            {{
+              'script' in
+              (reload_info | map('string') | map('lower') | map('trim') | list)
+              or
+              'scripts' in
+              (reload_info | map('string') | map('lower') | map('trim') | list)
+            }}
+
+      # --------------------------------------------------------
+      # 8a. Normale Bereiche neu laden
+      #     Bei "all" werden Einzel-Reloads übersprungen.
+      #     script/scripts wird hier ebenfalls übersprungen und
+      #     ggf. anschließend als letzte Aktion ausgeführt.
+      # --------------------------------------------------------
+      - if:
+          - condition: template
+            value_template: "{{ not reload_all_requested }}"
+        then:
+          - repeat:
+              for_each: "{{ reload_info }}"
+              sequence:
+                - variables:
+                    current_reload: "{{ repeat.item | string | lower | trim }}"
+
+                - if:
+                    - condition: template
+                      value_template: >-
+                        {{
+                          current_reload not in
+                          ['', 'all', 'script', 'scripts']
+                        }}
+                  then:
+                    - event: b2500pkg_status
+                      event_data:
+                        status: LAEUFT
+                        titel: B2500PKG Update
+                        untertitel: "GitHub-Version {{ version }}"
+                        meldung: Konfiguration wird neu geladen
+                        details: "Reload {{ current_reload }} ........ läuft"
+                        append: true
+                        rueckmeldung: ""
+                        adresse: "{{ current_reload }}.reload"
+                        quelle: script.b2500pkg_update
+
+                    - action: "{{ current_reload }}.reload"
+
+                    - event: b2500pkg_status
+                      event_data:
+                        status: LAEUFT
+                        titel: B2500PKG Update
+                        untertitel: "GitHub-Version {{ version }}"
+                        meldung: Konfiguration wird neu geladen
+                        details: "Reload {{ current_reload }} ........ OK"
+                        append: true
+                        rueckmeldung: ""
+                        adresse: "{{ current_reload }}.reload"
+                        quelle: script.b2500pkg_update
+
+      # --------------------------------------------------------
+      # 8b. ALL
+      #     Abschlussmeldung MUSS vor homeassistant.reload_all
+      #     erfolgen, weil dabei auch Scripts neu geladen werden.
+      # --------------------------------------------------------
+      - if:
+          - condition: template
+            value_template: "{{ reload_all_requested }}"
+        then:
+          - event: b2500pkg_status
+            event_data:
+              status: ERFOLGREICH
+              titel: B2500PKG Update
+              untertitel: "GitHub-Version {{ version }}"
+              meldung: Dateien erfolgreich aktualisiert
+              details: |-
+                Veraltete Dateien ............... OK ({{ files_obsolete | count }})
+                Update-Dateien .................. OK
+                Reloads ......................... ALL wird jetzt ausgeführt
+              append: true
+              rueckmeldung: ""
+              adresse: homeassistant.reload_all
+              quelle: script.b2500pkg_update
+
+          - action: homeassistant.reload_all
+
+          - stop: Reload ALL ausgelöst.
+
+      # --------------------------------------------------------
+      # 8c. SCRIPT
+      #     Alle anderen gewünschten Reloads sind bereits fertig.
+      #     Abschlussmeldung MUSS vor script.reload erfolgen.
+      # --------------------------------------------------------
+      - if:
+          - condition: template
+            value_template: "{{ script_reload_requested }}"
+        then:
+          - event: b2500pkg_status
+            event_data:
+              status: ERFOLGREICH
+              titel: B2500PKG Update
+              untertitel: "GitHub-Version {{ version }}"
+              meldung: Dateien erfolgreich aktualisiert
+              details: |-
+                Veraltete Dateien ............... OK ({{ files_obsolete | count }})
+                Update-Dateien .................. OK
+                Reloads ......................... Script wird jetzt neu geladen
+              append: true
+              rueckmeldung: ""
+              adresse: script.reload
+              quelle: script.b2500pkg_update
+
+          - action: script.reload
+
+          - stop: Script-Reload ausgelöst.
+
+      # ========================================================
+      # 9. Abschluss ohne Script-/ALL-Reload
+      # ========================================================
+      - event: b2500pkg_status
+        event_data:
+          status: ERFOLGREICH
+          titel: B2500PKG Update
+          untertitel: "GitHub-Version {{ version }}"
+          meldung: Dateien erfolgreich aktualisiert
+          details: |-
+            Veraltete Dateien ............... OK ({{ files_obsolete | count }})
+            Update-Dateien .................. OK
+            Reloads ......................... OK ({{ reload_info | count }})
+          append: true
+          rueckmeldung: ""
+          adresse: ""
+          quelle: script.b2500pkg_update
+
+      - variables:
+          response:
+            success: true
+            code: FILE_UPDATE_OK
+            message: Dateien erfolgreich aktualisiert.
+            version: "{{ version }}"
+            changes: "{{ changes }}"
+            b2500pkg_count: "{{ files_b2500pkg | count }}"
+            automations_count: "{{ files_automations | count }}"
+            dashboards_count: "{{ files_dashboards | count }}"
+            install_if_missing_count: "{{ files_install_if_missing | count }}"
+            obsolete_count: "{{ files_obsolete | count }}"
+            reload_count: "{{ reload_info | count }}"
+
+      - stop: Dateien erfolgreich aktualisiert.
+        response_variable: response
