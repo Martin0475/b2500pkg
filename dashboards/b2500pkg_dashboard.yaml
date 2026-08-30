@@ -3,26 +3,9 @@ views:
     sections:
       - type: grid
         cards:
-          - type: heading
-            heading_style: title
-            heading: >-
-              B2500 Package 2026-08-24 (Neues MQTT Discovery und Info CD16
-              überarbeitet))
-            grid_options:
-              columns: 12
-              rows: 1
           - type: picture
             image: >-
               https://raw.githubusercontent.com/Martin0475/b2500pkg/refs/heads/main/B2500PKG_Logo.jpg
-          - type: tile
-            entity: input_button.b2500pkg_update
-            features_position: bottom
-            vertical: false
-            grid_options:
-              columns: full
-              rows: 1
-            tap_action:
-              action: toggle
           - type: entities
             entities:
               - entity: sensor.b2500_status_zeile
@@ -98,257 +81,135 @@ views:
             show_header_toggle: false
             title: B09 Einstellungen
         column_span: 1
-      - type: grid
-        cards:
-          - type: entities
-            entities:
-              - entity: input_select.speicherauswahl
-            title: Speicherliste
-            footer:
-              type: buttons
-              entities:
-                - entity: automation.b2500pkg_speicherliste_aktualisieren
-                  name: Speicherliste aktualisieren
-                  tap_action:
-                    action: call-service
-                    service: automation.trigger
-                    service_data:
-                      entity_id: automation.b2500pkg_speicherliste_aktualisieren
-          - type: heading
-            heading: MQTT Entitäten anlegen / löschen
-            heading_style: title
-          - show_name: true
-            show_icon: true
-            type: button
-            entity: script.b2500pkg_discovery_script
-            icon: mdi:refresh-auto
-          - show_name: true
-            show_icon: true
-            type: button
-            name: Test starten
-            icon: mdi:test-tube
-            tap_action:
-              action: perform-action
-              perform_action: script.b2500pkg_test_config
-            show_state: false
-          - type: heading
-            icon: mdi:test-tube
-            heading: Konfiguration testen
-            heading_style: title
-          - type: tile
-            entity: input_select.b2500pkg_test_speicher
-            features:
-              - type: select-options
-          - type: tile
-            entity: input_select.b2500pkg_test_befehl
-            features:
-              - type: select-options
-          - type: markdown
-            title: B2500PKG Status
-            grid_options:
-              columns: 12
-              rows: 12
-            content: >-
-              {% set e = 'sensor.b2500pkg_status' %} {% set status = states(e) |
-              upper %} {% set titel = state_attr(e, 'titel') or 'B2500PKG' %} {%
-              set untertitel = state_attr(e, 'untertitel') or '' %} {% set
-              meldung = state_attr(e, 'meldung') or '' %} {% set details =
-              state_attr(e, 'details') or '' %} {% set telegramm = state_attr(e,
-              'telegramm') or '' %} {% set topic = state_attr(e, 'topic') or ''
-              %} {% set quelle = state_attr(e, 'quelle') or '' %}
-
-              <center> <b>{{ titel }}</b> {% if untertitel %}<br>{{ untertitel
-              }}{% endif %} </center> <br>
-
-              {% if status in ['OK', 'ERFOLGREICH', 'SUCCESS'] %} 🟢 <b>{{
-              meldung if meldung else 'Erfolgreich' }}</b> {% elif status in
-              ['LAEUFT', 'RUNNING'] %} 🟡 <b>{{ meldung if meldung else 'Läuft
-              …' }}</b> {% elif status in ['WARNUNG', 'WARNING',
-              'REPOST_FEHLER'] %} 🟠 <b>{{ meldung if meldung else 'Warnung'
-              }}</b> {% elif status in ['FEHLER', 'ERROR', 'KEINE_ANTWORT',
-              'KEINE_PASSENDE_ANTWORT'] %} 🔴 <b>{{ meldung if meldung else
-              'Fehler' }}</b> {% else %} ⚪ <b>{{ meldung if meldung else status
-              }}</b> {% endif %}
-
-              {% if quelle %} <br><br><b>Quelle:</b><br>{{ quelle }} {% endif %}
-
-              {% if details %} <br><br><b>Details:</b><br>{{ details |
-              replace('\n', '<br>') }} {% endif %}
-
-              {% if topic %} <br><br><b>Topic:</b><br><code>{{ topic }}</code>
-              {% endif %}
-
-              {% if telegramm %} <br><br><b>Telegramm:</b><br> <pre>{{ telegramm
-              }}</pre> {% endif %}
-      - type: grid
-        cards: []
     type: sections
     max_columns: 4
-    cards:
-      - type: conditional
-        conditions:
-          - condition: state
-            entity: input_text.b02_mac
-            state_not: "0"
-        card:
-          type: vertical-stack
-          cards:
-            - type: markdown
-              content: >-
-                <center> <span style="font-size: 24px;"> <b>CD16 Infos für
-                B02</b> </span> </center>
-            - type: markdown
-              content: >
-                | **PV1** | **PV2** |
+    cards: []
+  - type: sections
+    max_columns: 4
+    title: Tools & Debug
+    path: tools-debug
+    sections:
+      - type: grid
+        column_span: 8
+        cards:
+          - type: vertical-stack
+            cards:
+              - type: vertical-stack
+                cards:
+                  - type: vertical-stack
+                    cards:
+                      - type: heading
+                        heading: Speicherauswahl
+                        heading_style: subtitle
+                      - type: entities
+                        show_header_toggle: false
+                        entities:
+                          - entity: input_select.speicherauswahl
+                        header:
+                          type: buttons
+                          entities:
+                            - entity: automation.b2500pkg_speicherliste_aktualisieren
+                              name: Speicherliste aktualisieren
+                              tap_action:
+                                action: call-service
+                                service: automation.trigger
+                                service_data:
+                                  entity_id: >-
+                                    automation.b2500pkg_speicherliste_aktualisieren
+                  - type: horizontal-stack
+                    cards:
+                      - type: button
+                        entity: script.b2500pkg_discovery_script
+                        name: MQTT Entitäten anlegen / löschen
+                        icon: mdi:refresh-auto
+                        show_name: true
+                        show_icon: true
+                      - show_name: true
+                        show_icon: true
+                        type: button
+                        entity: automation.b2500pkg_speichererkennung_status
+                        name: Speicher erkennung
+                        icon: mdi:refresh-auto
+                      - show_name: true
+                        show_icon: true
+                        type: button
+                        entity: script.b2500pkg_update
+                        name: Update starten
+                        icon: mdi:refresh-auto
+                  - type: horizontal-stack
+                    cards:
+                      - square: false
+                        type: grid
+                        cards:
+                          - type: button
+                            name: Test starten
+                            icon: mdi:test-tube
+                            show_name: true
+                            show_icon: true
+                            show_state: false
+                            tap_action:
+                              action: perform-action
+                              perform_action: script.b2500pkg_test_config
+                        columns: 1
+                        title: Konfiguration testen
+                      - type: vertical-stack
+                        cards:
+                          - type: tile
+                            entity: input_select.b2500pkg_test_speicher
+                            name: Speicher
+                            features:
+                              - type: select-options
+                          - type: tile
+                            entity: input_select.b2500pkg_test_befehl
+                            name: Befehl
+                            features:
+                              - type: select-options
+              - type: markdown
+                content: >
+                  [![B2500PKG
+                  Version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FMartin0475%2Fb2500pkg%2Fmain%2Finstall_scripts%2Fb2500pkg_manifest.json&query=%24.version&label=GitHub)](https://github.com/Martin0475/b2500pkg)
 
-                |:---:|:---:|
+                  ![Änderungen](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FMartin0475%2Fb2500pkg%2Fmain%2Finstall_scripts%2Fb2500pkg_manifest.json&query=%24.changes&label=%C3%84nderungen)                            
+              - type: markdown
+                title: B2500PKG Status
+                content: >-
+                  {% set e = 'sensor.b2500pkg_status' %} {% set status =
+                  states(e) | upper %} {% set titel = state_attr(e, 'titel') or
+                  'B2500PKG' %} {% set untertitel = state_attr(e, 'untertitel')
+                  or '' %} {% set meldung = state_attr(e, 'meldung') or '' %} {%
+                  set details = state_attr(e, 'details') or '' %} {% set
+                  rueckmeldung = state_attr(e, 'rueckmeldung') or '' %} {% set
+                  topic = state_attr(e, 'topic') or '' %} {% set quelle =
+                  state_attr(e, 'quelle') or '' %}
 
-                | **{% set p = states('sensor.b2500_02_p1') | int(-1) %}{% if p
-                == 0 %}⚫ Aus{% elif p == 1 %}🟢 PV aktiv{% elif p == 2 %}🔵
-                Passthrough{% else %}❓ Unbekannt{% endif %}** | **{% set p =
-                states('sensor.b2500_02_p2') | int(-1) %}{% if p == 0 %}⚫ Aus{%
-                elif p == 1 %}🟢 PV aktiv{% elif p == 2 %}🔵 Passthrough{% else
-                %}❓ Unbekannt{% endif %}** |
+                  <center> <b>{{ titel }}</b> {% if untertitel %}<br>{{
+                  untertitel }}{% endif %} </center> <br>
 
-                | **{{ states('sensor.b2500_02_cd16w1') }} W** | **{{
-                states('sensor.b2500_02_cd16w2') }} W** |
+                  {% if status in ['OK', 'ERFOLGREICH', 'SUCCESS'] %} 🟢 <b>{{
+                  meldung if meldung else 'Erfolgreich' }}</b> {% elif status in
+                  ['LAEUFT', 'RUNNING'] %} 🟡 <b>{{ meldung if meldung else
+                  'Läuft …' }}</b> {% elif status in ['WARNUNG', 'WARNING',
+                  'REPOST_FEHLER', 'RAW_CAPTURE_FEHLER'] %} 🟠 <b>{{ meldung if
+                  meldung else 'Warnung' }}</b> {% elif status in ['FEHLER',
+                  'ERROR', 'KEINE_ANTWORT', 'KEINE_PASSENDE_ANTWORT'] %} 🔴
+                  <b>{{ meldung if meldung else 'Fehler' }}</b> {% else %} ⚪
+                  <b>{{ meldung if meldung else status }}</b> {% endif %}
 
-                | {{ states('sensor.b2500_02_cd16m1') }} V | {{
-                states('sensor.b2500_02_cd16m2') }} V |
+                  {% if quelle %} <br><br><b>Quelle:</b><br>{{ quelle }} {%
+                  endif %}
 
-                | {{ states('sensor.b2500_02_cd16c1') }} A | {{
-                states('sensor.b2500_02_cd16c2') }} A |
-            - type: markdown
-              content: >-
-                <center> <b>PV Gesamt</b><br> <span style="font-size: 24px;">
-                <b>{{
-                  (
-                    states('sensor.b2500_02_cd16w1') | float(0)
-                    +
-                    states('sensor.b2500_02_cd16w2') | float(0)
-                  ) | round(0)
-                }} W</b> </span> </center>
-            - type: horizontal-stack
-              cards:
-                - type: vertical-stack
-                  cards:
-                    - type: gauge
-                      entity: sensor.b2500_02_pe
-                      name: Batterie SOC
-                      min: 0
-                      max: 100
-                      needle: true
-                      severity:
-                        red: 0
-                        yellow: 20
-                        green: 50
-                      tap_action:
-                        action: perform-action
-                        perform_action: script.b2500pkg_worker_sequence
-                        data:
-                          worker: script.b2500_02_worker
-                          payloads:
-                            - cd=16
-                            - cd=01
-                            - cd=13
-                            - cd=21
-                      hold_action:
-                        action: perform-action
-                        perform_action: script.b2500_02_worker
-                        data:
-                          payload: cd=30
-                          followup_payload: ""
-                          no_check: true
-                          expected_answer: {}
-                    - type: markdown
-                      content: >-
-                        <center> <small> <b>Kalibrierung</b><br><br>
-                        <b>Charge</b> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                        <b>Discharge</b><br> {{ "%.3f" |
-                        format(states('sensor.b2500_02_cd21cf') | float(0)) }}
-                        Ah &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {{ "%.3f" |
-                        format(states('sensor.b2500_02_cd21df') | float(0)) }}
-                        Ah </small> </center>
-                - type: markdown
-                  content: >-
-                    ## Akku
+                  {% if details %} <br><br><b>Details:</b><br>{{ details |
+                  replace('\n', '<br>') }} {% endif %}
 
-                    **Leistung**   {{ states('sensor.b2500_02_cd16bb') }} W
+                  {% if topic %} <br><br><b>Topic:</b><br><code>{{ topic
+                  }}</code> {% endif %}
 
-                    **Spannung**   {{ states('sensor.b2500_02_cd16bv') }} V
-
-                    **Strom**   {{ states('sensor.b2500_02_cd16bc') }} A
-
-                    <br>
-
-                    {% set ns = namespace(min_v=999999, min_i=0, max_v=0,
-                    max_i=0, count=0) %} {% for z in range(1, 17) %}
-                      {% set entity_id = 'sensor.b2500_02_zelle' ~ ('%02d' | format(z)) %}
-                      {% set v = states(entity_id) | float(0) %}
-                      {% if v > 0 %}
-                        {% set ns.count = ns.count + 1 %}
-                        {% if v < ns.min_v %}
-                          {% set ns.min_v = v %}
-                          {% set ns.min_i = z %}
-                        {% endif %}
-                        {% if v > ns.max_v %}
-                          {% set ns.max_v = v %}
-                          {% set ns.max_i = z %}
-                        {% endif %}
-                      {% endif %}
-                    {% endfor %}
-
-                    **DOD:** {{ states('sensor.b2500_02_do') }} %<br> {% if
-                    ns.count > 0 %} **Min. Zelle:** Zelle {{ '%02d' |
-                    format(ns.min_i) }} – {{ ns.min_v | round(0) }} mV<br>
-                    **Max. Zelle:** Zelle {{ '%02d' | format(ns.max_i) }} – {{
-                    ns.max_v | round(0) }} mV<br> **Zelldrift:** {{ (ns.max_v -
-                    ns.min_v) | round(0) }} mV {% else %} **Min. Zelle:** –<br>
-                    **Max. Zelle:** –<br> **Zelldrift:** – {% endif %} <br>
-
-                    {% set entladen =
-                      is_state('binary_sensor.b2500_02_l0_bit0', 'on')
-                      or states('sensor.b2500_02_l0_bit0') in ['1','on']
-                    %} {% set laden =
-                      is_state('binary_sensor.b2500_02_l0_bit1', 'on')
-                      or states('sensor.b2500_02_l0_bit1') in ['1','on']
-                    %} {% set dod =
-                      is_state('binary_sensor.b2500_02_l0_bit2', 'on')
-                      or states('sensor.b2500_02_l0_bit2') in ['1','on']
-                    %} {% set uv =
-                      is_state('binary_sensor.b2500_02_l0_bit3', 'on')
-                      or states('sensor.b2500_02_l0_bit3') in ['1','on']
-                    %}
-
-                    **Status:**   {% if laden %}🟢 Laden   {% endif %} {% if
-                    entladen %}🔵 Entladen   {% endif %} {% if dod %}🟡 DOD
-                    erreicht   {% endif %} {% if uv %}🔴 Unterspannung   {%
-                    endif %} {% if not laden and not entladen and not dod and
-                    not uv %} ⚪ Bereit {% endif %}
-            - type: markdown
-              content: >-
-                <center> <b>Ausgang Gesamt</b><br> <span style="font-size:
-                24px;"> <b>{{
-                  (
-                    states('sensor.b2500_02_cd16g1') | float(0)
-                    +
-                    states('sensor.b2500_02_cd16g2') | float(0)
-                  ) | round(0)
-                }} W</b> </span> </center>
-            - type: markdown
-              content: >
-                | **OUT1** | **OUT2** |
-
-                |:---:|:---:|
-
-                | **{{ states('sensor.b2500_02_cd16g1') }} W** | **{{
-                states('sensor.b2500_02_cd16g2') }} W** |
-
-                | {{ states('sensor.b2500_02_cd16i1') }} V | {{
-                states('sensor.b2500_02_cd16i2') }} V |
-
-                | {{ states('sensor.b2500_02_cd16c3') }} A | {{
-                states('sensor.b2500_02_cd16c4') }} A |
+                  {% if rueckmeldung %} <br><br><b>Rückmeldung:</b><br><pre>{{
+                  rueckmeldung }}</pre> {% endif %}
+            grid_options:
+              rows: auto
+    cards: []
+    subview: false
   - type: sections
     path: timer
     title: Timer
@@ -443,13 +304,13 @@ views:
               - type: conditional
                 conditions:
                   - entity: input_boolean.b2500_timer_startzeit_aendern
-                    state: "on"
+                    state: 'on'
                 card:
                   type: entities
                   show_header_toggle: false
                   entities:
                     - entity: input_datetime.timer_beginn
-                      name: ""
+                      name: ''
                       icon: mdi:clock-start
               - type: tile
                 entity: input_boolean.b2500_timer_endzeit_aendern
@@ -463,13 +324,13 @@ views:
               - type: conditional
                 conditions:
                   - entity: input_boolean.b2500_timer_endzeit_aendern
-                    state: "on"
+                    state: 'on'
                 card:
                   type: entities
                   show_header_toggle: false
                   entities:
                     - entity: input_datetime.timer_ende
-                      name: ""
+                      name: ''
                       icon: mdi:clock-end
               - type: markdown
                 content: |
@@ -487,13 +348,13 @@ views:
               - type: conditional
                 conditions:
                   - entity: input_boolean.b2500_timer_leistung_aendern
-                    state: "on"
+                    state: 'on'
                 card:
                   type: entities
                   show_header_toggle: false
                   entities:
                     - entity: input_number.timer_leistung
-                      name: ""
+                      name: ''
                       icon: mdi:flash
         column_span: 2
       - type: grid
@@ -532,7 +393,7 @@ views:
             visibility:
               - condition: state
                 entity: input_text.b01_mac
-                state_not: "0"
+                state_not: '0'
           - show_name: false
             show_icon: false
             show_state: true
@@ -563,7 +424,7 @@ views:
             visibility:
               - condition: state
                 entity: input_text.b02_mac
-                state_not: "0"
+                state_not: '0'
           - show_name: false
             show_icon: false
             show_state: true
@@ -594,7 +455,7 @@ views:
             visibility:
               - condition: state
                 entity: input_text.b03_mac
-                state_not: "0"
+                state_not: '0'
           - show_name: false
             show_icon: false
             show_state: true
@@ -625,7 +486,7 @@ views:
             visibility:
               - condition: state
                 entity: input_text.b04_mac
-                state_not: "0"
+                state_not: '0'
           - show_name: false
             show_icon: false
             show_state: true
@@ -656,7 +517,7 @@ views:
             visibility:
               - condition: state
                 entity: input_text.b05_mac
-                state_not: "0"
+                state_not: '0'
           - show_name: false
             show_icon: false
             show_state: true
@@ -687,7 +548,7 @@ views:
             visibility:
               - condition: state
                 entity: input_text.b06_mac
-                state_not: "0"
+                state_not: '0'
           - show_name: false
             show_icon: false
             show_state: true
@@ -718,7 +579,7 @@ views:
             visibility:
               - condition: state
                 entity: input_text.b07_mac
-                state_not: "0"
+                state_not: '0'
           - show_name: false
             show_icon: false
             show_state: true
@@ -749,7 +610,7 @@ views:
             visibility:
               - condition: state
                 entity: input_text.b08_mac
-                state_not: "0"
+                state_not: '0'
           - show_name: false
             show_icon: false
             show_state: true
@@ -780,14 +641,14 @@ views:
             visibility:
               - condition: state
                 entity: input_text.b09_mac
-                state_not: "0"
+                state_not: '0'
           - type: vertical-stack
             cards:
               - type: conditional
                 conditions:
                   - condition: state
                     entity: input_text.b01_mac
-                    state_not: "0"
+                    state_not: '0'
                 card:
                   type: entities
                   entities:
@@ -797,7 +658,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b02_mac
-                    state_not: "0"
+                    state_not: '0'
                 card:
                   type: entities
                   entities:
@@ -807,7 +668,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b03_mac
-                    state_not: "0"
+                    state_not: '0'
                 card:
                   type: entities
                   entities:
@@ -817,7 +678,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b04_mac
-                    state_not: "0"
+                    state_not: '0'
                 card:
                   type: entities
                   entities:
@@ -827,7 +688,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b05_mac
-                    state_not: "0"
+                    state_not: '0'
                 card:
                   type: entities
                   entities:
@@ -837,7 +698,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b06_mac
-                    state_not: "0"
+                    state_not: '0'
                 card:
                   type: entities
                   entities:
@@ -847,7 +708,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b07_mac
-                    state_not: "0"
+                    state_not: '0'
                 card:
                   type: entities
                   entities:
@@ -857,7 +718,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b08_mac
-                    state_not: "0"
+                    state_not: '0'
                 card:
                   type: entities
                   entities:
@@ -867,7 +728,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b09_mac
-                    state_not: "0"
+                    state_not: '0'
                 card:
                   type: entities
                   entities:
@@ -880,7 +741,7 @@ views:
         entity: sensor.b2500_status_zeile
   - type: sections
     max_columns: 4
-    path: ""
+    path: ''
     sections:
       - type: grid
         cards:
@@ -903,7 +764,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b01_mac
-                    state_not: "0"
+                    state_not: '0'
                 card:
                   type: entities
                   entities:
@@ -913,7 +774,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b02_mac
-                    state_not: "0"
+                    state_not: '0'
                 card:
                   type: entities
                   entities:
@@ -923,7 +784,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b03_mac
-                    state_not: "0"
+                    state_not: '0'
                 card:
                   type: entities
                   entities:
@@ -933,7 +794,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b04_mac
-                    state_not: "0"
+                    state_not: '0'
                 card:
                   type: entities
                   entities:
@@ -943,7 +804,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b05_mac
-                    state_not: "0"
+                    state_not: '0'
                 card:
                   type: entities
                   entities:
@@ -953,7 +814,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b06_mac
-                    state_not: "0"
+                    state_not: '0'
                 card:
                   type: entities
                   entities:
@@ -963,7 +824,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b07_mac
-                    state_not: "0"
+                    state_not: '0'
                 card:
                   type: entities
                   entities:
@@ -973,7 +834,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b08_mac
-                    state_not: "0"
+                    state_not: '0'
                 card:
                   type: entities
                   entities:
@@ -983,7 +844,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b09_mac
-                    state_not: "0"
+                    state_not: '0'
                 card:
                   type: entities
                   entities:
@@ -995,7 +856,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b01_mac
-                    state_not: "0"
+                    state_not: '0'
                 card:
                   type: gauge
                   entity: sensor.b2500_01_pe
@@ -1010,7 +871,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b02_mac
-                    state_not: "0"
+                    state_not: '0'
                 card:
                   type: gauge
                   entity: sensor.b2500_02_pe
@@ -1025,7 +886,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b03_mac
-                    state_not: "0"
+                    state_not: '0'
                 card:
                   type: gauge
                   entity: sensor.b2500_03_pe
@@ -1040,7 +901,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b04_mac
-                    state_not: "0"
+                    state_not: '0'
                 card:
                   type: gauge
                   entity: sensor.b2500_04_pe
@@ -1060,7 +921,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b05_mac
-                    state_not: "0"
+                    state_not: '0'
                 card:
                   type: gauge
                   entity: sensor.b2500_05_pe
@@ -1075,7 +936,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b06_mac
-                    state_not: "0"
+                    state_not: '0'
                 card:
                   type: gauge
                   entity: sensor.b2500_06_pe
@@ -1090,7 +951,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b07_mac
-                    state_not: "0"
+                    state_not: '0'
                 card:
                   type: gauge
                   entity: sensor.b2500_07_pe
@@ -1105,7 +966,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b08_mac
-                    state_not: "0"
+                    state_not: '0'
                 card:
                   type: gauge
                   entity: sensor.b2500_08_pe
@@ -1125,7 +986,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b09_mac
-                    state_not: "0"
+                    state_not: '0'
                 card:
                   type: gauge
                   entity: sensor.b2500_09_pe
@@ -1169,7 +1030,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b01_mac
-                    state_not: "0"
+                    state_not: '0'
                 card:
                   type: entities
                   entities:
@@ -1179,7 +1040,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b02_mac
-                    state_not: "0"
+                    state_not: '0'
                 card:
                   type: entities
                   entities:
@@ -1189,7 +1050,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b03_mac
-                    state_not: "0"
+                    state_not: '0'
                 card:
                   type: entities
                   entities:
@@ -1199,7 +1060,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b04_mac
-                    state_not: "0"
+                    state_not: '0'
                 card:
                   type: entities
                   entities:
@@ -1209,7 +1070,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b05_mac
-                    state_not: "0"
+                    state_not: '0'
                 card:
                   type: entities
                   entities:
@@ -1219,7 +1080,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b06_mac
-                    state_not: "0"
+                    state_not: '0'
                 card:
                   type: entities
                   entities:
@@ -1229,7 +1090,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b07_mac
-                    state_not: "0"
+                    state_not: '0'
                 card:
                   type: entities
                   entities:
@@ -1239,7 +1100,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b08_mac
-                    state_not: "0"
+                    state_not: '0'
                 card:
                   type: entities
                   entities:
@@ -1249,7 +1110,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b09_mac
-                    state_not: "0"
+                    state_not: '0'
                 card:
                   type: entities
                   entities:
@@ -1327,7 +1188,7 @@ views:
             visibility:
               - condition: state
                 entity: input_text.b01_mac
-                state_not: "0"
+                state_not: '0'
           - square: false
             type: grid
             cards:
@@ -1386,7 +1247,7 @@ views:
             visibility:
               - condition: state
                 entity: input_text.b02_mac
-                state_not: "0"
+                state_not: '0'
           - square: false
             type: grid
             cards:
@@ -1445,7 +1306,7 @@ views:
             visibility:
               - condition: state
                 entity: input_text.b03_mac
-                state_not: "0"
+                state_not: '0'
           - square: false
             type: grid
             cards:
@@ -1504,7 +1365,7 @@ views:
             visibility:
               - condition: state
                 entity: input_text.b04_mac
-                state_not: "0"
+                state_not: '0'
           - square: false
             type: grid
             cards:
@@ -1563,7 +1424,7 @@ views:
             visibility:
               - condition: state
                 entity: input_text.b05_mac
-                state_not: "0"
+                state_not: '0'
           - square: false
             type: grid
             cards:
@@ -1622,7 +1483,7 @@ views:
             visibility:
               - condition: state
                 entity: input_text.b06_mac
-                state_not: "0"
+                state_not: '0'
           - square: false
             type: grid
             cards:
@@ -1681,7 +1542,7 @@ views:
             visibility:
               - condition: state
                 entity: input_text.b07_mac
-                state_not: "0"
+                state_not: '0'
           - square: false
             type: grid
             cards:
@@ -1740,7 +1601,7 @@ views:
             visibility:
               - condition: state
                 entity: input_text.b08_mac
-                state_not: "0"
+                state_not: '0'
           - square: false
             type: grid
             cards:
@@ -1799,7 +1660,7 @@ views:
             visibility:
               - condition: state
                 entity: input_text.b09_mac
-                state_not: "0"
+                state_not: '0'
         column_span: 4
       - type: grid
         cards:
@@ -1853,7 +1714,7 @@ views:
         conditions:
           - condition: state
             entity: input_text.b01_mac
-            state_not: "0"
+            state_not: '0'
         card:
           type: vertical-stack
           cards:
@@ -1921,7 +1782,7 @@ views:
                         perform_action: script.b2500_01_worker
                         data:
                           payload: cd=30
-                          followup_payload: ""
+                          followup_payload: ''
                           no_check: true
                           expected_answer: {}
                     - type: markdown
@@ -2017,7 +1878,7 @@ views:
         conditions:
           - condition: state
             entity: input_text.b02_mac
-            state_not: "0"
+            state_not: '0'
         card:
           type: vertical-stack
           cards:
@@ -2085,7 +1946,7 @@ views:
                         perform_action: script.b2500_02_worker
                         data:
                           payload: cd=30
-                          followup_payload: ""
+                          followup_payload: ''
                           no_check: true
                           expected_answer: {}
                     - type: markdown
@@ -2181,7 +2042,7 @@ views:
         conditions:
           - condition: state
             entity: input_text.b03_mac
-            state_not: "0"
+            state_not: '0'
         card:
           type: vertical-stack
           cards:
@@ -2249,7 +2110,7 @@ views:
                         perform_action: script.b2500_03_worker
                         data:
                           payload: cd=30
-                          followup_payload: ""
+                          followup_payload: ''
                           no_check: true
                           expected_answer: {}
                     - type: markdown
@@ -2345,7 +2206,7 @@ views:
         conditions:
           - condition: state
             entity: input_text.b04_mac
-            state_not: "0"
+            state_not: '0'
         card:
           type: vertical-stack
           cards:
@@ -2413,7 +2274,7 @@ views:
                         perform_action: script.b2500_04_worker
                         data:
                           payload: cd=30
-                          followup_payload: ""
+                          followup_payload: ''
                           no_check: true
                           expected_answer: {}
                     - type: markdown
@@ -2509,7 +2370,7 @@ views:
         conditions:
           - condition: state
             entity: input_text.b05_mac
-            state_not: "0"
+            state_not: '0'
         card:
           type: vertical-stack
           cards:
@@ -2577,7 +2438,7 @@ views:
                         perform_action: script.b2500_05_worker
                         data:
                           payload: cd=30
-                          followup_payload: ""
+                          followup_payload: ''
                           no_check: true
                           expected_answer: {}
                     - type: markdown
@@ -2673,7 +2534,7 @@ views:
         conditions:
           - condition: state
             entity: input_text.b06_mac
-            state_not: "0"
+            state_not: '0'
         card:
           type: vertical-stack
           cards:
@@ -2741,7 +2602,7 @@ views:
                         perform_action: script.b2500_06_worker
                         data:
                           payload: cd=30
-                          followup_payload: ""
+                          followup_payload: ''
                           no_check: true
                           expected_answer: {}
                     - type: markdown
@@ -2837,7 +2698,7 @@ views:
         conditions:
           - condition: state
             entity: input_text.b07_mac
-            state_not: "0"
+            state_not: '0'
         card:
           type: vertical-stack
           cards:
@@ -2905,7 +2766,7 @@ views:
                         perform_action: script.b2500_07_worker
                         data:
                           payload: cd=30
-                          followup_payload: ""
+                          followup_payload: ''
                           no_check: true
                           expected_answer: {}
                     - type: markdown
@@ -3001,7 +2862,7 @@ views:
         conditions:
           - condition: state
             entity: input_text.b08_mac
-            state_not: "0"
+            state_not: '0'
         card:
           type: vertical-stack
           cards:
@@ -3069,7 +2930,7 @@ views:
                         perform_action: script.b2500_08_worker
                         data:
                           payload: cd=30
-                          followup_payload: ""
+                          followup_payload: ''
                           no_check: true
                           expected_answer: {}
                     - type: markdown
@@ -3165,7 +3026,7 @@ views:
         conditions:
           - condition: state
             entity: input_text.b09_mac
-            state_not: "0"
+            state_not: '0'
         card:
           type: vertical-stack
           cards:
@@ -3233,7 +3094,7 @@ views:
                         perform_action: script.b2500_09_worker
                         data:
                           payload: cd=30
-                          followup_payload: ""
+                          followup_payload: ''
                           no_check: true
                           expected_answer: {}
                     - type: markdown
@@ -3462,7 +3323,7 @@ views:
         cards:
           - type: heading
             heading_style: title
-            heading: "Powermeter Entität auswählen "
+            heading: 'Powermeter Entität auswählen '
             badges: []
           - type: gauge
             entity: sensor.zeropower_measure_load
@@ -3518,7 +3379,7 @@ views:
             visibility:
               - condition: state
                 entity: input_text.b01_mac
-                state_not: "0"
+                state_not: '0'
           - type: entities
             entities:
               - entity: input_select.zeropower_use_b02
@@ -3526,7 +3387,7 @@ views:
             visibility:
               - condition: state
                 entity: input_text.b02_mac
-                state_not: "0"
+                state_not: '0'
           - type: entities
             entities:
               - entity: input_select.zeropower_use_b03
@@ -3534,7 +3395,7 @@ views:
             visibility:
               - condition: state
                 entity: input_text.b03_mac
-                state_not: "0"
+                state_not: '0'
           - type: entities
             entities:
               - entity: input_select.zeropower_use_b04
@@ -3542,7 +3403,7 @@ views:
             visibility:
               - condition: state
                 entity: input_text.b04_mac
-                state_not: "0"
+                state_not: '0'
           - type: entities
             entities:
               - entity: input_select.zeropower_use_b05
@@ -3550,7 +3411,7 @@ views:
             visibility:
               - condition: state
                 entity: input_text.b05_mac
-                state_not: "0"
+                state_not: '0'
           - type: entities
             entities:
               - entity: input_select.zeropower_use_b06
@@ -3558,7 +3419,7 @@ views:
             visibility:
               - condition: state
                 entity: input_text.b06_mac
-                state_not: "0"
+                state_not: '0'
           - type: entities
             entities:
               - entity: input_select.zeropower_use_b07
@@ -3566,7 +3427,7 @@ views:
             visibility:
               - condition: state
                 entity: input_text.b07_mac
-                state_not: "0"
+                state_not: '0'
           - type: entities
             entities:
               - entity: input_select.zeropower_use_b08
@@ -3574,7 +3435,7 @@ views:
             visibility:
               - condition: state
                 entity: input_text.b08_mac
-                state_not: "0"
+                state_not: '0'
           - type: entities
             entities:
               - entity: input_select.zeropower_use_b09
@@ -3582,7 +3443,7 @@ views:
             visibility:
               - condition: state
                 entity: input_text.b09_mac
-                state_not: "0"
+                state_not: '0'
           - type: entities
             entities:
               - entity: input_text.zeropower_measure
@@ -3657,7 +3518,7 @@ views:
         visibility:
           - condition: state
             entity: input_text.b01_mac
-            state_not: "0"
+            state_not: '0'
       - type: grid
         cards:
           - type: heading
@@ -3672,7 +3533,7 @@ views:
         visibility:
           - condition: state
             entity: input_text.b02_mac
-            state_not: "0"
+            state_not: '0'
       - type: grid
         cards:
           - type: heading
@@ -3687,7 +3548,7 @@ views:
         visibility:
           - condition: state
             entity: input_text.b03_mac
-            state_not: "0"
+            state_not: '0'
       - type: grid
         cards:
           - type: heading
@@ -3702,7 +3563,7 @@ views:
         visibility:
           - condition: state
             entity: input_text.b04_mac
-            state_not: "0"
+            state_not: '0'
       - type: grid
         cards:
           - type: heading
@@ -3717,7 +3578,7 @@ views:
         visibility:
           - condition: state
             entity: input_text.b05_mac
-            state_not: "0"
+            state_not: '0'
       - type: grid
         cards:
           - type: heading
@@ -3732,7 +3593,7 @@ views:
         visibility:
           - condition: state
             entity: input_text.b06_mac
-            state_not: "0"
+            state_not: '0'
       - type: grid
         cards:
           - type: heading
@@ -3747,7 +3608,7 @@ views:
         visibility:
           - condition: state
             entity: input_text.b07_mac
-            state_not: "0"
+            state_not: '0'
       - type: grid
         cards:
           - type: heading
@@ -3762,7 +3623,7 @@ views:
         visibility:
           - condition: state
             entity: input_text.b08_mac
-            state_not: "0"
+            state_not: '0'
       - type: grid
         cards:
           - type: heading
@@ -3777,7 +3638,7 @@ views:
         visibility:
           - condition: state
             entity: input_text.b09_mac
-            state_not: "0"
+            state_not: '0'
   - type: sections
     max_columns: 4
     title: Überschusseinspeisung
@@ -3803,7 +3664,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b01_mac
-                    state_not: "0"
+                    state_not: '0'
                 card:
                   type: entities
                   entities:
@@ -3813,7 +3674,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b02_mac
-                    state_not: "0"
+                    state_not: '0'
                 card:
                   type: entities
                   entities:
@@ -3823,7 +3684,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b03_mac
-                    state_not: "0"
+                    state_not: '0'
                 card:
                   type: entities
                   entities:
@@ -3833,7 +3694,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b04_mac
-                    state_not: "0"
+                    state_not: '0'
                 card:
                   type: entities
                   entities:
@@ -3843,7 +3704,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b05_mac
-                    state_not: "0"
+                    state_not: '0'
                 card:
                   type: entities
                   entities:
@@ -3853,7 +3714,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b06_mac
-                    state_not: "0"
+                    state_not: '0'
                 card:
                   type: entities
                   entities:
@@ -3863,7 +3724,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b07_mac
-                    state_not: "0"
+                    state_not: '0'
                 card:
                   type: entities
                   entities:
@@ -3873,7 +3734,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b08_mac
-                    state_not: "0"
+                    state_not: '0'
                 card:
                   type: entities
                   entities:
@@ -3883,7 +3744,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b09_mac
-                    state_not: "0"
+                    state_not: '0'
                 card:
                   type: entities
                   entities:
@@ -3919,7 +3780,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b01_mac
-                    state_not: "0"
+                    state_not: '0'
                 card:
                   type: entities
                   entities:
@@ -3939,7 +3800,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b02_mac
-                    state_not: "0"
+                    state_not: '0'
                 card:
                   type: entities
                   entities:
@@ -3959,7 +3820,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b03_mac
-                    state_not: "0"
+                    state_not: '0'
                 card:
                   type: entities
                   entities:
@@ -3979,7 +3840,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b04_mac
-                    state_not: "0"
+                    state_not: '0'
                 card:
                   type: entities
                   entities:
@@ -3999,7 +3860,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b05_mac
-                    state_not: "0"
+                    state_not: '0'
                 card:
                   type: entities
                   entities:
@@ -4019,7 +3880,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b06_mac
-                    state_not: "0"
+                    state_not: '0'
                 card:
                   type: entities
                   entities:
@@ -4039,7 +3900,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b07_mac
-                    state_not: "0"
+                    state_not: '0'
                 card:
                   type: entities
                   entities:
@@ -4059,7 +3920,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b08_mac
-                    state_not: "0"
+                    state_not: '0'
                 card:
                   type: entities
                   entities:
@@ -4079,7 +3940,7 @@ views:
                 conditions:
                   - condition: state
                     entity: input_text.b09_mac
-                    state_not: "0"
+                    state_not: '0'
                 card:
                   type: entities
                   entities:
@@ -4159,7 +4020,7 @@ views:
         visibility:
           - condition: state
             entity: input_text.b01_mac
-            state_not: "0"
+            state_not: '0'
       - type: grid
         cards:
           - type: heading
@@ -4198,7 +4059,7 @@ views:
         visibility:
           - condition: state
             entity: input_text.b02_mac
-            state_not: "0"
+            state_not: '0'
       - type: grid
         cards:
           - type: heading
@@ -4237,7 +4098,7 @@ views:
         visibility:
           - condition: state
             entity: input_text.b03_mac
-            state_not: "0"
+            state_not: '0'
       - type: grid
         cards:
           - type: heading
@@ -4276,7 +4137,7 @@ views:
         visibility:
           - condition: state
             entity: input_text.b04_mac
-            state_not: "0"
+            state_not: '0'
       - type: grid
         cards:
           - type: heading
@@ -4315,7 +4176,7 @@ views:
         visibility:
           - condition: state
             entity: input_text.b05_mac
-            state_not: "0"
+            state_not: '0'
       - type: grid
         cards:
           - type: heading
@@ -4354,7 +4215,7 @@ views:
         visibility:
           - condition: state
             entity: input_text.b06_mac
-            state_not: "0"
+            state_not: '0'
       - type: grid
         cards:
           - type: heading
@@ -4393,7 +4254,7 @@ views:
         visibility:
           - condition: state
             entity: input_text.b07_mac
-            state_not: "0"
+            state_not: '0'
       - type: grid
         cards:
           - type: heading
@@ -4432,7 +4293,7 @@ views:
         visibility:
           - condition: state
             entity: input_text.b08_mac
-            state_not: "0"
+            state_not: '0'
       - type: grid
         cards:
           - type: heading
@@ -4471,7 +4332,7 @@ views:
         visibility:
           - condition: state
             entity: input_text.b09_mac
-            state_not: "0"
+            state_not: '0'
   - type: sections
     max_columns: 4
     title: Leistung
@@ -4512,7 +4373,7 @@ views:
         visibility:
           - condition: state
             entity: input_text.b01_mac
-            state_not: "0"
+            state_not: '0'
       - type: grid
         cards:
           - type: heading
@@ -4548,7 +4409,7 @@ views:
         visibility:
           - condition: state
             entity: input_text.b02_mac
-            state_not: "0"
+            state_not: '0'
       - type: grid
         cards:
           - type: heading
@@ -4584,7 +4445,7 @@ views:
         visibility:
           - condition: state
             entity: input_text.b03_mac
-            state_not: "0"
+            state_not: '0'
       - type: grid
         cards:
           - type: heading
@@ -4620,7 +4481,7 @@ views:
         visibility:
           - condition: state
             entity: input_text.b04_mac
-            state_not: "0"
+            state_not: '0'
       - type: grid
         cards:
           - type: heading
@@ -4656,7 +4517,7 @@ views:
         visibility:
           - condition: state
             entity: input_text.b05_mac
-            state_not: "0"
+            state_not: '0'
       - type: grid
         cards:
           - type: heading
@@ -4692,7 +4553,7 @@ views:
         visibility:
           - condition: state
             entity: input_text.b06_mac
-            state_not: "0"
+            state_not: '0'
       - type: grid
         cards:
           - type: heading
@@ -4728,7 +4589,7 @@ views:
         visibility:
           - condition: state
             entity: input_text.b07_mac
-            state_not: "0"
+            state_not: '0'
       - type: grid
         cards:
           - type: heading
@@ -4764,7 +4625,7 @@ views:
         visibility:
           - condition: state
             entity: input_text.b08_mac
-            state_not: "0"
+            state_not: '0'
       - type: grid
         cards:
           - type: heading
@@ -4800,7 +4661,7 @@ views:
         visibility:
           - condition: state
             entity: input_text.b09_mac
-            state_not: "0"
+            state_not: '0'
   - type: sections
     max_columns: 4
     title: Erweiterung 1
@@ -4859,7 +4720,7 @@ views:
         visibility:
           - condition: state
             entity: binary_sensor.b2500_01_b1
-            state: "on"
+            state: 'on'
       - type: grid
         cards:
           - type: heading
@@ -4913,7 +4774,7 @@ views:
         visibility:
           - condition: state
             entity: binary_sensor.b2500_02_b1
-            state: "on"
+            state: 'on'
       - type: grid
         cards:
           - type: heading
@@ -4967,7 +4828,7 @@ views:
         visibility:
           - condition: state
             entity: binary_sensor.b2500_03_b1
-            state: "on"
+            state: 'on'
       - type: grid
         cards:
           - type: heading
@@ -5021,7 +4882,7 @@ views:
         visibility:
           - condition: state
             entity: binary_sensor.b2500_04_b1
-            state: "on"
+            state: 'on'
       - type: grid
         cards:
           - type: heading
@@ -5075,7 +4936,7 @@ views:
         visibility:
           - condition: state
             entity: binary_sensor.b2500_05_b1
-            state: "on"
+            state: 'on'
       - type: grid
         cards:
           - type: heading
@@ -5129,7 +4990,7 @@ views:
         visibility:
           - condition: state
             entity: binary_sensor.b2500_06_b1
-            state: "on"
+            state: 'on'
       - type: grid
         cards:
           - type: heading
@@ -5183,7 +5044,7 @@ views:
         visibility:
           - condition: state
             entity: binary_sensor.b2500_07_b1
-            state: "on"
+            state: 'on'
       - type: grid
         cards:
           - type: heading
@@ -5237,7 +5098,7 @@ views:
         visibility:
           - condition: state
             entity: binary_sensor.b2500_08_b1
-            state: "on"
+            state: 'on'
       - type: grid
         cards:
           - type: heading
@@ -5291,7 +5152,7 @@ views:
         visibility:
           - condition: state
             entity: binary_sensor.b2500_09_b1
-            state: "on"
+            state: 'on'
     cards: []
   - type: sections
     max_columns: 4
@@ -5350,7 +5211,7 @@ views:
         visibility:
           - condition: state
             entity: binary_sensor.b2500_01_b2
-            state: "on"
+            state: 'on'
       - type: grid
         cards:
           - type: heading
@@ -5403,7 +5264,7 @@ views:
         visibility:
           - condition: state
             entity: binary_sensor.b2500_02_b2
-            state: "on"
+            state: 'on'
       - type: grid
         cards:
           - type: heading
@@ -5456,7 +5317,7 @@ views:
         visibility:
           - condition: state
             entity: binary_sensor.b2500_03_b2
-            state: "on"
+            state: 'on'
       - type: grid
         cards:
           - type: heading
@@ -5509,7 +5370,7 @@ views:
         visibility:
           - condition: state
             entity: binary_sensor.b2500_04_b2
-            state: "on"
+            state: 'on'
       - type: grid
         cards:
           - type: heading
@@ -5562,7 +5423,7 @@ views:
         visibility:
           - condition: state
             entity: binary_sensor.b2500_05_b2
-            state: "on"
+            state: 'on'
       - type: grid
         cards:
           - type: heading
@@ -5615,7 +5476,7 @@ views:
         visibility:
           - condition: state
             entity: binary_sensor.b2500_06_b2
-            state: "on"
+            state: 'on'
       - type: grid
         cards:
           - type: heading
@@ -5668,7 +5529,7 @@ views:
         visibility:
           - condition: state
             entity: binary_sensor.b2500_07_b2
-            state: "on"
+            state: 'on'
       - type: grid
         cards:
           - type: heading
@@ -5721,7 +5582,7 @@ views:
         visibility:
           - condition: state
             entity: binary_sensor.b2500_08_b2
-            state: "on"
+            state: 'on'
       - type: grid
         cards:
           - type: heading
@@ -5774,7 +5635,7 @@ views:
         visibility:
           - condition: state
             entity: binary_sensor.b2500_09_b2
-            state: "on"
+            state: 'on'
     cards: []
   - type: sections
     max_columns: 4
