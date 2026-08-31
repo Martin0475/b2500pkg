@@ -79,13 +79,13 @@
     "/config/packages/b2500pkg/automations/delete_discovery.yaml"
   ],
   "reload": [
-    "input_boolean",
-    "input_number",
-    "input_select",
-    "input_text",
-    "input_button",
-    "template",
-    "automation",
-    "script"
+    "input_boolean.reload",
+    "input_number.reload",
+    "input_select.reload",
+    "input_text.reload",
+    "input_button.reload",
+    "template.reload",
+    "automation.reload",
+    "script.reload"
   ]
 }
