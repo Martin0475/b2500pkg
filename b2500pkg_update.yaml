@@ -36,7 +36,7 @@ script:
       erfolgreich waren, werden die neuen Dateien übernommen.
       Danach wird das verwendete Manifest lokal gespeichert,
       werden veraltete Dateien aus "obsolete" gelöscht und die
-      im Manifest angegebenen Bereiche neu geladen.
+      im Manifest angegebenen Home-Assistant-Aktionen ausgeführt.
     mode: single
 
     sequence:
@@ -50,7 +50,7 @@ script:
           titel: B2500PKG Update
           untertitel: Vorbereitung
           meldung: Update wird vorbereitet
-          details: "Verzeichnisse prüfen ............ läuft"
+          details: "Update starten ................... läuft"
           rueckmeldung: ""
           adresse: ""
           quelle: script.b2500pkg_update
@@ -81,6 +81,7 @@ script:
               untertitel: Vorbereitung
               meldung: Verzeichnisse konnten nicht vorbereitet werden
               details: "Verzeichnisse prüfen ............ FEHLER"
+              append: true
               rueckmeldung: "{{ prepare_response.stderr | default('') }}"
               adresse: ""
               quelle: script.b2500pkg_update
@@ -93,11 +94,22 @@ script:
         event_data:
           status: LAEUFT
           titel: B2500PKG Update
+          untertitel: Vorbereitung
+          meldung: Vorbereitung abgeschlossen
+          details: "Verzeichnisse prüfen ............ OK"
+          append: true
+          rueckmeldung: ""
+          adresse: ""
+          quelle: script.b2500pkg_update
+
+      - event: b2500pkg_status
+        event_data:
+          status: LAEUFT
+          titel: B2500PKG Update
           untertitel: Manifest
           meldung: Update-Informationen werden geladen
-          details: |-
-            Verzeichnisse prüfen ............ OK
-            Manifest laden .................. läuft
+          details: "Manifest laden .................. läuft"
+          append: true
           rueckmeldung: ""
           adresse: >-
             https://raw.githubusercontent.com/Martin0475/b2500pkg/main/install_scripts/b2500pkg_manifest.json
@@ -163,13 +175,13 @@ script:
               titel: B2500PKG Update
               untertitel: Manifest
               meldung: Update-Informationen konnten nicht geladen werden
-              details: |-
-                Verzeichnisse prüfen ............ OK
-                Manifest laden .................. FEHLER
-                wget Returncode ................. {{ manifest_returncode }}
-                JSON gültig ..................... {{ 'JA' if manifest is mapping else 'NEIN' }}
-                Version erkannt ................. {{ 'JA' if manifest is mapping and (manifest.get('version', '') | string | trim) != '' else 'NEIN' }}
-              rueckmeldung: "{{ manifest_response.stderr | default('') }}"
+              details: "Manifest laden .................. FEHLER"
+              append: true
+              rueckmeldung: >-
+                wget Returncode={{ manifest_returncode }};
+                JSON gültig={{ 'JA' if manifest is mapping else 'NEIN' }};
+                Version erkannt={{ 'JA' if manifest is mapping and (manifest.get('version', '') | string | trim) != '' else 'NEIN' }};
+                {{ manifest_response.stderr | default('') }}
               adresse: >-
                 https://raw.githubusercontent.com/Martin0475/b2500pkg/main/install_scripts/b2500pkg_manifest.json
               quelle: script.b2500pkg_update
@@ -201,6 +213,7 @@ script:
               untertitel: Manifest
               meldung: Ungültige Dateiliste im Manifest
               details: "Manifest-Dateilisten ............. FEHLER"
+              append: true
               rueckmeldung: ""
               adresse: ""
               quelle: script.b2500pkg_update
@@ -211,14 +224,45 @@ script:
           status: LAEUFT
           titel: B2500PKG Update
           untertitel: "GitHub-Version {{ version }}"
-          meldung: Dateien werden zwischengespeichert
-          details: |-
-            Verzeichnisse prüfen ............ OK
-            Manifest laden .................. OK
-            Version ......................... {{ version }}
-            Änderungen ...................... {{ changes if changes else '-' }}
+          meldung: Manifest erfolgreich geladen
+          details: "Manifest laden .................. OK"
+          append: true
+          rueckmeldung: ""
+          adresse: ""
+          quelle: script.b2500pkg_update
 
-            Downloads:
+      - event: b2500pkg_status
+        event_data:
+          status: LAEUFT
+          titel: B2500PKG Update
+          untertitel: "GitHub-Version {{ version }}"
+          meldung: Manifest geprüft
+          details: "Manifest-Dateilisten ............ OK"
+          append: true
+          rueckmeldung: ""
+          adresse: ""
+          quelle: script.b2500pkg_update
+
+      - event: b2500pkg_status
+        event_data:
+          status: LAEUFT
+          titel: B2500PKG Update
+          untertitel: "GitHub-Version {{ version }}"
+          meldung: Update-Informationen
+          details: "Version ......................... {{ version }}"
+          append: true
+          rueckmeldung: ""
+          adresse: ""
+          quelle: script.b2500pkg_update
+
+      - event: b2500pkg_status
+        event_data:
+          status: LAEUFT
+          titel: B2500PKG Update
+          untertitel: "GitHub-Version {{ version }}"
+          meldung: Update-Informationen
+          details: "Änderungen ...................... {{ changes if changes else '-' }}"
+          append: true
           rueckmeldung: ""
           adresse: ""
           quelle: script.b2500pkg_update
@@ -267,7 +311,6 @@ script:
                     adresse: ""
                     quelle: script.b2500pkg_update
                 - stop: Ungültiger Dateiname im Manifest.
-
             - action: shell_command.run_custom_command
               data:
                 command: >-
@@ -352,7 +395,6 @@ script:
                     adresse: ""
                     quelle: script.b2500pkg_update
                 - stop: Ungültiger Dateiname im Manifest.
-
             - action: shell_command.run_custom_command
               data:
                 command: >-
@@ -437,7 +479,6 @@ script:
                     adresse: ""
                     quelle: script.b2500pkg_update
                 - stop: Ungültiger Dateiname im Manifest.
-
             - action: shell_command.run_custom_command
               data:
                 command: >-
@@ -595,6 +636,20 @@ script:
           adresse: ""
           quelle: script.b2500pkg_update
 
+      # Anzahl der tatsächlich vorbereiteten Dateien ermitteln.
+      # install_if_missing-Dateien, die bereits vorhanden sind,
+      # besitzen keine Temp-Datei und werden daher nicht mitgezählt.
+      - action: shell_command.run_custom_command
+        data:
+          command: >-
+            find "/config/packages/b2500pkg" "/config/dashboards"
+            -type f -name '*.b2500pkg_update.tmp' | wc -l
+        response_variable: prepared_count_response
+
+      - variables:
+          prepared_count: >-
+            {{ prepared_count_response.stdout | default('0') | trim | int(0) }}
+
       # ========================================================
       # 5. Vorbereitete Dateien übernehmen
       #    Vorhandene gleichnamige Dateien werden hier ersetzt.
@@ -630,7 +685,6 @@ script:
                     adresse: ""
                     quelle: script.b2500pkg_update
                 - stop: Übernehmen einer Datei fehlgeschlagen.
-
       # 5b. Automationen
       - repeat:
           for_each: "{{ files_automations }}"
@@ -661,7 +715,6 @@ script:
                     adresse: ""
                     quelle: script.b2500pkg_update
                 - stop: Übernehmen einer Datei fehlgeschlagen.
-
       # 5c. Dashboards
       - repeat:
           for_each: "{{ files_dashboards }}"
@@ -692,7 +745,6 @@ script:
                     adresse: ""
                     quelle: script.b2500pkg_update
                 - stop: Übernehmen einer Datei fehlgeschlagen.
-
       # 5d. install_if_missing
       # Wenn kein Temp existiert, war die Datei bereits vorhanden.
       - repeat:
@@ -726,7 +778,6 @@ script:
                     adresse: ""
                     quelle: script.b2500pkg_update
                 - stop: Übernehmen einer Datei fehlgeschlagen.
-
       # ========================================================
       # 6. Installiertes Manifest lokal speichern
       #
@@ -740,10 +791,20 @@ script:
           status: LAEUFT
           titel: B2500PKG Update
           untertitel: "GitHub-Version {{ version }}"
+          meldung: Dateien wurden übernommen
+          details: "Neue Dateien übernehmen .......... OK ({{ prepared_count }})"
+          append: true
+          rueckmeldung: ""
+          adresse: ""
+          quelle: script.b2500pkg_update
+
+      - event: b2500pkg_status
+        event_data:
+          status: LAEUFT
+          titel: B2500PKG Update
+          untertitel: "GitHub-Version {{ version }}"
           meldung: Installations-Manifest wird gespeichert
-          details: |-
-            Neue Dateien übernehmen ........... OK
-            Manifest speichern ................ läuft
+          details: "Manifest speichern ............... läuft"
           append: true
           rueckmeldung: ""
           adresse: >-
@@ -776,7 +837,7 @@ script:
               titel: B2500PKG Update
               untertitel: "GitHub-Version {{ version }}"
               meldung: Installations-Manifest konnte nicht gespeichert werden
-              details: "Manifest speichern ................ FEHLER"
+              details: "Manifest speichern ............... FEHLER"
               append: true
               rueckmeldung: "{{ manifest_save_response.stderr | default('') }}"
               adresse: >-
@@ -799,7 +860,7 @@ script:
           titel: B2500PKG Update
           untertitel: "GitHub-Version {{ version }}"
           meldung: Veraltete Dateien werden entfernt
-          details: "Manifest speichern ................ OK"
+          details: "Manifest speichern ............... OK"
           append: true
           rueckmeldung: ""
           adresse: ""
@@ -842,7 +903,6 @@ script:
                     adresse: ""
                     quelle: script.b2500pkg_update
                 - stop: Ungültiger obsolete-Pfad im Manifest.
-
             - action: shell_command.run_custom_command
               data:
                 command: >-
@@ -866,98 +926,174 @@ script:
                     adresse: ""
                     quelle: script.b2500pkg_update
                 - stop: Löschen einer veralteten Datei fehlgeschlagen.
-
       # ========================================================
+
+      - event: b2500pkg_status
+        event_data:
+          status: LAEUFT
+          titel: B2500PKG Update
+          untertitel: "GitHub-Version {{ version }}"
+          meldung: Veraltete Dateien wurden entfernt
+          details: "Veraltete Dateien löschen ........ OK ({{ files_obsolete | count }})"
+          append: true
+          rueckmeldung: ""
+          adresse: ""
+          quelle: script.b2500pkg_update
+
       # 8. Aufräumen
       # ========================================================
+      - event: b2500pkg_status
+        event_data:
+          status: LAEUFT
+          titel: B2500PKG Update
+          untertitel: "GitHub-Version {{ version }}"
+          meldung: Temporäre Dateien werden bereinigt
+          details: "Temporäre Dateien löschen ........ läuft"
+          append: true
+          rueckmeldung: ""
+          adresse: ""
+          quelle: script.b2500pkg_update
+
       - action: shell_command.run_custom_command
         data:
           command: >-
             find "/config/packages/b2500pkg" "/config/dashboards"
             -type f -name '*.b2500pkg_update.tmp' -delete
+        response_variable: cleanup_response
+
+      - if:
+          - condition: template
+            value_template: >-
+              {{ cleanup_response.returncode | default(1) | int(1) != 0 }}
+        then:
+          - event: b2500pkg_status
+            event_data:
+              status: FEHLER
+              titel: B2500PKG Update
+              untertitel: "GitHub-Version {{ version }}"
+              meldung: Temporäre Dateien konnten nicht gelöscht werden
+              details: "Temporäre Dateien löschen ........ FEHLER"
+              append: true
+              rueckmeldung: "{{ cleanup_response.stderr | default('') }}"
+              adresse: ""
+              quelle: script.b2500pkg_update
+          - stop: Aufräumen fehlgeschlagen.
+
+      - event: b2500pkg_status
+        event_data:
+          status: LAEUFT
+          titel: B2500PKG Update
+          untertitel: "GitHub-Version {{ version }}"
+          meldung: Temporäre Dateien wurden bereinigt
+          details: "Temporäre Dateien löschen ........ OK"
+          append: true
+          rueckmeldung: ""
+          adresse: ""
+          quelle: script.b2500pkg_update
 
       # ========================================================
-      # 9. Reloads aus dem Manifest
+      # 9. Home-Assistant-Aktionen aus dem Manifest
       #
-      # Beispiele:
-      #   "reload": ["input_number", "input_text", "script"]
-      #   "reload": ["all"]
+      # Vollständige Home-Assistant-Action-Namen verwenden:
       #
-      # "all" hat Vorrang und ignoriert alle anderen Einträge.
-      # "script" / "scripts" wird immer zuletzt ausgeführt, weil
-      # script.reload dieses laufende Update-Script beendet.
-      # Die Abschlussmeldung wird deshalb VOR script.reload bzw.
-      # homeassistant.reload_all gesetzt.
+      #   "reload": [
+      #     "input_number.reload",
+      #     "input_text.reload",
+      #     "automation.reload",
+      #     "script.reload"
+      #   ]
+      #
+      # oder:
+      #   "reload": ["homeassistant.reload_all"]
+      #
+      # homeassistant.reload_all hat Vorrang. script.reload läuft
+      # immer zuletzt. Beide können das laufende Update-Script
+      # beenden, daher wird der Abschlussstatus vorher gepostet.
+      #
+      # Auch andere zukünftige parameterlose Actions im Format
+      # domain.action können direkt eingetragen werden.
       # ========================================================
       - variables:
+          action_names: >-
+            {{ reload_info | map('string') | map('lower') | map('trim') | list }}
+
           reload_all_requested: >-
-            {{
-              'all' in
-              (reload_info | map('string') | map('lower') | map('trim') | list)
-            }}
+            {{ 'homeassistant.reload_all' in action_names }}
+
           script_reload_requested: >-
-            {{
-              'script' in
-              (reload_info | map('string') | map('lower') | map('trim') | list)
-              or
-              'scripts' in
-              (reload_info | map('string') | map('lower') | map('trim') | list)
-            }}
+            {{ 'script.reload' in action_names }}
 
       # --------------------------------------------------------
-      # 9a. Normale Bereiche neu laden
-      #     Bei "all" werden Einzel-Reloads übersprungen.
-      #     script/scripts wird hier ebenfalls übersprungen und
-      #     ggf. anschließend als letzte Aktion ausgeführt.
+      # 9a. Normale Actions
       # --------------------------------------------------------
       - if:
           - condition: template
             value_template: "{{ not reload_all_requested }}"
         then:
           - repeat:
-              for_each: "{{ reload_info }}"
+              for_each: "{{ action_names }}"
               sequence:
                 - variables:
-                    current_reload: "{{ repeat.item | string | lower | trim }}"
+                    current_action: "{{ repeat.item }}"
 
                 - if:
                     - condition: template
                       value_template: >-
                         {{
-                          current_reload not in
-                          ['', 'all', 'script', 'scripts']
+                          current_action not in
+                          ['', 'script.reload', 'homeassistant.reload_all']
                         }}
                   then:
+                    - if:
+                        - condition: template
+                          value_template: >-
+                            {{
+                              '.' not in current_action
+                              or current_action.startswith('.')
+                              or current_action.endswith('.')
+                            }}
+                      then:
+                        - event: b2500pkg_status
+                          event_data:
+                            status: FEHLER
+                            titel: B2500PKG Update
+                            untertitel: "GitHub-Version {{ version }}"
+                            meldung: Ungültiger Home-Assistant-Action-Name
+                            details: "Action {{ current_action }} .... FEHLER"
+                            append: true
+                            rueckmeldung: "Erwartet wird domain.action."
+                            adresse: "{{ current_action }}"
+                            quelle: script.b2500pkg_update
+                        - stop: Ungültiger Home-Assistant-Action-Name.
+
                     - event: b2500pkg_status
                       event_data:
                         status: LAEUFT
                         titel: B2500PKG Update
                         untertitel: "GitHub-Version {{ version }}"
-                        meldung: Konfiguration wird neu geladen
-                        details: "Reload {{ current_reload }} ........ läuft"
+                        meldung: Home-Assistant-Aktion wird ausgeführt
+                        details: "Action {{ current_action }} .... läuft"
                         append: true
                         rueckmeldung: ""
-                        adresse: "{{ current_reload }}.reload"
+                        adresse: "{{ current_action }}"
                         quelle: script.b2500pkg_update
 
-                    - action: "{{ current_reload }}.reload"
+                    - action: "{{ current_action }}"
 
                     - event: b2500pkg_status
                       event_data:
                         status: LAEUFT
                         titel: B2500PKG Update
                         untertitel: "GitHub-Version {{ version }}"
-                        meldung: Konfiguration wird neu geladen
-                        details: "Reload {{ current_reload }} ........ OK"
+                        meldung: Home-Assistant-Aktion wurde ausgeführt
+                        details: "Action {{ current_action }} .... OK"
                         append: true
                         rueckmeldung: ""
-                        adresse: "{{ current_reload }}.reload"
+                        adresse: "{{ current_action }}"
                         quelle: script.b2500pkg_update
 
       # --------------------------------------------------------
-      # 9b. ALL
-      #     Abschlussmeldung MUSS vor homeassistant.reload_all
-      #     erfolgen, weil dabei auch Scripts neu geladen werden.
+      # 9b. homeassistant.reload_all
       # --------------------------------------------------------
       - if:
           - condition: template
@@ -968,12 +1104,20 @@ script:
               status: ERFOLGREICH
               titel: B2500PKG Update
               untertitel: "GitHub-Version {{ version }}"
-              meldung: Dateien erfolgreich aktualisiert
-              details: |-
-                Update-Dateien .................. OK
-                Installations-Manifest ........... OK
-                Veraltete Dateien ............... OK ({{ files_obsolete | count }})
-                Reloads ......................... ALL wird jetzt ausgeführt
+              meldung: Update abgeschlossen – Home Assistant wird neu geladen
+              details: "Update abgeschlossen ............. OK"
+              append: true
+              rueckmeldung: ""
+              adresse: ""
+              quelle: script.b2500pkg_update
+
+          - event: b2500pkg_status
+            event_data:
+              status: ERFOLGREICH
+              titel: B2500PKG Update
+              untertitel: "GitHub-Version {{ version }}"
+              meldung: Home-Assistant-Aktion wird ausgeführt
+              details: "Action homeassistant.reload_all ... startet"
               append: true
               rueckmeldung: ""
               adresse: homeassistant.reload_all
@@ -981,12 +1125,10 @@ script:
 
           - action: homeassistant.reload_all
 
-          - stop: Reload ALL ausgelöst.
+          - stop: homeassistant.reload_all ausgelöst.
 
       # --------------------------------------------------------
-      # 9c. SCRIPT
-      #     Alle anderen gewünschten Reloads sind bereits fertig.
-      #     Abschlussmeldung MUSS vor script.reload erfolgen.
+      # 9c. script.reload
       # --------------------------------------------------------
       - if:
           - condition: template
@@ -997,12 +1139,20 @@ script:
               status: ERFOLGREICH
               titel: B2500PKG Update
               untertitel: "GitHub-Version {{ version }}"
-              meldung: Dateien erfolgreich aktualisiert
-              details: |-
-                Update-Dateien .................. OK
-                Installations-Manifest ........... OK
-                Veraltete Dateien ............... OK ({{ files_obsolete | count }})
-                Reloads ......................... Script wird jetzt neu geladen
+              meldung: Update abgeschlossen – Scripts werden neu geladen
+              details: "Update abgeschlossen ............. OK"
+              append: true
+              rueckmeldung: ""
+              adresse: ""
+              quelle: script.b2500pkg_update
+
+          - event: b2500pkg_status
+            event_data:
+              status: ERFOLGREICH
+              titel: B2500PKG Update
+              untertitel: "GitHub-Version {{ version }}"
+              meldung: Home-Assistant-Aktion wird ausgeführt
+              details: "Action script.reload .............. startet"
               append: true
               rueckmeldung: ""
               adresse: script.reload
@@ -1010,10 +1160,10 @@ script:
 
           - action: script.reload
 
-          - stop: Script-Reload ausgelöst.
+          - stop: script.reload ausgelöst.
 
       # ========================================================
-      # 10. Abschluss ohne Script-/ALL-Reload
+      # 10. Abschluss ohne script.reload / reload_all
       # ========================================================
       - event: b2500pkg_status
         event_data:
@@ -1021,11 +1171,7 @@ script:
           titel: B2500PKG Update
           untertitel: "GitHub-Version {{ version }}"
           meldung: Dateien erfolgreich aktualisiert
-          details: |-
-            Update-Dateien .................. OK
-            Installations-Manifest ........... OK
-            Veraltete Dateien ............... OK ({{ files_obsolete | count }})
-            Reloads ......................... OK ({{ reload_info | count }})
+          details: "Update abgeschlossen ............. OK"
           append: true
           rueckmeldung: ""
           adresse: ""
