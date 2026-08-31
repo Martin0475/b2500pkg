@@ -1116,7 +1116,7 @@ script:
               status: ERFOLGREICH
               titel: B2500PKG Update
               untertitel: "GitHub-Version {{ version }}"
-              meldung: Home-Assistant-Aktion wird ausgeführt
+              meldung: Update abgeschlossen
               details: "Action homeassistant.reload_all ... startet"
               append: true
               rueckmeldung: ""
@@ -1151,7 +1151,7 @@ script:
               status: ERFOLGREICH
               titel: B2500PKG Update
               untertitel: "GitHub-Version {{ version }}"
-              meldung: Home-Assistant-Aktion wird ausgeführt
+              meldung: Update abgeschlossen
               details: "Action script.reload .............. startet"
               append: true
               rueckmeldung: ""
