@@ -18,8 +18,9 @@ script:
       Lädt zuerst alle im Manifest definierten B2500PKG-Dateien
       vollständig in temporäre Dateien. Erst wenn alle Downloads
       erfolgreich waren, werden die neuen Dateien übernommen.
-      Danach werden veraltete Dateien aus "obsolete" gelöscht und
-      die im Manifest angegebenen Bereiche neu geladen.
+      Danach wird das verwendete Manifest lokal gespeichert,
+      werden veraltete Dateien aus "obsolete" gelöscht und die
+      im Manifest angegebenen Bereiche neu geladen.
     mode: single
 
     sequence:
@@ -710,20 +711,77 @@ script:
                     quelle: script.b2500pkg_update
                 - stop: Übernehmen einer Datei fehlgeschlagen.
 
+      # ========================================================
+      # 6. Installiertes Manifest lokal speichern
+      #
+      # Erst nachdem alle neuen Dateien erfolgreich übernommen
+      # wurden, wird das GitHub-Manifest als lokale Kopie abgelegt.
+      # Ziel:
+      #   /config/packages/b2500pkg/b2500pkg_manifest.json
+      # ========================================================
+      - event: b2500pkg_status
+        event_data:
+          status: LAEUFT
+          titel: B2500PKG Update
+          untertitel: "GitHub-Version {{ version }}"
+          meldung: Installations-Manifest wird gespeichert
+          details: |-
+            Neue Dateien übernehmen ........... OK
+            Manifest speichern ................ läuft
+          append: true
+          rueckmeldung: ""
+          adresse: >-
+            https://raw.githubusercontent.com/Martin0475/b2500pkg/main/install_scripts/b2500pkg_manifest.json
+          quelle: script.b2500pkg_update
+
+      - action: shell_command.run_custom_command
+        data:
+          command: >-
+            tmp="/config/packages/b2500pkg/b2500pkg_manifest.json.b2500pkg_update.tmp";
+            target="/config/packages/b2500pkg/b2500pkg_manifest.json";
+            url="https://raw.githubusercontent.com/Martin0475/b2500pkg/main/install_scripts/b2500pkg_manifest.json?ts={{ now().timestamp() | int }}";
+            if wget -q --timeout=15 --tries=1 -O "$tmp" "$url"; then
+              mv "$tmp" "$target";
+            else
+              rc=$?;
+              rm -f "$tmp";
+              exit "$rc";
+            fi
+        response_variable: manifest_save_response
+
+      - if:
+          - condition: template
+            value_template: >-
+              {{ manifest_save_response.returncode | default(1) | int(1) != 0 }}
+        then:
+          - event: b2500pkg_status
+            event_data:
+              status: FEHLER
+              titel: B2500PKG Update
+              untertitel: "GitHub-Version {{ version }}"
+              meldung: Installations-Manifest konnte nicht gespeichert werden
+              details: "Manifest speichern ................ FEHLER"
+              append: true
+              rueckmeldung: "{{ manifest_save_response.stderr | default('') }}"
+              adresse: >-
+                https://raw.githubusercontent.com/Martin0475/b2500pkg/main/install_scripts/b2500pkg_manifest.json
+              quelle: script.b2500pkg_update
+          - stop: Installations-Manifest konnte nicht gespeichert werden.
+
       - event: b2500pkg_status
         event_data:
           status: LAEUFT
           titel: B2500PKG Update
           untertitel: "GitHub-Version {{ version }}"
           meldung: Veraltete Dateien werden entfernt
-          details: "Neue Dateien übernehmen ........... OK"
+          details: "Manifest speichern ................ OK"
           append: true
           rueckmeldung: ""
           adresse: ""
           quelle: script.b2500pkg_update
 
       # ========================================================
-      # 6. Veraltete Dateien ERST JETZT löschen
+      # 7. Veraltete Dateien ERST JETZT löschen
       # ========================================================
       - repeat:
           for_each: "{{ files_obsolete }}"
@@ -785,7 +843,7 @@ script:
                 - stop: Löschen einer veralteten Datei fehlgeschlagen.
 
       # ========================================================
-      # 7. Aufräumen
+      # 8. Aufräumen
       # ========================================================
       - action: shell_command.run_custom_command
         data:
@@ -794,7 +852,7 @@ script:
             -type f -name '*.b2500pkg_update.tmp' -delete
 
       # ========================================================
-      # 8. Reloads aus dem Manifest
+      # 9. Reloads aus dem Manifest
       #
       # Beispiele:
       #   "reload": ["input_number", "input_text", "script"]
@@ -822,7 +880,7 @@ script:
             }}
 
       # --------------------------------------------------------
-      # 8a. Normale Bereiche neu laden
+      # 9a. Normale Bereiche neu laden
       #     Bei "all" werden Einzel-Reloads übersprungen.
       #     script/scripts wird hier ebenfalls übersprungen und
       #     ggf. anschließend als letzte Aktion ausgeführt.
@@ -872,7 +930,7 @@ script:
                         quelle: script.b2500pkg_update
 
       # --------------------------------------------------------
-      # 8b. ALL
+      # 9b. ALL
       #     Abschlussmeldung MUSS vor homeassistant.reload_all
       #     erfolgen, weil dabei auch Scripts neu geladen werden.
       # --------------------------------------------------------
@@ -887,8 +945,9 @@ script:
               untertitel: "GitHub-Version {{ version }}"
               meldung: Dateien erfolgreich aktualisiert
               details: |-
-                Veraltete Dateien ............... OK ({{ files_obsolete | count }})
                 Update-Dateien .................. OK
+                Installations-Manifest ........... OK
+                Veraltete Dateien ............... OK ({{ files_obsolete | count }})
                 Reloads ......................... ALL wird jetzt ausgeführt
               append: true
               rueckmeldung: ""
@@ -900,7 +959,7 @@ script:
           - stop: Reload ALL ausgelöst.
 
       # --------------------------------------------------------
-      # 8c. SCRIPT
+      # 9c. SCRIPT
       #     Alle anderen gewünschten Reloads sind bereits fertig.
       #     Abschlussmeldung MUSS vor script.reload erfolgen.
       # --------------------------------------------------------
@@ -915,8 +974,9 @@ script:
               untertitel: "GitHub-Version {{ version }}"
               meldung: Dateien erfolgreich aktualisiert
               details: |-
-                Veraltete Dateien ............... OK ({{ files_obsolete | count }})
                 Update-Dateien .................. OK
+                Installations-Manifest ........... OK
+                Veraltete Dateien ............... OK ({{ files_obsolete | count }})
                 Reloads ......................... Script wird jetzt neu geladen
               append: true
               rueckmeldung: ""
@@ -928,7 +988,7 @@ script:
           - stop: Script-Reload ausgelöst.
 
       # ========================================================
-      # 9. Abschluss ohne Script-/ALL-Reload
+      # 10. Abschluss ohne Script-/ALL-Reload
       # ========================================================
       - event: b2500pkg_status
         event_data:
@@ -937,8 +997,9 @@ script:
           untertitel: "GitHub-Version {{ version }}"
           meldung: Dateien erfolgreich aktualisiert
           details: |-
-            Veraltete Dateien ............... OK ({{ files_obsolete | count }})
             Update-Dateien .................. OK
+            Installations-Manifest ........... OK
+            Veraltete Dateien ............... OK ({{ files_obsolete | count }})
             Reloads ......................... OK ({{ reload_info | count }})
           append: true
           rueckmeldung: ""
