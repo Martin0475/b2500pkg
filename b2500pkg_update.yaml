@@ -1,3 +1,19 @@
+command_line:
+  - sensor:
+      name: B2500PKG Installierte Version
+      unique_id: b2500pkg_installierte_version
+      icon: mdi:package-variant-closed-check
+      command: >-
+        if [ -f "/config/packages/b2500pkg/b2500pkg_manifest.json" ]; then
+          cat "/config/packages/b2500pkg/b2500pkg_manifest.json";
+        else
+          printf '{"version":"unbekannt"}';
+        fi
+      value_template: >-
+        {{ value_json.version | default('unbekannt') }}
+      scan_interval: 86400
+
+
 shell_command:
   run_custom_command: '/bin/bash -c "{{ command }}"'
 
@@ -767,6 +783,15 @@ script:
                 https://raw.githubusercontent.com/Martin0475/b2500pkg/main/install_scripts/b2500pkg_manifest.json
               quelle: script.b2500pkg_update
           - stop: Installations-Manifest konnte nicht gespeichert werden.
+
+      # Installierte Version sofort neu einlesen.
+      # Beim erstmaligen Einbau existiert der command_line-Sensor
+      # ggf. erst nach einem Home-Assistant-Neustart; deshalb darf
+      # ein Fehler hier das Update nicht abbrechen.
+      - action: homeassistant.update_entity
+        target:
+          entity_id: sensor.b2500pkg_installierte_version
+        continue_on_error: true
 
       - event: b2500pkg_status
         event_data:
