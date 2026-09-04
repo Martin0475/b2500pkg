@@ -79,13 +79,6 @@
     "/config/packages/b2500pkg/automations/delete_discovery.yaml"
   ],
   "reload": [
-    "input_boolean.reload",
-    "input_number.reload",
-    "input_select.reload",
-    "input_text.reload",
-    "input_button.reload",
-    "template.reload",
-    "automation.reload",
-    "script.reload"
+    "homeassistant.reload_all"
   ]
 }
