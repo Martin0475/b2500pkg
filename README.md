@@ -19,6 +19,7 @@ homeassistant:
 ```
 
 4. Starte Home Assistant neu.
-5. Nach dem Neustart sollte ein Button namens `B2500PKG Update starten` verfügbar sein.
+5. Nach dem Neustart sollte ein Script namens `B2500PKG Update` verfügbar sein.
    Hiermit kann die aktuelle Version heruntergeladen werden.
-6. Sollte der Button nicht in der Übersicht (lovelace) angezeigt werden, bitte einmal die Automation `B2500PKG update` ausführen.
+6. Bei Verwendung mehrerer B2500 benötigt jeder seinen eigenen MQTT Zugang. (Einstellbar in der Konfiguration von Mosquitto)
+
