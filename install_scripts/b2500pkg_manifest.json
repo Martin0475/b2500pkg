@@ -1,6 +1,6 @@
 {
   "version": "04.09.2026",
-  "changes": "Info16 am Anfang, Fix: Entitätsnamen (neu erstellen!), neue Sensoren für BN, UV und SM (Parallelmodus), Anzeige der installierten Version im Dashboard",
+  "changes": "Info16, Fix: Entitätsnamen (neu erstellen!), neue Sensoren",
   "b2500pkg": [
     "b2500pkg_input.yaml",
     "b2500pkg_templates.yaml"
