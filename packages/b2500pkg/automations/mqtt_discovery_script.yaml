@@ -172,7 +172,7 @@ script:
           meldung: Discovery läuft
           details: ""
           rueckmeldung: ""
-          topic: ""
+          adresse: ""
           quelle: script.b2500pkg_discovery_script
 
       # ============================================================
@@ -233,327 +233,327 @@ script:
                     component: binary_sensor
                     topic_suffix: l0_bit0
                     config: >-
-                      {% raw %}{"name":"B01 Entladen","state_topic":"B2500PKG/B2500_01/CD01/l0","payload_on":"1","payload_off":"0","value_template":"{{ ('{:0=8b}'.format(value | int(0) )|batch(1)|map('join')|join(' ')).split(' ')[7] }}","default_entity_id":"sensor.b2500_01_l0_bit0","unique_id":"b2500_01_l0_bit0","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B2500 B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                      {% raw %}{"name":"Entladen","state_topic":"B2500PKG/B2500_01/CD01/l0","payload_on":"1","payload_off":"0","value_template":"{{ ('{:0=8b}'.format(value | int(0) )|batch(1)|map('join')|join(' ')).split(' ')[7] }}","default_entity_id":"sensor.b2500_01_l0_bit0","unique_id":"b2500_01_l0_bit0","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
                   - source_key: l0
                     component: binary_sensor
                     topic_suffix: l0_bit1
                     config: >-
-                      {% raw %}{"name":"B01 Laden","state_topic":"B2500PKG/B2500_01/CD01/l0","payload_on":"1","payload_off":"0","value_template":"{{ ('{:0=8b}'.format(value | int(0) )|batch(1)|map('join')|join(' ')).split(' ')[6] }}","default_entity_id":"sensor.b2500_01_l0_bit1","unique_id":"b2500_01_l0_bit1","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B2500 B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                      {% raw %}{"name":"Laden","state_topic":"B2500PKG/B2500_01/CD01/l0","payload_on":"1","payload_off":"0","value_template":"{{ ('{:0=8b}'.format(value | int(0) )|batch(1)|map('join')|join(' ')).split(' ')[6] }}","default_entity_id":"sensor.b2500_01_l0_bit1","unique_id":"b2500_01_l0_bit1","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
                   - source_key: l0
                     component: binary_sensor
                     topic_suffix: l0_bit2
                     config: >-
-                      {% raw %}{"name":"B01 DOD erreicht","state_topic":"B2500PKG/B2500_01/CD01/l0","payload_on":"1","payload_off":"0","value_template":"{{ ('{:0=8b}'.format(value | int(0) )|batch(1)|map('join')|join(' ')).split(' ')[5] }}","default_entity_id":"sensor.b2500_01_l0_bit2","unique_id":"b2500_01_l0_bit2","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B2500 B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                      {% raw %}{"name":"DOD erreicht","state_topic":"B2500PKG/B2500_01/CD01/l0","payload_on":"1","payload_off":"0","value_template":"{{ ('{:0=8b}'.format(value | int(0) )|batch(1)|map('join')|join(' ')).split(' ')[5] }}","default_entity_id":"sensor.b2500_01_l0_bit2","unique_id":"b2500_01_l0_bit2","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
                   - source_key: l0
                     component: binary_sensor
                     topic_suffix: l0_bit3
                     config: >-
-                      {% raw %}{"name":"B01 Unterspannung","state_topic":"B2500PKG/B2500_01/CD01/l0","payload_on":"1","payload_off":"0","value_template":"{{ ('{:0=8b}'.format(value | int(0) )|batch(1)|map('join')|join(' ')).split(' ')[4] }}","default_entity_id":"sensor.b2500_01_l0_bit3","unique_id":"b2500_01_l0_bit3","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B2500 B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                      {% raw %}{"name":"Unterspannung","state_topic":"B2500PKG/B2500_01/CD01/l0","payload_on":"1","payload_off":"0","value_template":"{{ ('{:0=8b}'.format(value | int(0) )|batch(1)|map('join')|join(' ')).split(' ')[4] }}","default_entity_id":"sensor.b2500_01_l0_bit3","unique_id":"b2500_01_l0_bit3","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
                   - source_key: l1
                     component: binary_sensor
                     topic_suffix: l1_bit0
                     config: >-
-                      {% raw %}{"name":"B01E2 Entladen","state_topic":"B2500PKG/B2500_01/CD01/l1","payload_on":"1","payload_off":"0","value_template":"{{ ('{:0=8b}'.format(value | int(0) )|batch(1)|map('join')|join(' ')).split(' ')[7] }}","default_entity_id":"sensor.b2500_01_l1_bit0","unique_id":"b2500_01_l1_bit0","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B2500 B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                      {% raw %}{"name":"E2 Entladen","state_topic":"B2500PKG/B2500_01/CD01/l1","payload_on":"1","payload_off":"0","value_template":"{{ ('{:0=8b}'.format(value | int(0) )|batch(1)|map('join')|join(' ')).split(' ')[7] }}","default_entity_id":"sensor.b2500_01_l1_bit0","unique_id":"b2500_01_l1_bit0","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
                   - source_key: l1
                     component: binary_sensor
                     topic_suffix: l1_bit1
                     config: >-
-                      {% raw %}{"name":"B01E2 Laden","state_topic":"B2500PKG/B2500_01/CD01/l1","payload_on":"1","payload_off":"0","value_template":"{{ ('{:0=8b}'.format(value | int(0) )|batch(1)|map('join')|join(' ')).split(' ')[6] }}","default_entity_id":"sensor.b2500_01_l1_bit1","unique_id":"b2500_01_l1_bit1","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B2500 B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                      {% raw %}{"name":"E2 Laden","state_topic":"B2500PKG/B2500_01/CD01/l1","payload_on":"1","payload_off":"0","value_template":"{{ ('{:0=8b}'.format(value | int(0) )|batch(1)|map('join')|join(' ')).split(' ')[6] }}","default_entity_id":"sensor.b2500_01_l1_bit1","unique_id":"b2500_01_l1_bit1","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
                   - source_key: l1
                     component: binary_sensor
                     topic_suffix: l1_bit2
                     config: >-
-                      {% raw %}{"name":"B01E2 DOD erreicht","state_topic":"B2500PKG/B2500_01/CD01/l1","payload_on":"1","payload_off":"0","value_template":"{{ ('{:0=8b}'.format(value | int(0) )|batch(1)|map('join')|join(' ')).split(' ')[5] }}","default_entity_id":"sensor.b2500_01_l1_bit2","unique_id":"b2500_01_l1_bit2","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B2500 B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                      {% raw %}{"name":"E2 DOD erreicht","state_topic":"B2500PKG/B2500_01/CD01/l1","payload_on":"1","payload_off":"0","value_template":"{{ ('{:0=8b}'.format(value | int(0) )|batch(1)|map('join')|join(' ')).split(' ')[5] }}","default_entity_id":"sensor.b2500_01_l1_bit2","unique_id":"b2500_01_l1_bit2","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
                   - source_key: l1
                     component: binary_sensor
                     topic_suffix: l1_bit3
                     config: >-
-                      {% raw %}{"name":"B01E2 Unterspannung","state_topic":"B2500PKG/B2500_01/CD01/l1","payload_on":"1","payload_off":"0","value_template":"{{ ('{:0=8b}'.format(value | int(0) )|batch(1)|map('join')|join(' ')).split(' ')[4] }}","default_entity_id":"sensor.b2500_01_l1_bit3","unique_id":"b2500_01_l1_bit3","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B2500 B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                      {% raw %}{"name":"E2 Unterspannung","state_topic":"B2500PKG/B2500_01/CD01/l1","payload_on":"1","payload_off":"0","value_template":"{{ ('{:0=8b}'.format(value | int(0) )|batch(1)|map('join')|join(' ')).split(' ')[4] }}","default_entity_id":"sensor.b2500_01_l1_bit3","unique_id":"b2500_01_l1_bit3","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
                   - source_key: l1
                     component: binary_sensor
                     topic_suffix: l1_bit4
                     config: >-
-                      {% raw %}{"name":"B01E1 Entladen","state_topic":"B2500PKG/B2500_01/CD01/l1","payload_on":"1","payload_off":"0","value_template":"{{ ('{:0=8b}'.format(value | int(0) )|batch(1)|map('join')|join(' ')).split(' ')[3] }}","default_entity_id":"sensor.b2500_01_l1_bit4","unique_id":"b2500_01_l1_bit4","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B2500 B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                      {% raw %}{"name":"E1 Entladen","state_topic":"B2500PKG/B2500_01/CD01/l1","payload_on":"1","payload_off":"0","value_template":"{{ ('{:0=8b}'.format(value | int(0) )|batch(1)|map('join')|join(' ')).split(' ')[3] }}","default_entity_id":"sensor.b2500_01_l1_bit4","unique_id":"b2500_01_l1_bit4","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
                   - source_key: l1
                     component: binary_sensor
                     topic_suffix: l1_bit5
                     config: >-
-                      {% raw %}{"name":"B01E1 Laden","state_topic":"B2500PKG/B2500_01/CD01/l1","payload_on":"1","payload_off":"0","value_template":"{{ ('{:0=8b}'.format(value | int(0) )|batch(1)|map('join')|join(' ')).split(' ')[2] }}","default_entity_id":"sensor.b2500_01_l1_bit5","unique_id":"b2500_01_l1_bit5","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B2500 B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                      {% raw %}{"name":"E1 Laden","state_topic":"B2500PKG/B2500_01/CD01/l1","payload_on":"1","payload_off":"0","value_template":"{{ ('{:0=8b}'.format(value | int(0) )|batch(1)|map('join')|join(' ')).split(' ')[2] }}","default_entity_id":"sensor.b2500_01_l1_bit5","unique_id":"b2500_01_l1_bit5","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
                   - source_key: l1
                     component: binary_sensor
                     topic_suffix: l1_bit6
                     config: >-
-                      {% raw %}{"name":"B01E1 DOD erreicht","state_topic":"B2500PKG/B2500_01/CD01/l1","payload_on":"1","payload_off":"0","value_template":"{{ ('{:0=8b}'.format(value | int(0) )|batch(1)|map('join')|join(' ')).split(' ')[1] }}","default_entity_id":"sensor.b2500_01_l1_bit6","unique_id":"b2500_01_l1_bit6","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B2500 B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                      {% raw %}{"name":"E1 DOD erreicht","state_topic":"B2500PKG/B2500_01/CD01/l1","payload_on":"1","payload_off":"0","value_template":"{{ ('{:0=8b}'.format(value | int(0) )|batch(1)|map('join')|join(' ')).split(' ')[1] }}","default_entity_id":"sensor.b2500_01_l1_bit6","unique_id":"b2500_01_l1_bit6","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
                   - source_key: l1
                     component: binary_sensor
                     topic_suffix: l1_bit7
                     config: >-
-                      {% raw %}{"name":"B01E1 Unterspannung","state_topic":"B2500PKG/B2500_01/CD01/l1","payload_on":"1","payload_off":"0","value_template":"{{ ('{:0=8b}'.format(value | int(0) )|batch(1)|map('join')|join(' ')).split(' ')[0] }}","default_entity_id":"sensor.b2500_01_l1_bit7","unique_id":"b2500_01_l1_bit7","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B2500 B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                      {% raw %}{"name":"E1 Unterspannung","state_topic":"B2500PKG/B2500_01/CD01/l1","payload_on":"1","payload_off":"0","value_template":"{{ ('{:0=8b}'.format(value | int(0) )|batch(1)|map('join')|join(' ')).split(' ')[0] }}","default_entity_id":"sensor.b2500_01_l1_bit7","unique_id":"b2500_01_l1_bit7","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
                   - source_key: b1
                     component: binary_sensor
                     topic_suffix: b1
                     config: >-
-                      {% raw %}{"name":"B01 E1 verbunden","state_topic":"B2500PKG/B2500_01/CD01/b1","payload_on":"1","payload_off":"0","default_entity_id":"sensor.b2500_01_b1","unique_id":"b2500_01_b1","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B2500 B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                      {% raw %}{"name":"E1 verbunden","state_topic":"B2500PKG/B2500_01/CD01/b1","payload_on":"1","payload_off":"0","default_entity_id":"sensor.b2500_01_b1","unique_id":"b2500_01_b1","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
                   - source_key: b2
                     component: binary_sensor
                     topic_suffix: b2
                     config: >-
-                      {% raw %}{"name":"B01 E2 verbunden","state_topic":"B2500PKG/B2500_01/CD01/b2","payload_on":"1","payload_off":"0","default_entity_id":"sensor.b2500_01_b2","unique_id":"b2500_01_b2","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B2500 B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                      {% raw %}{"name":"E2 verbunden","state_topic":"B2500PKG/B2500_01/CD01/b2","payload_on":"1","payload_off":"0","default_entity_id":"sensor.b2500_01_b2","unique_id":"b2500_01_b2","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
                   - source_key: p1
                     component: sensor
                     topic_suffix: p1
                     config: >-
-                      {% raw %}{"name":"B01 Solar1 Input Status","state_topic":"B2500PKG/B2500_01/CD01/p1","default_entity_id":"sensor.b2500_01_p1","unique_id":"b2500_01_p1","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B2500 B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                      {% raw %}{"name":"Solar1 Input Status","state_topic":"B2500PKG/B2500_01/CD01/p1","default_entity_id":"sensor.b2500_01_p1","unique_id":"b2500_01_p1","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
                   - source_key: p2
                     component: sensor
                     topic_suffix: p2
                     config: >-
-                      {% raw %}{"name":"B01 Solar2 Input Status","state_topic":"B2500PKG/B2500_01/CD01/p2","default_entity_id":"sensor.b2500_01_p2","unique_id":"b2500_01_p2","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B2500 B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                      {% raw %}{"name":"Solar2 Input Status","state_topic":"B2500PKG/B2500_01/CD01/p2","default_entity_id":"sensor.b2500_01_p2","unique_id":"b2500_01_p2","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
                   - source_key: w1
                     component: sensor
                     topic_suffix: w1
                     config: >-
-                      {% raw %}{"name":"B01 PV1 Leistung","state_topic":"B2500PKG/B2500_01/CD01/w1","state_class":"measurement","device_class":"power","unit_of_measurement":"W","default_entity_id":"sensor.b2500_01_w1","unique_id":"b2500_01_w1","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B2500 B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                      {% raw %}{"name":"PV1 Leistung","state_topic":"B2500PKG/B2500_01/CD01/w1","state_class":"measurement","device_class":"power","unit_of_measurement":"W","default_entity_id":"sensor.b2500_01_w1","unique_id":"b2500_01_w1","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
                   - source_key: w2
                     component: sensor
                     topic_suffix: w2
                     config: >-
-                      {% raw %}{"name":"B01 PV2 Leistung","state_topic":"B2500PKG/B2500_01/CD01/w2","state_class":"measurement","device_class":"power","unit_of_measurement":"W","default_entity_id":"sensor.b2500_01_w2","unique_id":"b2500_01_w2","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B2500 B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                      {% raw %}{"name":"PV2 Leistung","state_topic":"B2500PKG/B2500_01/CD01/w2","state_class":"measurement","device_class":"power","unit_of_measurement":"W","default_entity_id":"sensor.b2500_01_w2","unique_id":"b2500_01_w2","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
                   - source_key: pe
                     component: sensor
                     topic_suffix: pe
                     config: >-
-                      {% raw %}{"name":"B01 Batterie SOC","state_topic":"B2500PKG/B2500_01/CD01/pe","state_class":"measurement","device_class":"battery","unit_of_measurement":"%","default_entity_id":"sensor.b2500_01_pe","unique_id":"b2500_01_pe","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B2500 B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                      {% raw %}{"name":"Batterie SOC","state_topic":"B2500PKG/B2500_01/CD01/pe","state_class":"measurement","device_class":"battery","unit_of_measurement":"%","default_entity_id":"sensor.b2500_01_pe","unique_id":"b2500_01_pe","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
                   - source_key: vv
                     component: sensor
                     topic_suffix: vv
                     config: >-
-                      {% raw %}{"name":"B01 Geräteversion","state_topic":"B2500PKG/B2500_01/CD01/vv","default_entity_id":"sensor.b2500_01_vv","unique_id":"b2500_01_vv","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B2500 B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                      {% raw %}{"name":"Geräteversion","state_topic":"B2500PKG/B2500_01/CD01/vv","default_entity_id":"sensor.b2500_01_vv","unique_id":"b2500_01_vv","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
                   - source_key: sv
                     component: sensor
                     topic_suffix: sv
                     config: >-
-                      {% raw %}{"name":"B01 Gerätesubversion","state_topic":"B2500PKG/B2500_01/CD01/sv","default_entity_id":"sensor.b2500_01_sv","unique_id":"b2500_01_sv","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B2500 B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                      {% raw %}{"name":"Gerätesubversion","state_topic":"B2500PKG/B2500_01/CD01/sv","default_entity_id":"sensor.b2500_01_sv","unique_id":"b2500_01_sv","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
                   - source_key: cs
                     component: sensor
                     topic_suffix: cs
                     config: >-
-                      {% raw %}{"name":"B01 Ladeeinstellung","state_topic":"B2500PKG/B2500_01/CD01/cs","value_template":"{{ value.replace('0','Laden und Entladen gleichzeitig').replace('1','Laden vor dem Entladen') }}","default_entity_id":"sensor.b2500_01_cs","unique_id":"b2500_01_cs","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B2500 B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                      {% raw %}{"name":"Ladeeinstellung","state_topic":"B2500PKG/B2500_01/CD01/cs","value_template":"{{ value.replace('0','Laden und Entladen gleichzeitig').replace('1','Laden vor dem Entladen') }}","default_entity_id":"sensor.b2500_01_cs","unique_id":"b2500_01_cs","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
                   - source_key: cd
                     component: sensor
                     topic_suffix: cd
                     config: >-
-                      {% raw %}{"name":"B01 Entladeeinstellung","state_topic":"B2500PKG/B2500_01/CD01/cd","value_template":"{% set cd = value | string %}{% if cd == '0' %}Ausgang PV1 und PV2 off{% elif cd == '1' %}Ausgang PV1 on, PV2 off{% elif cd == '2' %}Ausgang PV1 off, PV2 on{% elif cd == '3' %}Ausgang PV1 und PV2 on{% else %}unbekannt{% endif %}","default_entity_id":"sensor.b2500_01_cd","unique_id":"b2500_01_cd","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B2500 B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                      {% raw %}{"name":"Entladeeinstellung","state_topic":"B2500PKG/B2500_01/CD01/cd","value_template":"{% set cd = value | string %}{% if cd == '0' %}Ausgang PV1 und PV2 off{% elif cd == '1' %}Ausgang PV1 on, PV2 off{% elif cd == '2' %}Ausgang PV1 off, PV2 on{% elif cd == '3' %}Ausgang PV1 und PV2 on{% else %}unbekannt{% endif %}","default_entity_id":"sensor.b2500_01_cd","unique_id":"b2500_01_cd","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
                   - source_key: am
                     component: sensor
                     topic_suffix: am
                     config: >-
-                      {% raw %}{"name":"B01 AM","state_topic":"B2500PKG/B2500_01/CD01/am","default_entity_id":"sensor.b2500_01_am","unique_id":"b2500_01_am","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B2500 B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                      {% raw %}{"name":"AM","state_topic":"B2500PKG/B2500_01/CD01/am","default_entity_id":"sensor.b2500_01_am","unique_id":"b2500_01_am","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
                   - source_key: o1
                     component: sensor
                     topic_suffix: o1
                     config: >-
-                      {% raw %}{"name":"B01 Output Status 1","state_topic":"B2500PKG/B2500_01/CD01/o1","default_entity_id":"sensor.b2500_01_o1","unique_id":"b2500_01_o1","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B2500 B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                      {% raw %}{"name":"Output Status 1","state_topic":"B2500PKG/B2500_01/CD01/o1","default_entity_id":"sensor.b2500_01_o1","unique_id":"b2500_01_o1","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
                   - source_key: o2
                     component: sensor
                     topic_suffix: o2
                     config: >-
-                      {% raw %}{"name":"B01 Output Status 2","state_topic":"B2500PKG/B2500_01/CD01/o2","default_entity_id":"sensor.b2500_01_o2","unique_id":"b2500_01_o2","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B2500 B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                      {% raw %}{"name":"Output Status 2","state_topic":"B2500PKG/B2500_01/CD01/o2","default_entity_id":"sensor.b2500_01_o2","unique_id":"b2500_01_o2","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
                   - source_key: do
                     component: sensor
                     topic_suffix: do
                     config: >-
-                      {% raw %}{"name":"B01 DOD Entnehmbare Kapazität in %","state_topic":"B2500PKG/B2500_01/CD01/do","default_entity_id":"sensor.b2500_01_do","unique_id":"b2500_01_do","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B2500 B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                      {% raw %}{"name":"DOD Entnehmbare Kapazität in %","state_topic":"B2500PKG/B2500_01/CD01/do","default_entity_id":"sensor.b2500_01_do","unique_id":"b2500_01_do","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
                   - source_key: lv
                     component: sensor
                     topic_suffix: lv
                     config: >-
-                      {% raw %}{"name":"B01 Entladeschwelle","state_topic":"B2500PKG/B2500_01/CD01/lv","default_entity_id":"sensor.b2500_01_lv","unique_id":"b2500_01_lv","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B2500 B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                      {% raw %}{"name":"Entladeschwelle","state_topic":"B2500PKG/B2500_01/CD01/lv","default_entity_id":"sensor.b2500_01_lv","unique_id":"b2500_01_lv","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
                   - source_key: cj
                     component: sensor
                     topic_suffix: cj
                     config: >-
-                      {% raw %}{"name":"B01 CJ Scene","state_topic":"B2500PKG/B2500_01/CD01/cj","default_entity_id":"sensor.b2500_01_cj","unique_id":"b2500_01_cj","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B2500 B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                      {% raw %}{"name":"CJ Scene","state_topic":"B2500PKG/B2500_01/CD01/cj","default_entity_id":"sensor.b2500_01_cj","unique_id":"b2500_01_cj","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
                   - source_key: kn
                     component: sensor
                     topic_suffix: kn
                     config: >-
-                      {% raw %}{"name":"B01 Gesamtkapazität","state_topic":"B2500PKG/B2500_01/CD01/kn","device_class":"energy_storage","state_class":"measurement","unit_of_measurement":"Wh","default_entity_id":"sensor.b2500_01_kn","unique_id":"b2500_01_kn","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B2500 B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                      {% raw %}{"name":"Gesamtkapazität","state_topic":"B2500PKG/B2500_01/CD01/kn","device_class":"energy_storage","state_class":"measurement","unit_of_measurement":"Wh","default_entity_id":"sensor.b2500_01_kn","unique_id":"b2500_01_kn","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
                   - source_key: g1
                     component: sensor
                     topic_suffix: g1
                     config: >-
-                      {% raw %}{"name":"B01 Output1 Leistung","state_topic":"B2500PKG/B2500_01/CD01/g1","state_class":"measurement","device_class":"power","unit_of_measurement":"W","default_entity_id":"sensor.b2500_01_g1","unique_id":"b2500_01_g1","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B2500 B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                      {% raw %}{"name":"Output1 Leistung","state_topic":"B2500PKG/B2500_01/CD01/g1","state_class":"measurement","device_class":"power","unit_of_measurement":"W","default_entity_id":"sensor.b2500_01_g1","unique_id":"b2500_01_g1","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
                   - source_key: g2
                     component: sensor
                     topic_suffix: g2
                     config: >-
-                      {% raw %}{"name":"B01 Output2 Leistung","state_topic":"B2500PKG/B2500_01/CD01/g2","state_class":"measurement","device_class":"power","unit_of_measurement":"W","default_entity_id":"sensor.b2500_01_g2","unique_id":"b2500_01_g2","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B2500 B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                      {% raw %}{"name":"Output2 Leistung","state_topic":"B2500PKG/B2500_01/CD01/g2","state_class":"measurement","device_class":"power","unit_of_measurement":"W","default_entity_id":"sensor.b2500_01_g2","unique_id":"b2500_01_g2","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
                   - source_key: tl
                     component: sensor
                     topic_suffix: tl
                     config: >-
-                      {% raw %}{"name":"B01 Temperatur low","state_topic":"B2500PKG/B2500_01/CD01/tl","device_class":"temperature","unit_of_measurement":"°C","default_entity_id":"sensor.b2500_01_tl","unique_id":"b2500_01_tl","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B2500 B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                      {% raw %}{"name":"Temperatur low","state_topic":"B2500PKG/B2500_01/CD01/tl","device_class":"temperature","unit_of_measurement":"°C","default_entity_id":"sensor.b2500_01_tl","unique_id":"b2500_01_tl","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
                   - source_key: th
                     component: sensor
                     topic_suffix: th
                     config: >-
-                      {% raw %}{"name":"B01 Temperatur high","state_topic":"B2500PKG/B2500_01/CD01/th","device_class":"temperature","unit_of_measurement":"°C","default_entity_id":"sensor.b2500_01_th","unique_id":"b2500_01_th","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B2500 B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                      {% raw %}{"name":"Temperatur high","state_topic":"B2500PKG/B2500_01/CD01/th","device_class":"temperature","unit_of_measurement":"°C","default_entity_id":"sensor.b2500_01_th","unique_id":"b2500_01_th","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
                   - source_key: tc
                     component: sensor
                     topic_suffix: tc
                     config: >-
-                      {% raw %}{"name":"B01 Temperaturalarm (Laden)","state_topic":"B2500PKG/B2500_01/CD01/tc","default_entity_id":"sensor.b2500_01_tc","unique_id":"b2500_01_tc","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B2500 B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                      {% raw %}{"name":"Temperaturalarm (Laden)","state_topic":"B2500PKG/B2500_01/CD01/tc","default_entity_id":"sensor.b2500_01_tc","unique_id":"b2500_01_tc","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
                   - source_key: tf
                     component: sensor
                     topic_suffix: tf
                     config: >-
-                      {% raw %}{"name":"B01 Temperaturalarm (Entladen)","state_topic":"B2500PKG/B2500_01/CD01/tf","default_entity_id":"sensor.b2500_01_tf","unique_id":"b2500_01_tf","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B2500 B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                      {% raw %}{"name":"Temperaturalarm (Entladen)","state_topic":"B2500PKG/B2500_01/CD01/tf","default_entity_id":"sensor.b2500_01_tf","unique_id":"b2500_01_tf","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
                   - source_key: fc
                     component: sensor
                     topic_suffix: fc
                     config: >-
-                      {% raw %}{"name":"B01 Chip Version","state_topic":"B2500PKG/B2500_01/CD01/fc","default_entity_id":"sensor.b2500_01_fc","unique_id":"b2500_01_fc","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B2500 B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                      {% raw %}{"name":"Chip Version","state_topic":"B2500PKG/B2500_01/CD01/fc","default_entity_id":"sensor.b2500_01_fc","unique_id":"b2500_01_fc","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
                   - source_key: id
                     component: sensor
                     topic_suffix: id
                     config: >-
-                      {% raw %}{"name":"B01 Geräte ID","state_topic":"B2500PKG/B2500_01/CD01/id","default_entity_id":"sensor.b2500_01_id","unique_id":"b2500_01_id","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B2500 B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                      {% raw %}{"name":"Geräte ID","state_topic":"B2500PKG/B2500_01/CD01/id","default_entity_id":"sensor.b2500_01_id","unique_id":"b2500_01_id","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
                   - source_key: a0
                     component: sensor
                     topic_suffix: a0
                     config: >-
-                      {% raw %}{"name":"B01 Ladezustand Hauptspeicher","state_topic":"B2500PKG/B2500_01/CD01/a0","unit_of_measurement":"%","default_entity_id":"sensor.b2500_01_a0","unique_id":"b2500_01_a0","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B2500 B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                      {% raw %}{"name":"Ladezustand Hauptspeicher","state_topic":"B2500PKG/B2500_01/CD01/a0","unit_of_measurement":"%","default_entity_id":"sensor.b2500_01_a0","unique_id":"b2500_01_a0","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
                   - source_key: a1
                     component: sensor
                     topic_suffix: a1
                     config: >-
-                      {% raw %}{"name":"B01 Ladezustand Erweiterung1","state_topic":"B2500PKG/B2500_01/CD01/a1","unit_of_measurement":"%","default_entity_id":"sensor.b2500_01_a1","unique_id":"b2500_01_a1","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B2500 B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                      {% raw %}{"name":"Ladezustand Erweiterung1","state_topic":"B2500PKG/B2500_01/CD01/a1","unit_of_measurement":"%","default_entity_id":"sensor.b2500_01_a1","unique_id":"b2500_01_a1","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
                   - source_key: a2
                     component: sensor
                     topic_suffix: a2
                     config: >-
-                      {% raw %}{"name":"B01 Ladezustand Erweiterung2","state_topic":"B2500PKG/B2500_01/CD01/a2","unit_of_measurement":"%","default_entity_id":"sensor.b2500_01_a2","unique_id":"b2500_01_a2","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B2500 B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                      {% raw %}{"name":"Ladezustand Erweiterung2","state_topic":"B2500PKG/B2500_01/CD01/a2","unit_of_measurement":"%","default_entity_id":"sensor.b2500_01_a2","unique_id":"b2500_01_a2","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
                   - source_key: bc
                     component: sensor
                     topic_suffix: bc
                     config: >-
-                      {% raw %}{"name":"B01 Tägliche Battterieladung","state_topic":"B2500PKG/B2500_01/CD01/bc","state_class":"total_increasing","device_class":"energy","unit_of_measurement":"Wh","default_entity_id":"sensor.b2500_01_bc","unique_id":"b2500_01_bc","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B2500 B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                      {% raw %}{"name":"Tägliche Battterieladung","state_topic":"B2500PKG/B2500_01/CD01/bc","state_class":"total_increasing","device_class":"energy","unit_of_measurement":"Wh","default_entity_id":"sensor.b2500_01_bc","unique_id":"b2500_01_bc","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
                   - source_key: bs
                     component: sensor
                     topic_suffix: bs
                     config: >-
-                      {% raw %}{"name":"B01 Tägliche Batterieentladung","state_topic":"B2500PKG/B2500_01/CD01/bs","state_class":"total_increasing","device_class":"energy","unit_of_measurement":"Wh","default_entity_id":"sensor.b2500_01_bs","unique_id":"b2500_01_bs","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B2500 B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                      {% raw %}{"name":"Tägliche Batterieentladung","state_topic":"B2500PKG/B2500_01/CD01/bs","state_class":"total_increasing","device_class":"energy","unit_of_measurement":"Wh","default_entity_id":"sensor.b2500_01_bs","unique_id":"b2500_01_bs","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
                   - source_key: pt
                     component: sensor
                     topic_suffix: pt
                     config: >-
-                      {% raw %}{"name":"B01 Tägliche PV Erzeugung","state_topic":"B2500PKG/B2500_01/CD01/pt","state_class":"total_increasing","device_class":"energy","unit_of_measurement":"Wh","default_entity_id":"sensor.b2500_01_pt","unique_id":"b2500_01_pt","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B2500 B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                      {% raw %}{"name":"Tägliche PV Erzeugung","state_topic":"B2500PKG/B2500_01/CD01/pt","state_class":"total_increasing","device_class":"energy","unit_of_measurement":"Wh","default_entity_id":"sensor.b2500_01_pt","unique_id":"b2500_01_pt","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
                   - source_key: md
                     component: sensor
                     topic_suffix: md
                     config: >-
-                      {% raw %}{"name":"B01 Entlademodus Timer/Selbstanpassung","state_topic":"B2500PKG/B2500_01/CD01/md","value_template":"{{ value.replace('0','Timer').replace('1','Selbstanpassung') }}","default_entity_id":"sensor.b2500_01_md","unique_id":"b2500_01_md","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B2500 B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                      {% raw %}{"name":"Entlademodus Timer/Selbstanpassung","state_topic":"B2500PKG/B2500_01/CD01/md","value_template":"{{ value.replace('0','Timer').replace('1','Selbstanpassung') }}","default_entity_id":"sensor.b2500_01_md","unique_id":"b2500_01_md","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
                   - source_key: sg
                     component: sensor
                     topic_suffix: sg
                     config: >-
-                      {% raw %}{"name":"B01 CT Sensor verbunden","state_topic":"B2500PKG/B2500_01/CD01/sg","default_entity_id":"sensor.b2500_01_sg","unique_id":"b2500_01_sg","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B2500 B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                      {% raw %}{"name":"CT Sensor verbunden","state_topic":"B2500PKG/B2500_01/CD01/sg","default_entity_id":"sensor.b2500_01_sg","unique_id":"b2500_01_sg","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
                   - source_key: sp
                     component: sensor
                     topic_suffix: sp
                     config: >-
-                      {% raw %}{"name":"B01 SP","state_topic":"B2500PKG/B2500_01/CD01/sp","default_entity_id":"sensor.b2500_01_sp","unique_id":"b2500_01_sp","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B2500 B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                      {% raw %}{"name":"SP","state_topic":"B2500PKG/B2500_01/CD01/sp","default_entity_id":"sensor.b2500_01_sp","unique_id":"b2500_01_sp","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
                   - source_key: st
                     component: sensor
                     topic_suffix: st
                     config: >-
-                      {% raw %}{"name":"B01 ST","state_topic":"B2500PKG/B2500_01/CD01/st","default_entity_id":"sensor.b2500_01_st","unique_id":"b2500_01_st","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B2500 B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                      {% raw %}{"name":"ST","state_topic":"B2500PKG/B2500_01/CD01/st","default_entity_id":"sensor.b2500_01_st","unique_id":"b2500_01_st","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
                   - source_key: c0
                     component: sensor
                     topic_suffix: c0
                     config: >-
-                      {% raw %}{"name":"B01 CTCH Kanal","state_topic":"B2500PKG/B2500_01/CD01/c0","default_entity_id":"sensor.b2500_01_c0","unique_id":"b2500_01_c0","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B2500 B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                      {% raw %}{"name":"CTCH Kanal","state_topic":"B2500PKG/B2500_01/CD01/c0","default_entity_id":"sensor.b2500_01_c0","unique_id":"b2500_01_c0","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
                   - source_key: c1
                     component: sensor
                     topic_suffix: c1
                     config: >-
-                      {% raw %}{"name":"B01 Status CT","state_topic":"B2500PKG/B2500_01/CD01/c1","default_entity_id":"sensor.b2500_01_c1","unique_id":"b2500_01_c1","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B2500 B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                      {% raw %}{"name":"Status CT","state_topic":"B2500PKG/B2500_01/CD01/c1","default_entity_id":"sensor.b2500_01_c1","unique_id":"b2500_01_c1","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
                   - source_key: it
                     component: sensor
                     topic_suffix: it
                     config: >-
-                      {% raw %}{"name":"B01 IT Tägliche abgegebene Leistung","state_topic":"B2500PKG/B2500_01/CD01/it","default_entity_id":"sensor.b2500_01_it","unique_id":"b2500_01_it","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B2500 B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                      {% raw %}{"name":"IT Tägliche abgegebene Leistung","state_topic":"B2500PKG/B2500_01/CD01/it","default_entity_id":"sensor.b2500_01_it","unique_id":"b2500_01_it","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
                   - source_key: m0
                     component: sensor
                     topic_suffix: m0
                     config: >-
-                      {% raw %}{"name":"B01 Leistungsmessung Phase1","state_topic":"B2500PKG/B2500_01/CD01/m0","default_entity_id":"sensor.b2500_01_m0","unique_id":"b2500_01_m0","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B2500 B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                      {% raw %}{"name":"Leistungsmessung Phase1","state_topic":"B2500PKG/B2500_01/CD01/m0","default_entity_id":"sensor.b2500_01_m0","unique_id":"b2500_01_m0","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
                   - source_key: m1
                     component: sensor
                     topic_suffix: m1
                     config: >-
-                      {% raw %}{"name":"B01 Leistungsmessung Phase2","state_topic":"B2500PKG/B2500_01/CD01/m1","default_entity_id":"sensor.b2500_01_m1","unique_id":"b2500_01_m1","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B2500 B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                      {% raw %}{"name":"Leistungsmessung Phase2","state_topic":"B2500PKG/B2500_01/CD01/m1","default_entity_id":"sensor.b2500_01_m1","unique_id":"b2500_01_m1","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
                   - source_key: m2
                     component: sensor
                     topic_suffix: m2
                     config: >-
-                      {% raw %}{"name":"B01 Leistungsmessung Phase3","state_topic":"B2500PKG/B2500_01/CD01/m2","default_entity_id":"sensor.b2500_01_m2","unique_id":"b2500_01_m2","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B2500 B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                      {% raw %}{"name":"Leistungsmessung Phase3","state_topic":"B2500PKG/B2500_01/CD01/m2","default_entity_id":"sensor.b2500_01_m2","unique_id":"b2500_01_m2","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
                   - source_key: m3
                     component: sensor
                     topic_suffix: m3
                     config: >-
-                      {% raw %}{"name":"B01 M3","state_topic":"B2500PKG/B2500_01/CD01/m3","default_entity_id":"sensor.b2500_01_m3","unique_id":"b2500_01_m3","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B2500 B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                      {% raw %}{"name":"M3","state_topic":"B2500PKG/B2500_01/CD01/m3","default_entity_id":"sensor.b2500_01_m3","unique_id":"b2500_01_m3","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
                   - source_key: lmo
                     component: sensor
                     topic_suffix: lmo
                     config: >-
-                      {% raw %}{"name":"B01 LMO Nennausgangsleistung","state_topic":"B2500PKG/B2500_01/CD01/lmo","unit_of_measurement":"W","default_entity_id":"sensor.b2500_01_lmo","unique_id":"b2500_01_lmo","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B2500 B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                      {% raw %}{"name":"LMO Nennausgangsleistung","state_topic":"B2500PKG/B2500_01/CD01/lmo","unit_of_measurement":"W","default_entity_id":"sensor.b2500_01_lmo","unique_id":"b2500_01_lmo","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
                   - source_key: lmi
                     component: sensor
                     topic_suffix: lmi
                     config: >-
-                      {% raw %}{"name":"B01 LMI Nennaufnahmeleistung","state_topic":"B2500PKG/B2500_01/CD01/lmi","unit_of_measurement":"W","default_entity_id":"sensor.b2500_01_lmi","unique_id":"b2500_01_lmi","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B2500 B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                      {% raw %}{"name":"LMI Nennaufnahmeleistung","state_topic":"B2500PKG/B2500_01/CD01/lmi","unit_of_measurement":"W","default_entity_id":"sensor.b2500_01_lmi","unique_id":"b2500_01_lmi","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
                   - source_key: lmf
                     component: sensor
                     topic_suffix: lmf
                     config: >-
-                      {% raw %}{"name":"B01 LMF Gerätebeschränkung","state_topic":"B2500PKG/B2500_01/CD01/lmf","default_entity_id":"sensor.b2500_01_lmf","unique_id":"b2500_01_lmf","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B2500 B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                      {% raw %}{"name":"LMF Gerätebeschränkung","state_topic":"B2500PKG/B2500_01/CD01/lmf","default_entity_id":"sensor.b2500_01_lmf","unique_id":"b2500_01_lmf","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
                   - source_key: uv
                     component: sensor
                     topic_suffix: uv
                     config: >-
-                      {% raw %}{"name":"B01 UV","state_topic":"B2500PKG/B2500_01/CD01/uv","default_entity_id":"sensor.b2500_01_uv","unique_id":"b2500_01_uv","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B2500 B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                      {% raw %}{"name":"UV","state_topic":"B2500PKG/B2500_01/CD01/uv","default_entity_id":"sensor.b2500_01_uv","unique_id":"b2500_01_uv","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
                   - source_key: sm
                     component: sensor
                     topic_suffix: sm
                     config: >-
-                      {% raw %}{"name":"B01 SM","state_topic":"B2500PKG/B2500_01/CD01/sm","default_entity_id":"sensor.b2500_01_sm","unique_id":"b2500_01_sm","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B2500 B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                      {% raw %}{"name":"SM Parallelmodus","state_topic":"B2500PKG/B2500_01/CD01/sm","value_template":"{% if value | int(0) == 1 %}Parallelmodus an{% else %}Parallelmodus aus{% endif %}","default_entity_id":"sensor.b2500_01_sm","unique_id":"b2500_01_sm","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
                   - source_key: bn
                     component: sensor
                     topic_suffix: bn
                     config: >-
-                      {% raw %}{"name":"B01 BN","state_topic":"B2500PKG/B2500_01/CD01/bn","default_entity_id":"sensor.b2500_01_bn","unique_id":"b2500_01_bn","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B2500 B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                      {% raw %}{"name":"BN","state_topic":"B2500PKG/B2500_01/CD01/bn","default_entity_id":"sensor.b2500_01_bn","unique_id":"b2500_01_bn","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
                   - source_key: ct_t
                     component: sensor
                     topic_suffix: ct_t
                     config: >-
-                      {% raw %}{"name":"B01 Smartmeter Typ","state_topic":"B2500PKG/B2500_01/CD01/ct_t","value_template":"{{ value.replace('1','CT001').replace('3','CT002').replace('4','Shelly Pro 3EM').replace('6','CT003').replace('7','Shelly EM gen3').replace('8','Shelly Pro EM50').replace('9','Eco Tracker') }}","default_entity_id":"sensor.b2500_01_ct_t","unique_id":"b2500_01_ct_t","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B2500 B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                      {% raw %}{"name":"Smartmeter Typ","state_topic":"B2500PKG/B2500_01/CD01/ct_t","value_template":"{{ value.replace('1','CT001').replace('3','CT002').replace('4','Shelly Pro 3EM').replace('6','CT003').replace('7','Shelly EM gen3').replace('8','Shelly Pro EM50').replace('9','Eco Tracker') }}","default_entity_id":"sensor.b2500_01_ct_t","unique_id":"b2500_01_ct_t","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
                   - source_key: tc_dis
                     component: sensor
                     topic_suffix: tc_dis
                     config: >-
-                      {% raw %}{"name":"B01 Surplus Modus","state_topic":"B2500PKG/B2500_01/CD01/tc_dis","value_template":"{{ value.replace('0','Surplus Modus aktiv').replace('1','Surplus Modus deaktiviert') }}","default_entity_id":"sensor.b2500_01_tc_dis","unique_id":"b2500_01_tc_dis","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B2500 B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                      {% raw %}{"name":"Surplus Modus","state_topic":"B2500PKG/B2500_01/CD01/tc_dis","value_template":"{{ value.replace('0','Surplus Modus aktiv').replace('1','Surplus Modus deaktiviert') }}","default_entity_id":"sensor.b2500_01_tc_dis","unique_id":"b2500_01_tc_dis","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
                   - source_key: ws
                     component: sensor
                     topic_suffix: ws
                     config: >-
-                      {% raw %}{"name":"B01 Wifi Signal","state_topic":"B2500PKG/B2500_01/CD01/ws","default_entity_id":"sensor.b2500_01_ws","unique_id":"b2500_01_ws","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B2500 B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                      {% raw %}{"name":"Wifi Signal","state_topic":"B2500PKG/B2500_01/CD01/ws","default_entity_id":"sensor.b2500_01_ws","unique_id":"b2500_01_ws","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
                   - source_key: fktc
                     component: sensor
                     topic_suffix: fktc
                     config: >-
-                      {% raw %}{"name":"B01 FKTC","state_topic":"B2500PKG/B2500_01/CD01/fktc","default_entity_id":"sensor.b2500_01_fktc","unique_id":"b2500_01_fktc","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B2500 B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                      {% raw %}{"name":"FKTC","state_topic":"B2500PKG/B2500_01/CD01/fktc","default_entity_id":"sensor.b2500_01_fktc","unique_id":"b2500_01_fktc","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
 
 
                 cd16_entities:
@@ -565,75 +565,75 @@ script:
                   - source_key: p1
                     topic_suffix: cd16p1
                     config: >-
-                      {% raw %}{"name":"B01 PV1 Status","state_topic":"B2500PKG/B2500_01/CD16/p1","default_entity_id":"sensor.b2500_01_cd16p1","unique_id":"b2500_01_cd16p1","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B2500 B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                      {% raw %}{"name":"PV1 Status","state_topic":"B2500PKG/B2500_01/CD16/p1","default_entity_id":"sensor.b2500_01_cd16p1","unique_id":"b2500_01_cd16p1","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
                   - source_key: p2
                     topic_suffix: cd16p2
                     config: >-
-                      {% raw %}{"name":"B01 PV2 Status","state_topic":"B2500PKG/B2500_01/CD16/p2","default_entity_id":"sensor.b2500_01_cd16p2","unique_id":"b2500_01_cd16p2","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B2500 B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                      {% raw %}{"name":"PV2 Status","state_topic":"B2500PKG/B2500_01/CD16/p2","default_entity_id":"sensor.b2500_01_cd16p2","unique_id":"b2500_01_cd16p2","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
                   - source_key: w1
                     topic_suffix: cd16w1
                     config: >-
-                      {% raw %}{"name":"B01 PV1 Leistung","state_topic":"B2500PKG/B2500_01/CD16/w1","state_class":"measurement","device_class":"power","unit_of_measurement":"W","default_entity_id":"sensor.b2500_01_cd16w1","unique_id":"b2500_01_cd16w1","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B2500 B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                      {% raw %}{"name":"PV1 Leistung","state_topic":"B2500PKG/B2500_01/CD16/w1","state_class":"measurement","device_class":"power","unit_of_measurement":"W","default_entity_id":"sensor.b2500_01_cd16w1","unique_id":"b2500_01_cd16w1","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
                   - source_key: m1
                     topic_suffix: cd16m1
                     config: >-
-                      {% raw %}{"name":"B01 PV1 Input Voltage","state_topic":"B2500PKG/B2500_01/CD16/m1","state_class":"measurement","device_class":"voltage","unit_of_measurement":"V","value_template":"{{ (value | float) / 1000 }}","default_entity_id":"sensor.b2500_01_cd16m1","unique_id":"b2500_01_cd16m1","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B2500 B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                      {% raw %}{"name":"PV1 Input Voltage","state_topic":"B2500PKG/B2500_01/CD16/m1","state_class":"measurement","device_class":"voltage","unit_of_measurement":"V","value_template":"{{ (value | float) / 1000 }}","default_entity_id":"sensor.b2500_01_cd16m1","unique_id":"b2500_01_cd16m1","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
                   - source_key: c1
                     topic_suffix: cd16c1
                     config: >-
-                      {% raw %}{"name":"B01 PV1 Input Current","state_topic":"B2500PKG/B2500_01/CD16/c1","state_class":"measurement","device_class":"current","unit_of_measurement":"A","value_template":"{{ (value | float) / 1000 }}","default_entity_id":"sensor.b2500_01_cd16c1","unique_id":"b2500_01_cd16c1","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B2500 B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                      {% raw %}{"name":"PV1 Input Current","state_topic":"B2500PKG/B2500_01/CD16/c1","state_class":"measurement","device_class":"current","unit_of_measurement":"A","value_template":"{{ (value | float) / 1000 }}","default_entity_id":"sensor.b2500_01_cd16c1","unique_id":"b2500_01_cd16c1","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
 
                   - source_key: w2
                     topic_suffix: cd16w2
                     config: >-
-                      {% raw %}{"name":"B01 PV2 Leistung","state_topic":"B2500PKG/B2500_01/CD16/w2","state_class":"measurement","device_class":"power","unit_of_measurement":"W","default_entity_id":"sensor.b2500_01_cd16w2","unique_id":"b2500_01_cd16w2","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B2500 B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                      {% raw %}{"name":"PV2 Leistung","state_topic":"B2500PKG/B2500_01/CD16/w2","state_class":"measurement","device_class":"power","unit_of_measurement":"W","default_entity_id":"sensor.b2500_01_cd16w2","unique_id":"b2500_01_cd16w2","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
                   - source_key: m2
                     topic_suffix: cd16m2
                     config: >-
-                      {% raw %}{"name":"B01 PV2 Input Voltage","state_topic":"B2500PKG/B2500_01/CD16/m2","state_class":"measurement","device_class":"voltage","unit_of_measurement":"V","value_template":"{{ (value | float) / 1000 }}","default_entity_id":"sensor.b2500_01_cd16m2","unique_id":"b2500_01_cd16m2","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B2500 B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                      {% raw %}{"name":"PV2 Input Voltage","state_topic":"B2500PKG/B2500_01/CD16/m2","state_class":"measurement","device_class":"voltage","unit_of_measurement":"V","value_template":"{{ (value | float) / 1000 }}","default_entity_id":"sensor.b2500_01_cd16m2","unique_id":"b2500_01_cd16m2","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
                   - source_key: c2
                     topic_suffix: cd16c2
                     config: >-
-                      {% raw %}{"name":"B01 PV2 Input Current","state_topic":"B2500PKG/B2500_01/CD16/c2","state_class":"measurement","device_class":"current","unit_of_measurement":"A","value_template":"{{ (value | float) / 1000 }}","default_entity_id":"sensor.b2500_01_cd16c2","unique_id":"b2500_01_cd16c2","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B2500 B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                      {% raw %}{"name":"PV2 Input Current","state_topic":"B2500PKG/B2500_01/CD16/c2","state_class":"measurement","device_class":"current","unit_of_measurement":"A","value_template":"{{ (value | float) / 1000 }}","default_entity_id":"sensor.b2500_01_cd16c2","unique_id":"b2500_01_cd16c2","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
 
                   - source_key: bb
                     topic_suffix: cd16bb
                     config: >-
-                      {% raw %}{"name":"B01 Akku Power","state_topic":"B2500PKG/B2500_01/CD16/bb","state_class":"measurement","device_class":"power","unit_of_measurement":"W","default_entity_id":"sensor.b2500_01_cd16bb","unique_id":"b2500_01_cd16bb","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B2500 B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                      {% raw %}{"name":"Akku Power","state_topic":"B2500PKG/B2500_01/CD16/bb","state_class":"measurement","device_class":"power","unit_of_measurement":"W","default_entity_id":"sensor.b2500_01_cd16bb","unique_id":"b2500_01_cd16bb","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
                   - source_key: bv
                     topic_suffix: cd16bv
                     config: >-
-                      {% raw %}{"name":"B01 Akku Voltage","state_topic":"B2500PKG/B2500_01/CD16/bv","state_class":"measurement","device_class":"voltage","unit_of_measurement":"V","value_template":"{{ (value | float) / 1000 }}","default_entity_id":"sensor.b2500_01_cd16bv","unique_id":"b2500_01_cd16bv","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B2500 B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                      {% raw %}{"name":"Akku Voltage","state_topic":"B2500PKG/B2500_01/CD16/bv","state_class":"measurement","device_class":"voltage","unit_of_measurement":"V","value_template":"{{ (value | float) / 1000 }}","default_entity_id":"sensor.b2500_01_cd16bv","unique_id":"b2500_01_cd16bv","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
                   - source_key: bc
                     topic_suffix: cd16bc
                     config: >-
-                      {% raw %}{"name":"B01 Akku Current","state_topic":"B2500PKG/B2500_01/CD16/bc","state_class":"measurement","device_class":"current","unit_of_measurement":"A","value_template":"{{ (value | float) / 1000 }}","default_entity_id":"sensor.b2500_01_cd16bc","unique_id":"b2500_01_cd16bc","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B2500 B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                      {% raw %}{"name":"Akku Current","state_topic":"B2500PKG/B2500_01/CD16/bc","state_class":"measurement","device_class":"current","unit_of_measurement":"A","value_template":"{{ (value | float) / 1000 }}","default_entity_id":"sensor.b2500_01_cd16bc","unique_id":"b2500_01_cd16bc","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
 
                   - source_key: g1
                     topic_suffix: cd16g1
                     config: >-
-                      {% raw %}{"name":"B01 Output1 Leistung","state_topic":"B2500PKG/B2500_01/CD16/g1","state_class":"measurement","device_class":"power","unit_of_measurement":"W","default_entity_id":"sensor.b2500_01_cd16g1","unique_id":"b2500_01_cd16g1","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B2500 B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                      {% raw %}{"name":"Output1 Leistung","state_topic":"B2500PKG/B2500_01/CD16/g1","state_class":"measurement","device_class":"power","unit_of_measurement":"W","default_entity_id":"sensor.b2500_01_cd16g1","unique_id":"b2500_01_cd16g1","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
                   - source_key: i1
                     topic_suffix: cd16i1
                     config: >-
-                      {% raw %}{"name":"B01 Output1 Voltage","state_topic":"B2500PKG/B2500_01/CD16/i1","state_class":"measurement","device_class":"voltage","unit_of_measurement":"V","value_template":"{{ (value | float) / 1000 }}","default_entity_id":"sensor.b2500_01_cd16i1","unique_id":"b2500_01_cd16i1","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B2500 B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                      {% raw %}{"name":"Output1 Voltage","state_topic":"B2500PKG/B2500_01/CD16/i1","state_class":"measurement","device_class":"voltage","unit_of_measurement":"V","value_template":"{{ (value | float) / 1000 }}","default_entity_id":"sensor.b2500_01_cd16i1","unique_id":"b2500_01_cd16i1","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
                   - source_key: c3
                     topic_suffix: cd16c3
                     config: >-
-                      {% raw %}{"name":"B01 Output1 Current","state_topic":"B2500PKG/B2500_01/CD16/c3","state_class":"measurement","device_class":"current","unit_of_measurement":"A","value_template":"{{ (value | float) / 1000 }}","default_entity_id":"sensor.b2500_01_cd16c3","unique_id":"b2500_01_cd16c3","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B2500 B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                      {% raw %}{"name":"Output1 Current","state_topic":"B2500PKG/B2500_01/CD16/c3","state_class":"measurement","device_class":"current","unit_of_measurement":"A","value_template":"{{ (value | float) / 1000 }}","default_entity_id":"sensor.b2500_01_cd16c3","unique_id":"b2500_01_cd16c3","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
 
                   - source_key: g2
                     topic_suffix: cd16g2
                     config: >-
-                      {% raw %}{"name":"B01 Output2 Leistung","state_topic":"B2500PKG/B2500_01/CD16/g2","state_class":"measurement","device_class":"power","unit_of_measurement":"W","default_entity_id":"sensor.b2500_01_cd16g2","unique_id":"b2500_01_cd16g2","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B2500 B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                      {% raw %}{"name":"Output2 Leistung","state_topic":"B2500PKG/B2500_01/CD16/g2","state_class":"measurement","device_class":"power","unit_of_measurement":"W","default_entity_id":"sensor.b2500_01_cd16g2","unique_id":"b2500_01_cd16g2","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
                   - source_key: i2
                     topic_suffix: cd16i2
                     config: >-
-                      {% raw %}{"name":"B01 Output2 Voltage","state_topic":"B2500PKG/B2500_01/CD16/i2","state_class":"measurement","device_class":"voltage","unit_of_measurement":"V","value_template":"{{ (value | float) / 1000 }}","default_entity_id":"sensor.b2500_01_cd16i2","unique_id":"b2500_01_cd16i2","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B2500 B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                      {% raw %}{"name":"Output2 Voltage","state_topic":"B2500PKG/B2500_01/CD16/i2","state_class":"measurement","device_class":"voltage","unit_of_measurement":"V","value_template":"{{ (value | float) / 1000 }}","default_entity_id":"sensor.b2500_01_cd16i2","unique_id":"b2500_01_cd16i2","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
                   - source_key: c4
                     topic_suffix: cd16c4
                     config: >-
-                      {% raw %}{"name":"B01 Output2 Current","state_topic":"B2500PKG/B2500_01/CD16/c4","state_class":"measurement","device_class":"current","unit_of_measurement":"A","value_template":"{{ (value | float) / 1000 }}","default_entity_id":"sensor.b2500_01_cd16c4","unique_id":"b2500_01_cd16c4","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B2500 B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                      {% raw %}{"name":"Output2 Current","state_topic":"B2500PKG/B2500_01/CD16/c4","state_class":"measurement","device_class":"current","unit_of_measurement":"A","value_template":"{{ (value | float) / 1000 }}","default_entity_id":"sensor.b2500_01_cd16c4","unique_id":"b2500_01_cd16c4","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
 
                   # ------------------------------------------------
                   # Erweiterungsakku E1: nur erzeugen, wenn CD01 b1=1
@@ -642,17 +642,17 @@ script:
                     topic_suffix: cd16sb
                     extension: 1
                     config: >-
-                      {% raw %}{"name":"B01E1 Akku Power","state_topic":"B2500PKG/B2500_01/CD16/sb","state_class":"measurement","device_class":"power","unit_of_measurement":"W","default_entity_id":"sensor.b2500_01_cd16sb","unique_id":"b2500_01_cd16sb","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B2500 B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                      {% raw %}{"name":"E1 Akku Power","state_topic":"B2500PKG/B2500_01/CD16/sb","state_class":"measurement","device_class":"power","unit_of_measurement":"W","default_entity_id":"sensor.b2500_01_cd16sb","unique_id":"b2500_01_cd16sb","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
                   - source_key: sv
                     topic_suffix: cd16sv
                     extension: 1
                     config: >-
-                      {% raw %}{"name":"B01E1 Akku Voltage","state_topic":"B2500PKG/B2500_01/CD16/sv","state_class":"measurement","device_class":"voltage","unit_of_measurement":"V","value_template":"{{ (value | float) / 1000 }}","default_entity_id":"sensor.b2500_01_cd16sv","unique_id":"b2500_01_cd16sv","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B2500 B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                      {% raw %}{"name":"E1 Akku Voltage","state_topic":"B2500PKG/B2500_01/CD16/sv","state_class":"measurement","device_class":"voltage","unit_of_measurement":"V","value_template":"{{ (value | float) / 1000 }}","default_entity_id":"sensor.b2500_01_cd16sv","unique_id":"b2500_01_cd16sv","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
                   - source_key: sc
                     topic_suffix: cd16sc
                     extension: 1
                     config: >-
-                      {% raw %}{"name":"B01E1 Akku Current","state_topic":"B2500PKG/B2500_01/CD16/sc","state_class":"measurement","device_class":"current","unit_of_measurement":"A","value_template":"{{ (value | float) / 1000 }}","default_entity_id":"sensor.b2500_01_cd16sc","unique_id":"b2500_01_cd16sc","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B2500 B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                      {% raw %}{"name":"E1 Akku Current","state_topic":"B2500PKG/B2500_01/CD16/sc","state_class":"measurement","device_class":"current","unit_of_measurement":"A","value_template":"{{ (value | float) / 1000 }}","default_entity_id":"sensor.b2500_01_cd16sc","unique_id":"b2500_01_cd16sc","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
 
                   # ------------------------------------------------
                   # Erweiterungsakku E2: nur erzeugen, wenn CD01 b2=1
@@ -661,27 +661,27 @@ script:
                     topic_suffix: cd16lb
                     extension: 2
                     config: >-
-                      {% raw %}{"name":"B01E2 Akku Power","state_topic":"B2500PKG/B2500_01/CD16/lb","state_class":"measurement","device_class":"power","unit_of_measurement":"W","default_entity_id":"sensor.b2500_01_cd16lb","unique_id":"b2500_01_cd16lb","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B2500 B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                      {% raw %}{"name":"E2 Akku Power","state_topic":"B2500PKG/B2500_01/CD16/lb","state_class":"measurement","device_class":"power","unit_of_measurement":"W","default_entity_id":"sensor.b2500_01_cd16lb","unique_id":"b2500_01_cd16lb","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
                   - source_key: lv
                     topic_suffix: cd16lv
                     extension: 2
                     config: >-
-                      {% raw %}{"name":"B01E2 Akku Voltage","state_topic":"B2500PKG/B2500_01/CD16/lv","state_class":"measurement","device_class":"voltage","unit_of_measurement":"V","value_template":"{{ (value | float) / 1000 }}","default_entity_id":"sensor.b2500_01_cd16lv","unique_id":"b2500_01_cd16lv","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B2500 B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                      {% raw %}{"name":"E2 Akku Voltage","state_topic":"B2500PKG/B2500_01/CD16/lv","state_class":"measurement","device_class":"voltage","unit_of_measurement":"V","value_template":"{{ (value | float) / 1000 }}","default_entity_id":"sensor.b2500_01_cd16lv","unique_id":"b2500_01_cd16lv","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
                   - source_key: lc
                     topic_suffix: cd16lc
                     extension: 2
                     config: >-
-                      {% raw %}{"name":"B01E2 Akku Current","state_topic":"B2500PKG/B2500_01/CD16/lc","state_class":"measurement","device_class":"current","unit_of_measurement":"A","value_template":"{{ (value | float) / 1000 }}","default_entity_id":"sensor.b2500_01_cd16lc","unique_id":"b2500_01_cd16lc","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B2500 B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                      {% raw %}{"name":"E2 Akku Current","state_topic":"B2500PKG/B2500_01/CD16/lc","state_class":"measurement","device_class":"current","unit_of_measurement":"A","value_template":"{{ (value | float) / 1000 }}","default_entity_id":"sensor.b2500_01_cd16lc","unique_id":"b2500_01_cd16lc","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
 
                 calibration_entities:
                   - source_key: cf
                     topic_suffix: cd21cf
                     config: >-
-                      {% raw %}{"name":"B01 Kalibrierung Laden","state_topic":"B2500PKG/B2500_01/CD21/cf","unit_of_measurement":"Ah","state_class":"measurement","suggested_display_precision":2,"value_template":"{{ (value | float) / 1000000 }}","default_entity_id":"sensor.b2500_01_cd21cf","unique_id":"b2500_01_cd21cf","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B2500 B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                      {% raw %}{"name":"Kalibrierung Laden","state_topic":"B2500PKG/B2500_01/CD21/cf","unit_of_measurement":"Ah","state_class":"measurement","suggested_display_precision":2,"value_template":"{{ (value | float) / 1000000 }}","default_entity_id":"sensor.b2500_01_cd21cf","unique_id":"b2500_01_cd21cf","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
                   - source_key: df
                     topic_suffix: cd21df
                     config: >-
-                      {% raw %}{"name":"B01 Kalibrierung Entladen","state_topic":"B2500PKG/B2500_01/CD21/df","unit_of_measurement":"Ah","state_class":"measurement","suggested_display_precision":2,"value_template":"{{ (value | float) / 1000000 }}","default_entity_id":"sensor.b2500_01_cd21df","unique_id":"b2500_01_cd21df","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B2500 B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                      {% raw %}{"name":"Kalibrierung Entladen","state_topic":"B2500PKG/B2500_01/CD21/df","unit_of_measurement":"Ah","state_class":"measurement","suggested_display_precision":2,"value_template":"{{ (value | float) / 1000000 }}","default_entity_id":"sensor.b2500_01_cd21df","unique_id":"b2500_01_cd21df","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
 
             # ======================================================
             # ZENTRALE DATENAKTUALISIERUNG
@@ -903,7 +903,7 @@ script:
                         details: "Lösche B{{ current_number }} Hauptspeicher ........ OK"
                         append: true
                         rueckmeldung: ""
-                        topic: ""
+                        adresse: ""
                         quelle: script.b2500pkg_discovery_script
 
                 # --------------------------------------------------
@@ -988,7 +988,7 @@ script:
                         details: "Lösche B{{ current_number }} Spannungen ........... OK"
                         append: true
                         rueckmeldung: ""
-                        topic: ""
+                        adresse: ""
                         quelle: script.b2500pkg_discovery_script
 
                 # --------------------------------------------------
@@ -1052,7 +1052,7 @@ script:
                         details: "Lösche B{{ current_number }} Timer ................ OK"
                         append: true
                         rueckmeldung: ""
-                        topic: ""
+                        adresse: ""
                         quelle: script.b2500pkg_discovery_script
 
                 # --------------------------------------------------
@@ -1085,7 +1085,7 @@ script:
                         details: "Lösche B{{ current_number }} CD16 ................. OK"
                         append: true
                         rueckmeldung: ""
-                        topic: ""
+                        adresse: ""
                         quelle: script.b2500pkg_discovery_script
 
                 # --------------------------------------------------
@@ -1116,7 +1116,7 @@ script:
                         details: "Lösche B{{ current_number }} Kalibrierung ......... OK"
                         append: true
                         rueckmeldung: ""
-                        topic: ""
+                        adresse: ""
                         quelle: script.b2500pkg_discovery_script
 
             # ======================================================
@@ -1174,7 +1174,7 @@ script:
                         details: "Erzeuge B{{ current_number }} Hauptspeicher ....... OK"
                         append: true
                         rueckmeldung: ""
-                        topic: ""
+                        adresse: ""
                         quelle: script.b2500pkg_discovery_script
 
                 # --------------------------------------------------
@@ -1250,7 +1250,7 @@ script:
                                     {{
                                       {
                                         'name':
-                                          'B' ~ current_number ~ ' Zelle' ~ cell_number,
+                                          'Zelle' ~ cell_number,
                                         'state_topic':
                                           'B2500PKG/B2500_' ~ current_number ~ '/CD13/' ~ voltage_key,
                                         'device_class': 'voltage',
@@ -1262,7 +1262,7 @@ script:
                                         'entity_category': 'diagnostic',
                                         'device': {
                                           'identifiers': ['b2500_' ~ current_number],
-                                          'name': 'B2500 B' ~ current_number,
+                                          'name': 'B' ~ current_number,
                                           'manufacturer': 'B2500PKG',
                                           'model': current_typ,
                                           'serial_number': current_mac
@@ -1395,7 +1395,7 @@ script:
                                     {{
                                       {
                                         'name':
-                                          'B' ~ current_number ~ 'E' ~ extension_number ~ ' Zelle' ~ cell_number,
+                                          'E' ~ extension_number ~ ' Zelle' ~ cell_number,
                                         'state_topic':
                                           'B2500PKG/B2500_' ~ current_number ~ '/CD13/' ~ voltage_key,
                                         'device_class': 'voltage',
@@ -1407,7 +1407,7 @@ script:
                                         'entity_category': 'diagnostic',
                                         'device': {
                                           'identifiers': ['b2500_' ~ current_number],
-                                          'name': 'B2500 B' ~ current_number,
+                                          'name': 'B' ~ current_number,
                                           'manufacturer': 'B2500PKG',
                                           'model': current_typ,
                                           'serial_number': current_mac
@@ -1425,7 +1425,7 @@ script:
                         details: "Erzeuge B{{ current_number }} Spannungen .......... OK"
                         append: true
                         rueckmeldung: ""
-                        topic: ""
+                        adresse: ""
                         quelle: script.b2500pkg_discovery_script
 
                 # --------------------------------------------------
@@ -1469,7 +1469,7 @@ script:
                                     {{
                                       {
                                         'name':
-                                          'B' ~ current_number ~ ' Timer' ~ timer_slot ~ ' aktiv',
+                                          'Timer' ~ timer_slot ~ ' aktiv',
                                         'state_topic':
                                           'B2500PKG/B2500_' ~ current_number ~ '/CD01/' ~ key_d,
                                         'payload_on': '1',
@@ -1481,7 +1481,7 @@ script:
                                         'entity_category': 'diagnostic',
                                         'device': {
                                           'identifiers': ['b2500_' ~ current_number],
-                                          'name': 'B2500 B' ~ current_number,
+                                          'name': 'B' ~ current_number,
                                           'manufacturer': 'B2500PKG',
                                           'model': current_typ,
                                           'serial_number': current_mac
@@ -1504,7 +1504,7 @@ script:
                                     {{
                                       {
                                         'name':
-                                          'B' ~ current_number ~ ' Timer' ~ timer_slot ~ ' Beginn',
+                                          'Timer' ~ timer_slot ~ ' Beginn',
                                         'state_topic':
                                           'B2500PKG/B2500_' ~ current_number ~ '/CD01/' ~ key_e,
                                         'default_entity_id':
@@ -1514,7 +1514,7 @@ script:
                                         'entity_category': 'diagnostic',
                                         'device': {
                                           'identifiers': ['b2500_' ~ current_number],
-                                          'name': 'B2500 B' ~ current_number,
+                                          'name': 'B' ~ current_number,
                                           'manufacturer': 'B2500PKG',
                                           'model': current_typ,
                                           'serial_number': current_mac
@@ -1537,7 +1537,7 @@ script:
                                     {{
                                       {
                                         'name':
-                                          'B' ~ current_number ~ ' Timer' ~ timer_slot ~ ' Ende',
+                                          'Timer' ~ timer_slot ~ ' Ende',
                                         'state_topic':
                                           'B2500PKG/B2500_' ~ current_number ~ '/CD01/' ~ key_f,
                                         'default_entity_id':
@@ -1547,7 +1547,7 @@ script:
                                         'entity_category': 'diagnostic',
                                         'device': {
                                           'identifiers': ['b2500_' ~ current_number],
-                                          'name': 'B2500 B' ~ current_number,
+                                          'name': 'B' ~ current_number,
                                           'manufacturer': 'B2500PKG',
                                           'model': current_typ,
                                           'serial_number': current_mac
@@ -1570,7 +1570,7 @@ script:
                                     {{
                                       {
                                         'name':
-                                          'B' ~ current_number ~ ' Timer' ~ timer_slot ~ ' Ausgabeleistung',
+                                          'Timer' ~ timer_slot ~ ' Ausgabeleistung',
                                         'state_topic':
                                           'B2500PKG/B2500_' ~ current_number ~ '/CD01/' ~ key_h,
                                         'unit_of_measurement': 'W',
@@ -1581,7 +1581,7 @@ script:
                                         'entity_category': 'diagnostic',
                                         'device': {
                                           'identifiers': ['b2500_' ~ current_number],
-                                          'name': 'B2500 B' ~ current_number,
+                                          'name': 'B' ~ current_number,
                                           'manufacturer': 'B2500PKG',
                                           'model': current_typ,
                                           'serial_number': current_mac
@@ -1599,7 +1599,7 @@ script:
                         details: "Erzeuge B{{ current_number }} Timer ............... OK"
                         append: true
                         rueckmeldung: ""
-                        topic: ""
+                        adresse: ""
                         quelle: script.b2500pkg_discovery_script
 
                 # --------------------------------------------------
@@ -1655,7 +1655,7 @@ script:
                         details: "Erzeuge B{{ current_number }} CD16 ................ OK"
                         append: true
                         rueckmeldung: ""
-                        topic: ""
+                        adresse: ""
                         quelle: script.b2500pkg_discovery_script
 
                 # --------------------------------------------------
@@ -1701,7 +1701,7 @@ script:
                         details: "Erzeuge B{{ current_number }} Kalibrierung ........ OK"
                         append: true
                         rueckmeldung: ""
-                        topic: ""
+                        adresse: ""
                         quelle: script.b2500pkg_discovery_script
 
       # ============================================================
@@ -1717,7 +1717,7 @@ script:
           details: "Discovery abgeschlossen ........ OK"
           append: true
           rueckmeldung: ""
-          topic: ""
+          adresse: ""
           quelle: script.b2500pkg_discovery_script
 
       - variables:

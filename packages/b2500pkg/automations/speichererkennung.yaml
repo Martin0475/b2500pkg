@@ -177,6 +177,6 @@ automation:
 
           rueckmeldung: ""
 
-          topic: ""
+          adresse: ""
 
           quelle: automation.b2500pkg_speichererkennung_status

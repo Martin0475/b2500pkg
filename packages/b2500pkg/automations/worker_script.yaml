@@ -2,7 +2,7 @@ input_number:
   b2500_01_status:
     name: B2500_01 Status
     min: -1
-    max: 3
+    max: 4
     step: 1
     mode: box
     initial: 0
@@ -10,7 +10,7 @@ input_number:
   b2500_02_status:
     name: B2500_02 Status
     min: -1
-    max: 3
+    max: 4
     step: 1
     mode: box
     initial: 0
@@ -18,7 +18,7 @@ input_number:
   b2500_03_status:
     name: B2500_03 Status
     min: -1
-    max: 3
+    max: 4
     step: 1
     mode: box
     initial: 0
@@ -26,7 +26,7 @@ input_number:
   b2500_04_status:
     name: B2500_04 Status
     min: -1
-    max: 3
+    max: 4
     step: 1
     mode: box
     initial: 0
@@ -34,7 +34,7 @@ input_number:
   b2500_05_status:
     name: B2500_05 Status
     min: -1
-    max: 3
+    max: 4
     step: 1
     mode: box
     initial: 0
@@ -42,7 +42,7 @@ input_number:
   b2500_06_status:
     name: B2500_06 Status
     min: -1
-    max: 3
+    max: 4
     step: 1
     mode: box
     initial: 0
@@ -50,7 +50,7 @@ input_number:
   b2500_07_status:
     name: B2500_07 Status
     min: -1
-    max: 3
+    max: 4
     step: 1
     mode: box
     initial: 0
@@ -58,7 +58,7 @@ input_number:
   b2500_08_status:
     name: B2500_08 Status
     min: -1
-    max: 3
+    max: 4
     step: 1
     mode: box
     initial: 0
@@ -66,7 +66,7 @@ input_number:
   b2500_09_status:
     name: B2500_09 Status
     min: -1
-    max: 3
+    max: 4
     step: 1
     mode: box
     initial: 0
@@ -145,6 +145,12 @@ script:
         then:
           - stop: "expected_answer ist kein Dictionary → Abbruch"
 
+      - service: input_number.set_value
+        target:
+          entity_id: input_number.b2500_01_status
+        data:
+          value: 1
+
       - service: mqtt.publish
         data:
           topic: "{{ mqtt_topic }}"
@@ -167,13 +173,14 @@ script:
           - condition: template
             value_template: '{{ no_check_clean == true }}'
         then:
-          - stop: "no_check aktiv → Ende nach dem Senden"
-
-      - service: input_number.set_value
-        target:
-          entity_id: input_number.b2500_01_status
-        data:
-          value: 1
+          - delay:
+              milliseconds: 500
+          - service: input_number.set_value
+            target:
+              entity_id: input_number.b2500_01_status
+            data:
+              value: 4
+          - stop: "no_check aktiv → gesendet, ohne Prüfung"
 
       - wait_for_trigger:
           - trigger: mqtt
@@ -370,6 +377,12 @@ script:
         then:
           - stop: "expected_answer ist kein Dictionary → Abbruch"
 
+      - service: input_number.set_value
+        target:
+          entity_id: input_number.b2500_02_status
+        data:
+          value: 1
+
       - service: mqtt.publish
         data:
           topic: "{{ mqtt_topic }}"
@@ -392,13 +405,14 @@ script:
           - condition: template
             value_template: '{{ no_check_clean == true }}'
         then:
-          - stop: "no_check aktiv → Ende nach dem Senden"
-
-      - service: input_number.set_value
-        target:
-          entity_id: input_number.b2500_02_status
-        data:
-          value: 1
+          - delay:
+              milliseconds: 500
+          - service: input_number.set_value
+            target:
+              entity_id: input_number.b2500_02_status
+            data:
+              value: 4
+          - stop: "no_check aktiv → gesendet, ohne Prüfung"
 
       - wait_for_trigger:
           - trigger: mqtt
@@ -595,6 +609,12 @@ script:
         then:
           - stop: "expected_answer ist kein Dictionary → Abbruch"
 
+      - service: input_number.set_value
+        target:
+          entity_id: input_number.b2500_03_status
+        data:
+          value: 1
+
       - service: mqtt.publish
         data:
           topic: "{{ mqtt_topic }}"
@@ -617,13 +637,14 @@ script:
           - condition: template
             value_template: '{{ no_check_clean == true }}'
         then:
-          - stop: "no_check aktiv → Ende nach dem Senden"
-
-      - service: input_number.set_value
-        target:
-          entity_id: input_number.b2500_03_status
-        data:
-          value: 1
+          - delay:
+              milliseconds: 500
+          - service: input_number.set_value
+            target:
+              entity_id: input_number.b2500_03_status
+            data:
+              value: 4
+          - stop: "no_check aktiv → gesendet, ohne Prüfung"
 
       - wait_for_trigger:
           - trigger: mqtt
@@ -820,6 +841,12 @@ script:
         then:
           - stop: "expected_answer ist kein Dictionary → Abbruch"
 
+      - service: input_number.set_value
+        target:
+          entity_id: input_number.b2500_04_status
+        data:
+          value: 1
+
       - service: mqtt.publish
         data:
           topic: "{{ mqtt_topic }}"
@@ -842,13 +869,14 @@ script:
           - condition: template
             value_template: '{{ no_check_clean == true }}'
         then:
-          - stop: "no_check aktiv → Ende nach dem Senden"
-
-      - service: input_number.set_value
-        target:
-          entity_id: input_number.b2500_04_status
-        data:
-          value: 1
+          - delay:
+              milliseconds: 500
+          - service: input_number.set_value
+            target:
+              entity_id: input_number.b2500_04_status
+            data:
+              value: 4
+          - stop: "no_check aktiv → gesendet, ohne Prüfung"
 
       - wait_for_trigger:
           - trigger: mqtt
@@ -1045,6 +1073,12 @@ script:
         then:
           - stop: "expected_answer ist kein Dictionary → Abbruch"
 
+      - service: input_number.set_value
+        target:
+          entity_id: input_number.b2500_05_status
+        data:
+          value: 1
+
       - service: mqtt.publish
         data:
           topic: "{{ mqtt_topic }}"
@@ -1067,13 +1101,14 @@ script:
           - condition: template
             value_template: '{{ no_check_clean == true }}'
         then:
-          - stop: "no_check aktiv → Ende nach dem Senden"
-
-      - service: input_number.set_value
-        target:
-          entity_id: input_number.b2500_05_status
-        data:
-          value: 1
+          - delay:
+              milliseconds: 500
+          - service: input_number.set_value
+            target:
+              entity_id: input_number.b2500_05_status
+            data:
+              value: 4
+          - stop: "no_check aktiv → gesendet, ohne Prüfung"
 
       - wait_for_trigger:
           - trigger: mqtt
@@ -1270,6 +1305,12 @@ script:
         then:
           - stop: "expected_answer ist kein Dictionary → Abbruch"
 
+      - service: input_number.set_value
+        target:
+          entity_id: input_number.b2500_06_status
+        data:
+          value: 1
+
       - service: mqtt.publish
         data:
           topic: "{{ mqtt_topic }}"
@@ -1292,13 +1333,14 @@ script:
           - condition: template
             value_template: '{{ no_check_clean == true }}'
         then:
-          - stop: "no_check aktiv → Ende nach dem Senden"
-
-      - service: input_number.set_value
-        target:
-          entity_id: input_number.b2500_06_status
-        data:
-          value: 1
+          - delay:
+              milliseconds: 500
+          - service: input_number.set_value
+            target:
+              entity_id: input_number.b2500_06_status
+            data:
+              value: 4
+          - stop: "no_check aktiv → gesendet, ohne Prüfung"
 
       - wait_for_trigger:
           - trigger: mqtt
@@ -1495,6 +1537,12 @@ script:
         then:
           - stop: "expected_answer ist kein Dictionary → Abbruch"
 
+      - service: input_number.set_value
+        target:
+          entity_id: input_number.b2500_07_status
+        data:
+          value: 1
+
       - service: mqtt.publish
         data:
           topic: "{{ mqtt_topic }}"
@@ -1517,13 +1565,14 @@ script:
           - condition: template
             value_template: '{{ no_check_clean == true }}'
         then:
-          - stop: "no_check aktiv → Ende nach dem Senden"
-
-      - service: input_number.set_value
-        target:
-          entity_id: input_number.b2500_07_status
-        data:
-          value: 1
+          - delay:
+              milliseconds: 500
+          - service: input_number.set_value
+            target:
+              entity_id: input_number.b2500_07_status
+            data:
+              value: 4
+          - stop: "no_check aktiv → gesendet, ohne Prüfung"
 
       - wait_for_trigger:
           - trigger: mqtt
@@ -1720,6 +1769,12 @@ script:
         then:
           - stop: "expected_answer ist kein Dictionary → Abbruch"
 
+      - service: input_number.set_value
+        target:
+          entity_id: input_number.b2500_08_status
+        data:
+          value: 1
+
       - service: mqtt.publish
         data:
           topic: "{{ mqtt_topic }}"
@@ -1742,13 +1797,14 @@ script:
           - condition: template
             value_template: '{{ no_check_clean == true }}'
         then:
-          - stop: "no_check aktiv → Ende nach dem Senden"
-
-      - service: input_number.set_value
-        target:
-          entity_id: input_number.b2500_08_status
-        data:
-          value: 1
+          - delay:
+              milliseconds: 500
+          - service: input_number.set_value
+            target:
+              entity_id: input_number.b2500_08_status
+            data:
+              value: 4
+          - stop: "no_check aktiv → gesendet, ohne Prüfung"
 
       - wait_for_trigger:
           - trigger: mqtt
@@ -1945,6 +2001,12 @@ script:
         then:
           - stop: "expected_answer ist kein Dictionary → Abbruch"
 
+      - service: input_number.set_value
+        target:
+          entity_id: input_number.b2500_09_status
+        data:
+          value: 1
+
       - service: mqtt.publish
         data:
           topic: "{{ mqtt_topic }}"
@@ -1967,13 +2029,14 @@ script:
           - condition: template
             value_template: '{{ no_check_clean == true }}'
         then:
-          - stop: "no_check aktiv → Ende nach dem Senden"
-
-      - service: input_number.set_value
-        target:
-          entity_id: input_number.b2500_09_status
-        data:
-          value: 1
+          - delay:
+              milliseconds: 500
+          - service: input_number.set_value
+            target:
+              entity_id: input_number.b2500_09_status
+            data:
+              value: 4
+          - stop: "no_check aktiv → gesendet, ohne Prüfung"
 
       - wait_for_trigger:
           - trigger: mqtt

@@ -135,7 +135,7 @@ script:
 
             Befehl: {{ cd_name }}'
           rueckmeldung: ''
-          topic: '{{ repost_topic }}'
+          adresse: '{{ repost_topic }}'
           quelle: script.b2500pkg_test_config
       - stop: Ungültige Speicher-Konfiguration oder Eingabe
     - action: mqtt.publish
@@ -160,7 +160,7 @@ script:
 
           Rohantwort und Repost werden geprüft'
         rueckmeldung: ''
-        topic: '{{ repost_topic }}'
+        adresse: '{{ repost_topic }}'
         quelle: script.b2500pkg_test_config
     - action: script.turn_on
       target:
@@ -230,7 +230,7 @@ script:
 
           Repost: {{ repost_topic }}'
         rueckmeldung: '{{ raw_payload if raw_payload else repost_payload }}'
-        topic: '{{ repost_topic }}'
+        adresse: '{{ repost_topic }}'
         quelle: script.b2500pkg_test_config
   b2500pkg_test_raw_capture:
     alias: B2500PKG Test Raw Capture
