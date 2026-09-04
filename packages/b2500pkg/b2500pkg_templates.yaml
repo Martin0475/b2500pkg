@@ -192,6 +192,8 @@ template:
                   {% set icon = "🟠" %}
                 {% elif v == 3 %}
                   {% set icon = "🟢" %}
+                {% elif v == 4 %}
+                  {% set icon = "🔵" %}
                 {% else %}
                   {% set icon = "⚫" %}
                 {% endif %}
@@ -202,7 +204,6 @@ template:
 
             {{ result.items | join(' | ') if result.items else 'Keine Speicher' }}
           {% endif %}
-
   - sensor:
       - name: "B01_min_Spannung"
         unique_id: b01_min_spannung
@@ -695,7 +696,7 @@ template:
             {% endif %}
           rueckmeldung: >-
             {{ trigger.event.data.rueckmeldung | default('') }}
-          topic: >-
-            {{ trigger.event.data.topic | default('') }}
+          adresse: >-
+            {{ trigger.event.data.adresse | default('') }}
           quelle: >-
             {{ trigger.event.data.quelle | default('') }}
