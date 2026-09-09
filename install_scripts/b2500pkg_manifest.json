@@ -1,9 +1,10 @@
 {
-  "version": "04.09.2026",
-  "changes": "Info16, Fix: Entitätsnamen (neu erstellen!), neue Sensoren",
+  "version": "09.09.2026",
+  "changes": "Bugfix, set_scripte überarbeitet",
   "b2500pkg": [
     "b2500pkg_input.yaml",
-    "b2500pkg_templates.yaml"
+    "b2500pkg_templates.yaml",
+    "b2500pkg_recorder.yaml"
   ],
   "automations": [
     "request_infos.yaml",
