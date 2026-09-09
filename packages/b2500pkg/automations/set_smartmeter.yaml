@@ -1,195 +1,185 @@
 input_select:
   smartmeter:
     name: Smartmeter auswählen
-    options: 
-      - "Eco Tracker"
-      - "CT002"
-      - "Shelly Pro 3EM"
-      - "Shelly EM gen3"
-      - "Shelly Pro EM50"
-      - "CT003"
-      - "CT001"
-
-input_button:
-  b2500_smartmeter_setzen:
-    name: Smartmeter setzen     
-
-automation:
-  alias: B2500PKG Set Smartmeter
-  description: |+
-  
-  triggers:
-    - trigger: state
-      entity_id:
-        - input_button.b2500_smartmeter_setzen
-
-  conditions: []
-  actions:
+    options:
+    - Eco Tracker
+    - CT002
+    - Shelly Pro 3EM
+    - Shelly EM gen3
+    - Shelly Pro EM50
+    - CT003
+    - CT001
+script:
+  b2500pkg_set_smartmeter:
+    alias: B2500PKG_Set_Smartmeter
+    description: Setzt den Smartmeter-Typ für einen B2500-Speicher. Leere Aktionsfelder verwenden input_select.speicherauswahl und input_select.smartmeter.
+    fields:
+      speicher:
+        name: Speicher
+        description: Optional. Wenn leer, wird input_select.speicherauswahl verwendet.
+        required: false
+        example: b2500_01
+        selector:
+          select:
+            options:
+            - label: B01
+              value: b2500_01
+            - label: B02
+              value: b2500_02
+            - label: B03
+              value: b2500_03
+            - label: B04
+              value: b2500_04
+            - label: B05
+              value: b2500_05
+            - label: B06
+              value: b2500_06
+            - label: B07
+              value: b2500_07
+            - label: B08
+              value: b2500_08
+            - label: B09
+              value: b2500_09
+      smartmeter:
+        name: Smartmeter
+        description: Optional. Wenn leer, wird input_select.smartmeter verwendet.
+        required: false
+        example: Eco Tracker
+        selector:
+          select:
+            options:
+            - Eco Tracker
+            - CT002
+            - Shelly Pro 3EM
+            - Shelly EM gen3
+            - Shelly Pro EM50
+            - CT003
+            - CT001
+    sequence:
     - variables:
-        b2500_mac: >-
-          {{ states('input_text.b01_mac') if states('input_select.speicherauswahl') == 'b2500_01' else
-             states('input_text.b02_mac') if states('input_select.speicherauswahl') == 'b2500_02' else
-             states('input_text.b03_mac') if states('input_select.speicherauswahl') == 'b2500_03' else
-             states('input_text.b04_mac') if states('input_select.speicherauswahl') == 'b2500_04' else
-             states('input_text.b05_mac') if states('input_select.speicherauswahl') == 'b2500_05' else
-             states('input_text.b06_mac') if states('input_select.speicherauswahl') == 'b2500_06' else
-             states('input_text.b07_mac') if states('input_select.speicherauswahl') == 'b2500_07' else
-             states('input_text.b08_mac') if states('input_select.speicherauswahl') == 'b2500_08' else
-             states('input_text.b09_mac') if states('input_select.speicherauswahl') == 'b2500_09' else
-             'unknown'
-          }}
-        b2500_typ: >-
-          {{ states('input_text.b01_typ') if states('input_select.speicherauswahl') == 'b2500_01' else
-             states('input_text.b02_typ') if states('input_select.speicherauswahl') == 'b2500_02' else
-             states('input_text.b03_typ') if states('input_select.speicherauswahl') == 'b2500_03' else
-             states('input_text.b04_typ') if states('input_select.speicherauswahl') == 'b2500_04' else
-             states('input_text.b05_typ') if states('input_select.speicherauswahl') == 'b2500_05' else
-             states('input_text.b06_typ') if states('input_select.speicherauswahl') == 'b2500_06' else
-             states('input_text.b07_typ') if states('input_select.speicherauswahl') == 'b2500_07' else
-             states('input_text.b08_typ') if states('input_select.speicherauswahl') == 'b2500_08' else
-             states('input_text.b09_typ') if states('input_select.speicherauswahl') == 'b2500_09' else
-             'unknown'
-          }}
-        b2500_topic: >-
-          {{ states('input_text.b01_topic') if states('input_select.speicherauswahl') == 'b2500_01' else
-             states('input_text.b02_topic') if states('input_select.speicherauswahl') == 'b2500_02' else
-             states('input_text.b03_topic') if states('input_select.speicherauswahl') == 'b2500_03' else
-             states('input_text.b04_topic') if states('input_select.speicherauswahl') == 'b2500_04' else
-             states('input_text.b05_topic') if states('input_select.speicherauswahl') == 'b2500_05' else
-             states('input_text.b06_topic') if states('input_select.speicherauswahl') == 'b2500_06' else
-             states('input_text.b07_topic') if states('input_select.speicherauswahl') == 'b2500_07' else
-             states('input_text.b08_topic') if states('input_select.speicherauswahl') == 'b2500_08' else
-             states('input_text.b09_topic') if states('input_select.speicherauswahl') == 'b2500_09' else
-             'unknown'
-          }}
-    - choose:
-        - conditions:
-            - condition: state
-              entity_id: input_select.smartmeter
-              state: CT001
-          sequence:
-            - action: mqtt.publish
-              metadata: {}
-              data:
-                evaluate_payload: false
-                qos: 0
-                retain: false
-                topic: "{{ b2500_topic }}/{{ b2500_typ }}/App/{{ b2500_mac }}/ctrl"
-                payload: |-
-                  {% raw %}
-                    cd=27,meter=0,mac=000000000000
-                  {% endraw %}
-        - conditions:
-            - condition: state
-              entity_id: input_select.smartmeter
-              state: Shelly Pro 3EM
-          sequence:
-            - action: mqtt.publish
-              metadata: {}
-              data:
-                evaluate_payload: false
-                qos: 0
-                retain: false
-                topic: "{{ b2500_topic }}/{{ b2500_typ }}/App/{{ b2500_mac }}/ctrl"
-                payload: |-
-                  {% raw %}
-                    cd=27,meter=1,mac=000000000000
-                  {% endraw %}
-        - conditions:
-            - condition: state
-              entity_id: input_select.smartmeter
-              state: CT002
-          sequence:
-            - action: mqtt.publish
-              metadata: {}
-              data:
-                evaluate_payload: false
-                qos: 0
-                retain: false
-                topic: "{{ b2500_topic }}/{{ b2500_typ }}/App/{{ b2500_mac }}/ctrl"
-                payload: |-
-                  {% raw %}
-                    cd=27,meter=3,mac=000000000000
-                  {% endraw %}
-        - conditions:
-            - condition: state
-              entity_id: input_select.smartmeter
-              state: CT003
-          sequence:
-            - action: mqtt.publish
-              metadata: {}
-              data:
-                evaluate_payload: false
-                qos: 0
-                retain: false
-                topic: "{{ b2500_topic }}/{{ b2500_typ }}/App/{{ b2500_mac }}/ctrl"
-                payload: |-
-                  {% raw %}
-                    cd=27,meter=4,mac=000000000000
-                  {% endraw %}
-        - conditions:
-            - condition: state
-              entity_id: input_select.smartmeter
-              state: Shelly EM gen3
-          sequence:
-            - action: mqtt.publish
-              metadata: {}
-              data:
-                evaluate_payload: false
-                qos: 0
-                retain: false
-                topic: "{{ b2500_topic }}/{{ b2500_typ }}/App/{{ b2500_mac }}/ctrl"
-                payload: |-
-                  {% raw %}
-                    cd=27,meter=5,mac=000000000000
-                  {% endraw %}
-        - conditions:
-            - condition: state
-              entity_id: input_select.smartmeter
-              state: Shelly Pro EM50
-          sequence:
-            - action: mqtt.publish
-              metadata: {}
-              data:
-                evaluate_payload: false
-                qos: 0
-                retain: false
-                topic: "{{ b2500_topic }}/{{ b2500_typ }}/App/{{ b2500_mac }}/ctrl"
-                payload: |-
-                  {% raw %}
-                    cd=27,meter=6,mac=000000000000
-                  {% endraw %}
-        - conditions:
-            - condition: state
-              entity_id: input_select.smartmeter
-              state: Eco Tracker
-          sequence:
-            - action: mqtt.publish
-              metadata: {}
-              data:
-                evaluate_payload: false
-                qos: 0
-                retain: false
-                topic: "{{ b2500_topic }}/{{ b2500_typ }}/App/{{ b2500_mac }}/ctrl"
-                payload: |-
-                  {% raw %}
-                    cd=27,meter=7,mac=000000000000
-                  {% endraw %}                  
-    - delay:
-        hours: 0
-        minutes: 0
-        seconds: 3
-    - action: mqtt.publish
-      metadata: {}
+        speicher_auswahl: "{% if speicher is defined and speicher | string | trim != '' %}\n  {{ speicher | string | trim }}\n{% else %}\n  {{\
+          \ states('input_select.speicherauswahl') | string | trim }}\n{% endif %}"
+        smartmeter_auswahl: "{% if smartmeter is defined and smartmeter | string | trim != '' %}\n  {{ smartmeter | string | trim }}\n{% else\
+          \ %}\n  {{ states('input_select.smartmeter') | string | trim }}\n{% endif %}"
+        erlaubte_speicher:
+        - b2500_01
+        - b2500_02
+        - b2500_03
+        - b2500_04
+        - b2500_05
+        - b2500_06
+        - b2500_07
+        - b2500_08
+        - b2500_09
+        meter_set_map:
+          CT001: 0
+          Shelly Pro 3EM: 1
+          CT002: 3
+          CT003: 4
+          Shelly EM gen3: 5
+          Shelly Pro EM50: 6
+          Eco Tracker: 7
+        ct_t_raw_map:
+          CT001: 1
+          CT002: 3
+          Shelly Pro 3EM: 4
+          CT003: 6
+          Shelly EM gen3: 7
+          Shelly Pro EM50: 8
+          Eco Tracker: 9
+        meter_set: '{{ meter_set_map.get(smartmeter_auswahl, -1) }}'
+        ct_t_expected: '{{ ct_t_raw_map.get(smartmeter_auswahl, -1) }}'
+        smartmeter_payload: cd=27,meter={{ meter_set | int(-1) }},mac=000000000000
+        worker_entity: script.{{ speicher_auswahl }}_worker
+        worker_status_entity: input_number.b2500_{{ speicher_auswahl[-2:] }}_status
+    - if:
+      - condition: template
+        value_template: '{{ speicher_auswahl not in erlaubte_speicher or meter_set | int(-1) < 0 or ct_t_expected | int(-1) < 0 }}'
+      then:
+      - variables:
+          response:
+            success: false
+            code: INVALID_INPUT
+            message: Speicher oder Smartmeter-Typ ist ungültig.
+            speicher: '{{ speicher_auswahl }}'
+            smartmeter: '{{ smartmeter_auswahl }}'
+      - event: b2500pkg_status
+        event_data:
+          status: FEHLER
+          titel: B2500PKG Smartmeter
+          untertitel: '{{ speicher_auswahl }}'
+          meldung: Ungültige Eingabe
+          details: 'Smartmeter: {{ smartmeter_auswahl }}'
+          rueckmeldung: Speicher oder Smartmeter-Typ ist ungültig.
+          adresse: script.b2500pkg_set_smartmeter
+          quelle: script.b2500pkg_set_smartmeter
+      - stop: Ungültige Smartmeter-Eingabe.
+        response_variable: response
+    - event: b2500pkg_status
+      event_data:
+        status: LAEUFT
+        titel: B2500PKG Smartmeter
+        untertitel: '{{ speicher_auswahl | upper | replace(''B2500_'', ''B'') }} – {{ smartmeter_auswahl }}'
+        meldung: Smartmeter wird gesetzt
+        details: Sende {{ smartmeter_payload }}
+        rueckmeldung: Erwartet ct_t={{ ct_t_expected | int }}
+        adresse: '{{ worker_entity }}'
+        quelle: script.b2500pkg_set_smartmeter
+    - action: '{{ worker_entity }}'
       data:
-        evaluate_payload: false
-        qos: 0
-        retain: false
-        topic: "{{ b2500_topic }}/{{ b2500_typ }}/App/{{ b2500_mac }}/ctrl"
-        payload: cd=01
-    - delay:
-        hours: 0
-        minutes: 0
-        seconds: 3
-  mode: queued
-  max: 10
+        payload: '{{ smartmeter_payload }}'
+        followup_payload: cd=01
+        no_check: false
+        expected_answer:
+          ct_t: '{{ ct_t_expected | int }}'
+    - variables:
+        worker_status: '{{ states(worker_status_entity) | int(0) }}'
+    - if:
+      - condition: template
+        value_template: '{{ worker_status == 3 }}'
+      then:
+      - event: b2500pkg_status
+        event_data:
+          status: ERFOLGREICH
+          titel: B2500PKG Smartmeter
+          untertitel: '{{ speicher_auswahl | upper | replace(''B2500_'', ''B'') }} – {{ smartmeter_auswahl }}'
+          meldung: Smartmeter bestätigt
+          details: ct_t={{ ct_t_expected | int }} wurde bestätigt
+          rueckmeldung: Worker-Status {{ worker_status }}
+          adresse: '{{ worker_status_entity }}'
+          quelle: script.b2500pkg_set_smartmeter
+      - variables:
+          response:
+            success: true
+            code: SMARTMETER_CONFIRMED
+            message: Smartmeter wurde bestätigt.
+            speicher: '{{ speicher_auswahl }}'
+            smartmeter: '{{ smartmeter_auswahl }}'
+            ct_t: '{{ ct_t_expected | int }}'
+      - stop: Smartmeter gesetzt.
+        response_variable: response
+      else:
+      - event: b2500pkg_status
+        event_data:
+          status: FEHLER
+          titel: B2500PKG Smartmeter
+          untertitel: '{{ speicher_auswahl | upper | replace(''B2500_'', ''B'') }} – {{ smartmeter_auswahl }}'
+          meldung: Smartmeter konnte nicht bestätigt werden
+          details: Erwartet ct_t={{ ct_t_expected | int }}
+          rueckmeldung: Worker-Status {{ worker_status }}
+          adresse: '{{ worker_status_entity }}'
+          quelle: script.b2500pkg_set_smartmeter
+      - variables:
+          response:
+            success: false
+            code: WORKER_FAILED
+            message: Smartmeter konnte nicht bestätigt werden.
+            speicher: '{{ speicher_auswahl }}'
+            smartmeter: '{{ smartmeter_auswahl }}'
+            worker_status: '{{ worker_status }}'
+      - stop: Smartmeter konnte nicht bestätigt werden.
+        response_variable: response
+    mode: queued
+    max: 10
+    trace:
+      stored_traces: 0

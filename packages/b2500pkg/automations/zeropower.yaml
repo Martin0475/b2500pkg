@@ -427,6 +427,7 @@ script:
                     Aktiv nur wenn:
                     - input_text.b09_typ enthält "venus" (egal ob Venus/VENUS/venus)
                     - input_boolean.zeropower_use_venus ist on und Sensoren liefern gültige Werte
+                    - sensor.venus_rs485_control_mode_status ist "enabled"
 
                     Wenn nicht aktiv, läuft B09 ganz normal als B2500 über input_select.zeropower_use_b09.
                   #}
@@ -436,10 +437,14 @@ script:
 
                   {% set venus_soc_state =
                      states('sensor.venus_battery_soc') %}
+
+                  {% set venus_rs485_mode_state =
+                     states('sensor.venus_rs485_control_mode_status') | lower %}
                
                   {% set venus_ready =
                      venus_soc_state not in bad
                      and venus_power_state not in bad
+                     and venus_rs485_mode_state == 'enabled'
                   %}
 
                   {% set b09_venus_active =
@@ -841,8 +846,6 @@ script:
                           {% endif %}
                         power_master: "{{ (e_power_list[0] if e_power_list | length > 0 else 0) | int }}"
                         power_extras: "{{ (e_power_list[1:9] | sum) | int }}"
-                    - variables:
-                        force_redistribution: false
                   alias: Neuverteilung
               enabled: true
 
@@ -961,6 +964,9 @@ script:
                                       milliseconds: 300
                   enabled: true
               enabled: true
+            - variables:
+                force_redistribution: false
+              alias: Force-Neuverteilung nach Setzen zurücksetzen
             - target:
                 entity_id: input_text.zeropower_variables
               data:

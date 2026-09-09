@@ -1,5 +1,6 @@
 # ============================================================
 # B2500PKG - interner Repost-Cache
+# Version 6 - Dictionary zuerst, danach geänderte Einzeltopics
 #
 # Pro Speicher ein Cache-Sensor.
 # Die Attribute cd01/cd13/... enthalten jeweils das zuletzt
@@ -38,37 +39,61 @@ template:
         attributes:
           cd01: >-
             {% if trigger.id == 'cd01' %}
-              {{ trigger.payload_json }}
+              {% if trigger.payload | trim == '' %}
+                {{ {} }}
+              {% else %}
+                {{ trigger.payload | from_json({}) }}
+              {% endif %}
             {% else %}
               {{ this.attributes.get('cd01', {}) }}
             {% endif %}
           cd13: >-
             {% if trigger.id == 'cd13' %}
-              {{ trigger.payload_json }}
+              {% if trigger.payload | trim == '' %}
+                {{ {} }}
+              {% else %}
+                {{ trigger.payload | from_json({}) }}
+              {% endif %}
             {% else %}
               {{ this.attributes.get('cd13', {}) }}
             {% endif %}
           cd15: >-
             {% if trigger.id == 'cd15' %}
-              {{ trigger.payload_json }}
+              {% if trigger.payload | trim == '' %}
+                {{ {} }}
+              {% else %}
+                {{ trigger.payload | from_json({}) }}
+              {% endif %}
             {% else %}
               {{ this.attributes.get('cd15', {}) }}
             {% endif %}
           cd16: >-
             {% if trigger.id == 'cd16' %}
-              {{ trigger.payload_json }}
+              {% if trigger.payload | trim == '' %}
+                {{ {} }}
+              {% else %}
+                {{ trigger.payload | from_json({}) }}
+              {% endif %}
             {% else %}
               {{ this.attributes.get('cd16', {}) }}
             {% endif %}
           cd21: >-
             {% if trigger.id == 'cd21' %}
-              {{ trigger.payload_json }}
+              {% if trigger.payload | trim == '' %}
+                {{ {} }}
+              {% else %}
+                {{ trigger.payload | from_json({}) }}
+              {% endif %}
             {% else %}
               {{ this.attributes.get('cd21', {}) }}
             {% endif %}
           cd24: >-
             {% if trigger.id == 'cd24' %}
-              {{ trigger.payload_json }}
+              {% if trigger.payload | trim == '' %}
+                {{ {} }}
+              {% else %}
+                {{ trigger.payload | from_json({}) }}
+              {% endif %}
             {% else %}
               {{ this.attributes.get('cd24', {}) }}
             {% endif %}
@@ -101,37 +126,61 @@ template:
         attributes:
           cd01: >-
             {% if trigger.id == 'cd01' %}
-              {{ trigger.payload_json }}
+              {% if trigger.payload | trim == '' %}
+                {{ {} }}
+              {% else %}
+                {{ trigger.payload | from_json({}) }}
+              {% endif %}
             {% else %}
               {{ this.attributes.get('cd01', {}) }}
             {% endif %}
           cd13: >-
             {% if trigger.id == 'cd13' %}
-              {{ trigger.payload_json }}
+              {% if trigger.payload | trim == '' %}
+                {{ {} }}
+              {% else %}
+                {{ trigger.payload | from_json({}) }}
+              {% endif %}
             {% else %}
               {{ this.attributes.get('cd13', {}) }}
             {% endif %}
           cd15: >-
             {% if trigger.id == 'cd15' %}
-              {{ trigger.payload_json }}
+              {% if trigger.payload | trim == '' %}
+                {{ {} }}
+              {% else %}
+                {{ trigger.payload | from_json({}) }}
+              {% endif %}
             {% else %}
               {{ this.attributes.get('cd15', {}) }}
             {% endif %}
           cd16: >-
             {% if trigger.id == 'cd16' %}
-              {{ trigger.payload_json }}
+              {% if trigger.payload | trim == '' %}
+                {{ {} }}
+              {% else %}
+                {{ trigger.payload | from_json({}) }}
+              {% endif %}
             {% else %}
               {{ this.attributes.get('cd16', {}) }}
             {% endif %}
           cd21: >-
             {% if trigger.id == 'cd21' %}
-              {{ trigger.payload_json }}
+              {% if trigger.payload | trim == '' %}
+                {{ {} }}
+              {% else %}
+                {{ trigger.payload | from_json({}) }}
+              {% endif %}
             {% else %}
               {{ this.attributes.get('cd21', {}) }}
             {% endif %}
           cd24: >-
             {% if trigger.id == 'cd24' %}
-              {{ trigger.payload_json }}
+              {% if trigger.payload | trim == '' %}
+                {{ {} }}
+              {% else %}
+                {{ trigger.payload | from_json({}) }}
+              {% endif %}
             {% else %}
               {{ this.attributes.get('cd24', {}) }}
             {% endif %}
@@ -164,37 +213,61 @@ template:
         attributes:
           cd01: >-
             {% if trigger.id == 'cd01' %}
-              {{ trigger.payload_json }}
+              {% if trigger.payload | trim == '' %}
+                {{ {} }}
+              {% else %}
+                {{ trigger.payload | from_json({}) }}
+              {% endif %}
             {% else %}
               {{ this.attributes.get('cd01', {}) }}
             {% endif %}
           cd13: >-
             {% if trigger.id == 'cd13' %}
-              {{ trigger.payload_json }}
+              {% if trigger.payload | trim == '' %}
+                {{ {} }}
+              {% else %}
+                {{ trigger.payload | from_json({}) }}
+              {% endif %}
             {% else %}
               {{ this.attributes.get('cd13', {}) }}
             {% endif %}
           cd15: >-
             {% if trigger.id == 'cd15' %}
-              {{ trigger.payload_json }}
+              {% if trigger.payload | trim == '' %}
+                {{ {} }}
+              {% else %}
+                {{ trigger.payload | from_json({}) }}
+              {% endif %}
             {% else %}
               {{ this.attributes.get('cd15', {}) }}
             {% endif %}
           cd16: >-
             {% if trigger.id == 'cd16' %}
-              {{ trigger.payload_json }}
+              {% if trigger.payload | trim == '' %}
+                {{ {} }}
+              {% else %}
+                {{ trigger.payload | from_json({}) }}
+              {% endif %}
             {% else %}
               {{ this.attributes.get('cd16', {}) }}
             {% endif %}
           cd21: >-
             {% if trigger.id == 'cd21' %}
-              {{ trigger.payload_json }}
+              {% if trigger.payload | trim == '' %}
+                {{ {} }}
+              {% else %}
+                {{ trigger.payload | from_json({}) }}
+              {% endif %}
             {% else %}
               {{ this.attributes.get('cd21', {}) }}
             {% endif %}
           cd24: >-
             {% if trigger.id == 'cd24' %}
-              {{ trigger.payload_json }}
+              {% if trigger.payload | trim == '' %}
+                {{ {} }}
+              {% else %}
+                {{ trigger.payload | from_json({}) }}
+              {% endif %}
             {% else %}
               {{ this.attributes.get('cd24', {}) }}
             {% endif %}
@@ -227,37 +300,61 @@ template:
         attributes:
           cd01: >-
             {% if trigger.id == 'cd01' %}
-              {{ trigger.payload_json }}
+              {% if trigger.payload | trim == '' %}
+                {{ {} }}
+              {% else %}
+                {{ trigger.payload | from_json({}) }}
+              {% endif %}
             {% else %}
               {{ this.attributes.get('cd01', {}) }}
             {% endif %}
           cd13: >-
             {% if trigger.id == 'cd13' %}
-              {{ trigger.payload_json }}
+              {% if trigger.payload | trim == '' %}
+                {{ {} }}
+              {% else %}
+                {{ trigger.payload | from_json({}) }}
+              {% endif %}
             {% else %}
               {{ this.attributes.get('cd13', {}) }}
             {% endif %}
           cd15: >-
             {% if trigger.id == 'cd15' %}
-              {{ trigger.payload_json }}
+              {% if trigger.payload | trim == '' %}
+                {{ {} }}
+              {% else %}
+                {{ trigger.payload | from_json({}) }}
+              {% endif %}
             {% else %}
               {{ this.attributes.get('cd15', {}) }}
             {% endif %}
           cd16: >-
             {% if trigger.id == 'cd16' %}
-              {{ trigger.payload_json }}
+              {% if trigger.payload | trim == '' %}
+                {{ {} }}
+              {% else %}
+                {{ trigger.payload | from_json({}) }}
+              {% endif %}
             {% else %}
               {{ this.attributes.get('cd16', {}) }}
             {% endif %}
           cd21: >-
             {% if trigger.id == 'cd21' %}
-              {{ trigger.payload_json }}
+              {% if trigger.payload | trim == '' %}
+                {{ {} }}
+              {% else %}
+                {{ trigger.payload | from_json({}) }}
+              {% endif %}
             {% else %}
               {{ this.attributes.get('cd21', {}) }}
             {% endif %}
           cd24: >-
             {% if trigger.id == 'cd24' %}
-              {{ trigger.payload_json }}
+              {% if trigger.payload | trim == '' %}
+                {{ {} }}
+              {% else %}
+                {{ trigger.payload | from_json({}) }}
+              {% endif %}
             {% else %}
               {{ this.attributes.get('cd24', {}) }}
             {% endif %}
@@ -290,37 +387,61 @@ template:
         attributes:
           cd01: >-
             {% if trigger.id == 'cd01' %}
-              {{ trigger.payload_json }}
+              {% if trigger.payload | trim == '' %}
+                {{ {} }}
+              {% else %}
+                {{ trigger.payload | from_json({}) }}
+              {% endif %}
             {% else %}
               {{ this.attributes.get('cd01', {}) }}
             {% endif %}
           cd13: >-
             {% if trigger.id == 'cd13' %}
-              {{ trigger.payload_json }}
+              {% if trigger.payload | trim == '' %}
+                {{ {} }}
+              {% else %}
+                {{ trigger.payload | from_json({}) }}
+              {% endif %}
             {% else %}
               {{ this.attributes.get('cd13', {}) }}
             {% endif %}
           cd15: >-
             {% if trigger.id == 'cd15' %}
-              {{ trigger.payload_json }}
+              {% if trigger.payload | trim == '' %}
+                {{ {} }}
+              {% else %}
+                {{ trigger.payload | from_json({}) }}
+              {% endif %}
             {% else %}
               {{ this.attributes.get('cd15', {}) }}
             {% endif %}
           cd16: >-
             {% if trigger.id == 'cd16' %}
-              {{ trigger.payload_json }}
+              {% if trigger.payload | trim == '' %}
+                {{ {} }}
+              {% else %}
+                {{ trigger.payload | from_json({}) }}
+              {% endif %}
             {% else %}
               {{ this.attributes.get('cd16', {}) }}
             {% endif %}
           cd21: >-
             {% if trigger.id == 'cd21' %}
-              {{ trigger.payload_json }}
+              {% if trigger.payload | trim == '' %}
+                {{ {} }}
+              {% else %}
+                {{ trigger.payload | from_json({}) }}
+              {% endif %}
             {% else %}
               {{ this.attributes.get('cd21', {}) }}
             {% endif %}
           cd24: >-
             {% if trigger.id == 'cd24' %}
-              {{ trigger.payload_json }}
+              {% if trigger.payload | trim == '' %}
+                {{ {} }}
+              {% else %}
+                {{ trigger.payload | from_json({}) }}
+              {% endif %}
             {% else %}
               {{ this.attributes.get('cd24', {}) }}
             {% endif %}
@@ -353,37 +474,61 @@ template:
         attributes:
           cd01: >-
             {% if trigger.id == 'cd01' %}
-              {{ trigger.payload_json }}
+              {% if trigger.payload | trim == '' %}
+                {{ {} }}
+              {% else %}
+                {{ trigger.payload | from_json({}) }}
+              {% endif %}
             {% else %}
               {{ this.attributes.get('cd01', {}) }}
             {% endif %}
           cd13: >-
             {% if trigger.id == 'cd13' %}
-              {{ trigger.payload_json }}
+              {% if trigger.payload | trim == '' %}
+                {{ {} }}
+              {% else %}
+                {{ trigger.payload | from_json({}) }}
+              {% endif %}
             {% else %}
               {{ this.attributes.get('cd13', {}) }}
             {% endif %}
           cd15: >-
             {% if trigger.id == 'cd15' %}
-              {{ trigger.payload_json }}
+              {% if trigger.payload | trim == '' %}
+                {{ {} }}
+              {% else %}
+                {{ trigger.payload | from_json({}) }}
+              {% endif %}
             {% else %}
               {{ this.attributes.get('cd15', {}) }}
             {% endif %}
           cd16: >-
             {% if trigger.id == 'cd16' %}
-              {{ trigger.payload_json }}
+              {% if trigger.payload | trim == '' %}
+                {{ {} }}
+              {% else %}
+                {{ trigger.payload | from_json({}) }}
+              {% endif %}
             {% else %}
               {{ this.attributes.get('cd16', {}) }}
             {% endif %}
           cd21: >-
             {% if trigger.id == 'cd21' %}
-              {{ trigger.payload_json }}
+              {% if trigger.payload | trim == '' %}
+                {{ {} }}
+              {% else %}
+                {{ trigger.payload | from_json({}) }}
+              {% endif %}
             {% else %}
               {{ this.attributes.get('cd21', {}) }}
             {% endif %}
           cd24: >-
             {% if trigger.id == 'cd24' %}
-              {{ trigger.payload_json }}
+              {% if trigger.payload | trim == '' %}
+                {{ {} }}
+              {% else %}
+                {{ trigger.payload | from_json({}) }}
+              {% endif %}
             {% else %}
               {{ this.attributes.get('cd24', {}) }}
             {% endif %}
@@ -416,37 +561,61 @@ template:
         attributes:
           cd01: >-
             {% if trigger.id == 'cd01' %}
-              {{ trigger.payload_json }}
+              {% if trigger.payload | trim == '' %}
+                {{ {} }}
+              {% else %}
+                {{ trigger.payload | from_json({}) }}
+              {% endif %}
             {% else %}
               {{ this.attributes.get('cd01', {}) }}
             {% endif %}
           cd13: >-
             {% if trigger.id == 'cd13' %}
-              {{ trigger.payload_json }}
+              {% if trigger.payload | trim == '' %}
+                {{ {} }}
+              {% else %}
+                {{ trigger.payload | from_json({}) }}
+              {% endif %}
             {% else %}
               {{ this.attributes.get('cd13', {}) }}
             {% endif %}
           cd15: >-
             {% if trigger.id == 'cd15' %}
-              {{ trigger.payload_json }}
+              {% if trigger.payload | trim == '' %}
+                {{ {} }}
+              {% else %}
+                {{ trigger.payload | from_json({}) }}
+              {% endif %}
             {% else %}
               {{ this.attributes.get('cd15', {}) }}
             {% endif %}
           cd16: >-
             {% if trigger.id == 'cd16' %}
-              {{ trigger.payload_json }}
+              {% if trigger.payload | trim == '' %}
+                {{ {} }}
+              {% else %}
+                {{ trigger.payload | from_json({}) }}
+              {% endif %}
             {% else %}
               {{ this.attributes.get('cd16', {}) }}
             {% endif %}
           cd21: >-
             {% if trigger.id == 'cd21' %}
-              {{ trigger.payload_json }}
+              {% if trigger.payload | trim == '' %}
+                {{ {} }}
+              {% else %}
+                {{ trigger.payload | from_json({}) }}
+              {% endif %}
             {% else %}
               {{ this.attributes.get('cd21', {}) }}
             {% endif %}
           cd24: >-
             {% if trigger.id == 'cd24' %}
-              {{ trigger.payload_json }}
+              {% if trigger.payload | trim == '' %}
+                {{ {} }}
+              {% else %}
+                {{ trigger.payload | from_json({}) }}
+              {% endif %}
             {% else %}
               {{ this.attributes.get('cd24', {}) }}
             {% endif %}
@@ -479,37 +648,61 @@ template:
         attributes:
           cd01: >-
             {% if trigger.id == 'cd01' %}
-              {{ trigger.payload_json }}
+              {% if trigger.payload | trim == '' %}
+                {{ {} }}
+              {% else %}
+                {{ trigger.payload | from_json({}) }}
+              {% endif %}
             {% else %}
               {{ this.attributes.get('cd01', {}) }}
             {% endif %}
           cd13: >-
             {% if trigger.id == 'cd13' %}
-              {{ trigger.payload_json }}
+              {% if trigger.payload | trim == '' %}
+                {{ {} }}
+              {% else %}
+                {{ trigger.payload | from_json({}) }}
+              {% endif %}
             {% else %}
               {{ this.attributes.get('cd13', {}) }}
             {% endif %}
           cd15: >-
             {% if trigger.id == 'cd15' %}
-              {{ trigger.payload_json }}
+              {% if trigger.payload | trim == '' %}
+                {{ {} }}
+              {% else %}
+                {{ trigger.payload | from_json({}) }}
+              {% endif %}
             {% else %}
               {{ this.attributes.get('cd15', {}) }}
             {% endif %}
           cd16: >-
             {% if trigger.id == 'cd16' %}
-              {{ trigger.payload_json }}
+              {% if trigger.payload | trim == '' %}
+                {{ {} }}
+              {% else %}
+                {{ trigger.payload | from_json({}) }}
+              {% endif %}
             {% else %}
               {{ this.attributes.get('cd16', {}) }}
             {% endif %}
           cd21: >-
             {% if trigger.id == 'cd21' %}
-              {{ trigger.payload_json }}
+              {% if trigger.payload | trim == '' %}
+                {{ {} }}
+              {% else %}
+                {{ trigger.payload | from_json({}) }}
+              {% endif %}
             {% else %}
               {{ this.attributes.get('cd21', {}) }}
             {% endif %}
           cd24: >-
             {% if trigger.id == 'cd24' %}
-              {{ trigger.payload_json }}
+              {% if trigger.payload | trim == '' %}
+                {{ {} }}
+              {% else %}
+                {{ trigger.payload | from_json({}) }}
+              {% endif %}
             {% else %}
               {{ this.attributes.get('cd24', {}) }}
             {% endif %}
@@ -542,49 +735,71 @@ template:
         attributes:
           cd01: >-
             {% if trigger.id == 'cd01' %}
-              {{ trigger.payload_json }}
+              {% if trigger.payload | trim == '' %}
+                {{ {} }}
+              {% else %}
+                {{ trigger.payload | from_json({}) }}
+              {% endif %}
             {% else %}
               {{ this.attributes.get('cd01', {}) }}
             {% endif %}
           cd13: >-
             {% if trigger.id == 'cd13' %}
-              {{ trigger.payload_json }}
+              {% if trigger.payload | trim == '' %}
+                {{ {} }}
+              {% else %}
+                {{ trigger.payload | from_json({}) }}
+              {% endif %}
             {% else %}
               {{ this.attributes.get('cd13', {}) }}
             {% endif %}
           cd15: >-
             {% if trigger.id == 'cd15' %}
-              {{ trigger.payload_json }}
+              {% if trigger.payload | trim == '' %}
+                {{ {} }}
+              {% else %}
+                {{ trigger.payload | from_json({}) }}
+              {% endif %}
             {% else %}
               {{ this.attributes.get('cd15', {}) }}
             {% endif %}
           cd16: >-
             {% if trigger.id == 'cd16' %}
-              {{ trigger.payload_json }}
+              {% if trigger.payload | trim == '' %}
+                {{ {} }}
+              {% else %}
+                {{ trigger.payload | from_json({}) }}
+              {% endif %}
             {% else %}
               {{ this.attributes.get('cd16', {}) }}
             {% endif %}
           cd21: >-
             {% if trigger.id == 'cd21' %}
-              {{ trigger.payload_json }}
+              {% if trigger.payload | trim == '' %}
+                {{ {} }}
+              {% else %}
+                {{ trigger.payload | from_json({}) }}
+              {% endif %}
             {% else %}
               {{ this.attributes.get('cd21', {}) }}
             {% endif %}
           cd24: >-
             {% if trigger.id == 'cd24' %}
-              {{ trigger.payload_json }}
+              {% if trigger.payload | trim == '' %}
+                {{ {} }}
+              {% else %}
+                {{ trigger.payload | from_json({}) }}
+              {% endif %}
             {% else %}
               {{ this.attributes.get('cd24', {}) }}
             {% endif %}
 
-recorder:
-  exclude:
-    entity_globs:
-      - sensor.b2500_cache_*
 
 automation:
   alias: B2500PKG_Repost_CD01_CD13_CD15_CD16_CD21_CD24_CD30
   description: ""
+  trace:
+    stored_traces: 0
   triggers:
     - trigger: mqtt
       topic: +/+/device/+/ctrl
@@ -757,224 +972,114 @@ automation:
           value_template: "{{ speicher_nummer != 'unknown' }}"
       then:
 
-        # ----------------------------------------------------
-        # Nur geänderte Einzelwerte veröffentlichen
+        # ====================================================
+        # NORMALE DICTIONARY-ANTWORTEN
         #
-        # Beispiel:
-        #   B2500PKG/B2500_01/CD01/pe
-        #   B2500PKG/B2500_01/CD01/w1
+        # Reihenfolge absichtlich:
+        #   1. vollständiges Dictionary
+        #   2. geänderte Einzeltopics
+        #   3. last_updated
         #
-        # retain=true, damit ein später per Discovery erzeugter
-        # MQTT-Sensor sofort den letzten Wert erhält.
-        # ----------------------------------------------------
+        # Dadurch ist der Repost-Cache bereits mit der neuen
+        # Komplettantwort versorgt, bevor die Einzelwerte folgen.
+        # ====================================================
         - if:
             - condition: template
-              value_template: >-
-                {{ cd_topic != '' and changed_count | int(0) > 0 }}
+              value_template: "{{ cd_topic != '' }}"
           then:
-            - repeat:
-                for_each: "{{ changed_keys }}"
-                sequence:
-                  - action: mqtt.publish
-                    metadata: {}
-                    data:
-                      qos: 0
-                      retain: true
-                      topic: >-
-                        B2500PKG/{{ speicher_nummer }}/{{ cd_topic }}/{{ repeat.item }}
-                      payload: "{{ changed_dict[repeat.item] }}"
+            # 1. Vollständiges Dictionary zuerst veröffentlichen.
+            - action: mqtt.publish
+              metadata: {}
+              data:
+                qos: 0
+                retain: true
+                topic: >-
+                  B2500PKG/{{ speicher_nummer }}/{{ cd_topic }}
+                payload: "{{ current_dict | to_json }}"
 
-        # ----------------------------------------------------
-        # Danach vollständiges Dictionary repostieren und
-        # zuletzt last_updated setzen.
-        # ----------------------------------------------------
-        - choose:
-            - conditions:
-                - condition: trigger
-                  id:
-                    - b2500_cd01
-              sequence:
-                - action: mqtt.publish
-                  metadata: {}
-                  data:
-                    qos: 0
-                    retain: true
-                    topic: B2500PKG/{{ speicher_nummer }}/CD01
-                    payload: "{{ current_dict | to_json }}"
-                
-                - delay:
-                    seconds: 0
-                    milliseconds: 500
-                - action: mqtt.publish
-                  metadata: {}
-                  data:
-                    qos: 0
-                    retain: false
-                    topic: B2500PKG/{{ speicher_nummer }}/CD01/last_updated
-                    payload: "{{ now_ts }}"
+            # Kurze Verarbeitungszeit für den triggerbasierten
+            # Cache-Sensor. Besonders wichtig, wenn sich kein
+            # Einzelwert geändert hat und daher kein repeat folgt.
+            - delay:
+                milliseconds: 500
 
-            - conditions:
-                - condition: trigger
-                  id:
-                    - b2500_cd13
-              sequence:
-                - action: mqtt.publish
-                  metadata: {}
-                  data:
-                    qos: 0
-                    retain: true
-                    topic: B2500PKG/{{ speicher_nummer }}/CD13
-                    payload: "{{ current_dict | to_json }}"
+            # 2. Danach nur geänderte Einzelwerte veröffentlichen.
+            - if:
+                - condition: template
+                  value_template: "{{ changed_count | int(0) > 0 }}"
+              then:
+                - repeat:
+                    for_each: "{{ changed_keys }}"
+                    sequence:
+                      - action: mqtt.publish
+                        metadata: {}
+                        data:
+                          qos: 0
+                          retain: true
+                          topic: >-
+                            B2500PKG/{{ speicher_nummer }}/{{ cd_topic }}/{{ repeat.item }}
+                          payload: "{{ changed_dict[repeat.item] }}"
 
-                - delay:
-                    seconds: 1
+            # 3. Erst wenn Dictionary und Einzeltopics abgearbeitet
+            # sind, den Worker über last_updated freigeben.
+            - action: mqtt.publish
+              metadata: {}
+              data:
+                qos: 0
+                retain: false
+                topic: >-
+                  B2500PKG/{{ speicher_nummer }}/{{ cd_topic }}/last_updated
+                payload: "{{ now_ts }}"
 
-                - action: mqtt.publish
-                  metadata: {}
-                  data:
-                    qos: 0
-                    retain: false
-                    topic: B2500PKG/{{ speicher_nummer }}/CD13/last_updated
-                    payload: "{{ now_ts }}"
+        # ====================================================
+        # CD30
+        #
+        # CD30 ist kein key=value-Dictionary und besitzt deshalb
+        # keine Einzeltopics. Die Antwort wird weiterhin über die
+        # vorausgehende cd=30-Anfrage zugeordnet.
+        # ====================================================
+        - if:
+            - condition: trigger
+              id:
+                - b2500_cd30_request
+          then:
+            # CD30 liefert neben dem eigentlichen Ereignisblock auch
+            # kurze Antworten wie 01ff, 02ff oder 0ff0.
+            # Nur der lange Hauptblock ist für uns relevant:
+            #   - beginnt mit 00
+            #   - muss mindestens 20 Hex-Zeichen lang sein
+            - wait_for_trigger:
+                - trigger: mqtt
+                  topic: "{{ device_topic }}"
+                  payload: "valid_cd30"
+                  value_template: >-
+                    {% set v = value | string | trim | lower %}
+                    {% if v.startswith('00') and (v | length) >= 20 %}
+                      valid_cd30
+                    {% else %}
+                      ignore
+                    {% endif %}
+              timeout: "00:00:05"
+              continue_on_timeout: false
 
-            - conditions:
-                - condition: trigger
-                  id:
-                    - b2500_cd15
-              sequence:
-                - action: mqtt.publish
-                  metadata: {}
-                  data:
-                    qos: 0
-                    retain: true
-                    topic: B2500PKG/{{ speicher_nummer }}/CD15
-                    payload: "{{ current_dict | to_json }}"
+            - action: mqtt.publish
+              metadata: {}
+              data:
+                qos: 0
+                retain: true
+                topic: B2500PKG/{{ speicher_nummer }}/CD30
+                payload: "{{ wait.trigger.payload }}"
 
-                - delay:
-                    seconds: 1
+            - delay:
+                milliseconds: 500
 
-                - action: mqtt.publish
-                  metadata: {}
-                  data:
-                    qos: 0
-                    retain: false
-                    topic: B2500PKG/{{ speicher_nummer }}/CD15/last_updated
-                    payload: "{{ now_ts }}"
-
-            - conditions:
-                - condition: trigger
-                  id:
-                    - b2500_cd16
-              sequence:
-                - action: mqtt.publish
-                  metadata: {}
-                  data:
-                    qos: 0
-                    retain: true
-                    topic: B2500PKG/{{ speicher_nummer }}/CD16
-                    payload: "{{ current_dict | to_json }}"
-
-                - delay:
-                    seconds: 1
-
-                - action: mqtt.publish
-                  metadata: {}
-                  data:
-                    qos: 0
-                    retain: false
-                    topic: B2500PKG/{{ speicher_nummer }}/CD16/last_updated
-                    payload: "{{ now_ts }}"
-
-            - conditions:
-                - condition: trigger
-                  id:
-                    - b2500_cd21
-              sequence:
-                - action: mqtt.publish
-                  metadata: {}
-                  data:
-                    qos: 0
-                    retain: true
-                    topic: B2500PKG/{{ speicher_nummer }}/CD21
-                    payload: "{{ current_dict | to_json }}"
-
-                - delay:
-                    seconds: 1
-
-                - action: mqtt.publish
-                  metadata: {}
-                  data:
-                    qos: 0
-                    retain: false
-                    topic: B2500PKG/{{ speicher_nummer }}/CD21/last_updated
-                    payload: "{{ now_ts }}"
-
-            - conditions:
-                - condition: trigger
-                  id:
-                    - b2500_cd24
-              sequence:
-                - action: mqtt.publish
-                  metadata: {}
-                  data:
-                    qos: 0
-                    retain: true
-                    topic: B2500PKG/{{ speicher_nummer }}/CD24
-                    payload: "{{ current_dict | to_json }}"
-
-                - delay:
-                    seconds: 1
-
-                - action: mqtt.publish
-                  metadata: {}
-                  data:
-                    qos: 0
-                    retain: false
-                    topic: B2500PKG/{{ speicher_nummer }}/CD24/last_updated
-                    payload: "{{ now_ts }}"
-
-            - conditions:
-                - condition: trigger
-                  id:
-                    - b2500_cd30_request
-              sequence:
-                # CD30 liefert neben dem eigentlichen Ereignisblock auch
-                # kurze Antworten wie 01ff, 02ff oder 0ff0.
-                # Nur der lange Hauptblock ist für uns relevant:
-                #   - beginnt mit 00
-                #   - muss mindestens 20 Hex-Zeichen lang sein
-                - wait_for_trigger:
-                    - trigger: mqtt
-                      topic: "{{ device_topic }}"
-                      payload: "valid_cd30"
-                      value_template: >-
-                        {% set v = value | string | trim | lower %}
-                        {% if v.startswith('00') and (v | length) >= 20 %}
-                          valid_cd30
-                        {% else %}
-                          ignore
-                        {% endif %}
-                  timeout: "00:00:05"
-                  continue_on_timeout: false
-
-                - action: mqtt.publish
-                  metadata: {}
-                  data:
-                    qos: 0
-                    retain: true
-                    topic: B2500PKG/{{ speicher_nummer }}/CD30
-                    payload: "{{ wait.trigger.payload }}"
-
-                - delay:
-                    seconds: 1
-
-                - action: mqtt.publish
-                  metadata: {}
-                  data:
-                    qos: 0
-                    retain: false
-                    topic: B2500PKG/{{ speicher_nummer }}/CD30/last_updated
-                    payload: "{{ now_ts }}"
+            - action: mqtt.publish
+              metadata: {}
+              data:
+                qos: 0
+                retain: false
+                topic: B2500PKG/{{ speicher_nummer }}/CD30/last_updated
+                payload: "{{ now_ts }}"
 
   mode: parallel
   max: 10

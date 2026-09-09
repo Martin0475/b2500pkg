@@ -71,12 +71,22 @@ input_number:
     mode: box
     initial: 0
 
+# ============================================================
+# Recorder
+#
+# Worker-Status und Worker-Script-Zustaende sind rein transient
+# und werden nicht fuer Langzeitstatistiken benoetigt.
+# ============================================================
+
+
 script:
   b2500_01_worker:
     alias: B2500PKG_B01_Worker
     mode: queued
     max: 50
 
+    trace:
+      stored_traces: 0
     fields:
       payload:
         required: true
@@ -112,18 +122,28 @@ script:
               {{ {} }}
             {% endif %}
           wait_command: "{{ followup_payload_clean if followup_payload_clean != '' else payload_clean }}"
-          wait_topic: >-
+
+          # Das Repost-Dictionary ist die technische Wahrheit fuer die
+          # Bestaetigung. Die Discovery-Entitaeten koennen Werte fuer die UI
+          # uebersetzen (z. B. cs), werden vom Worker aber nicht mehr gelesen.
+          cache_entity: sensor.b2500_cache_01
+          cache_key: >-
             {% if wait_command == 'cd=01' %}
-              B2500PKG/B2500_01/CD01/last_updated
+              cd01
             {% elif wait_command == 'cd=13' %}
-              B2500PKG/B2500_01/CD13/last_updated
+              cd13
             {% elif wait_command == 'cd=15' %}
-              B2500PKG/B2500_01/CD15/last_updated
+              cd15
             {% elif wait_command == 'cd=16' %}
-              B2500PKG/B2500_01/CD16/last_updated
+              cd16
+            {% elif wait_command == 'cd=21' %}
+              cd21
+            {% elif wait_command == 'cd=24' %}
+              cd24
             {% else %}
-              B2500PKG/B2500_01/CD01/last_updated
+              cd01
             {% endif %}
+          wait_topic: "B2500PKG/B2500_01/{{ cache_key | upper }}/last_updated"
 
       - if:
           - condition: template
@@ -193,28 +213,27 @@ script:
             {% if wait.trigger is none %}
               false
             {% else %}
+              {% set data = state_attr(cache_entity, cache_key) or {} %}
               {% set ns = namespace(ok=true) %}
-              {% for field, expected in expected_answer_clean.items() %}
-                {% set field_name = field | string | lower %}
-                {% if field_name in ['d1', 'd2', 'd3', 'd4', 'd5'] %}
-                  {% set entity = 'binary_sensor.b2500_01_' ~ field_name %}
-                  {% set actual = 1 if is_state(entity, 'on') else 0 %}
-                {% else %}
-                  {% set entity = 'sensor.b2500_01_' ~ field_name %}
-                  {% set actual = states(entity) %}
-                {% endif %}
-                {% if actual in ['unknown', 'unavailable', 'none', ''] %}
-                  {% set ns.ok = false %}
-                {% elif expected is number %}
-                  {% if actual | float(999999999) != expected | float(999999998) %}
+              {% if data is not mapping %}
+                {% set ns.ok = false %}
+              {% else %}
+                {% for field, expected in expected_answer_clean.items() %}
+                  {% set field_name = field | string | lower %}
+                  {% set actual = data.get(field_name) %}
+                  {% if actual is none or (actual | string | lower) in ['unknown', 'unavailable', 'none', ''] %}
                     {% set ns.ok = false %}
+                  {% elif expected is number %}
+                    {% if actual | float(999999999) != expected | float(999999998) %}
+                      {% set ns.ok = false %}
+                    {% endif %}
+                  {% else %}
+                    {% if actual | string != expected | string %}
+                      {% set ns.ok = false %}
+                    {% endif %}
                   {% endif %}
-                {% else %}
-                  {% if actual | string != expected | string %}
-                    {% set ns.ok = false %}
-                  {% endif %}
-                {% endif %}
-              {% endfor %}
+                {% endfor %}
+              {% endif %}
               {{ ns.ok }}
             {% endif %}
 
@@ -263,28 +282,27 @@ script:
                 {% if wait.trigger is none %}
                   false
                 {% else %}
+                  {% set data = state_attr(cache_entity, cache_key) or {} %}
                   {% set ns = namespace(ok=true) %}
-                  {% for field, expected in expected_answer_clean.items() %}
-                    {% set field_name = field | string | lower %}
-                    {% if field_name in ['d1', 'd2', 'd3', 'd4', 'd5'] %}
-                      {% set entity = 'binary_sensor.b2500_01_' ~ field_name %}
-                      {% set actual = 1 if is_state(entity, 'on') else 0 %}
-                    {% else %}
-                      {% set entity = 'sensor.b2500_01_' ~ field_name %}
-                      {% set actual = states(entity) %}
-                    {% endif %}
-                    {% if actual in ['unknown', 'unavailable', 'none', ''] %}
-                      {% set ns.ok = false %}
-                    {% elif expected is number %}
-                      {% if actual | float(999999999) != expected | float(999999998) %}
+                  {% if data is not mapping %}
+                    {% set ns.ok = false %}
+                  {% else %}
+                    {% for field, expected in expected_answer_clean.items() %}
+                      {% set field_name = field | string | lower %}
+                      {% set actual = data.get(field_name) %}
+                      {% if actual is none or (actual | string | lower) in ['unknown', 'unavailable', 'none', ''] %}
                         {% set ns.ok = false %}
+                      {% elif expected is number %}
+                        {% if actual | float(999999999) != expected | float(999999998) %}
+                          {% set ns.ok = false %}
+                        {% endif %}
+                      {% else %}
+                        {% if actual | string != expected | string %}
+                          {% set ns.ok = false %}
+                        {% endif %}
                       {% endif %}
-                    {% else %}
-                      {% if actual | string != expected | string %}
-                        {% set ns.ok = false %}
-                      {% endif %}
-                    {% endif %}
-                  {% endfor %}
+                    {% endfor %}
+                  {% endif %}
                   {{ ns.ok }}
                 {% endif %}
 
@@ -309,6 +327,8 @@ script:
     mode: queued
     max: 50
 
+    trace:
+      stored_traces: 0
     fields:
       payload:
         required: true
@@ -344,18 +364,28 @@ script:
               {{ {} }}
             {% endif %}
           wait_command: "{{ followup_payload_clean if followup_payload_clean != '' else payload_clean }}"
-          wait_topic: >-
+
+          # Das Repost-Dictionary ist die technische Wahrheit fuer die
+          # Bestaetigung. Die Discovery-Entitaeten koennen Werte fuer die UI
+          # uebersetzen (z. B. cs), werden vom Worker aber nicht mehr gelesen.
+          cache_entity: sensor.b2500_cache_02
+          cache_key: >-
             {% if wait_command == 'cd=01' %}
-              B2500PKG/B2500_02/CD01/last_updated
+              cd01
             {% elif wait_command == 'cd=13' %}
-              B2500PKG/B2500_02/CD13/last_updated
+              cd13
             {% elif wait_command == 'cd=15' %}
-              B2500PKG/B2500_02/CD15/last_updated
+              cd15
             {% elif wait_command == 'cd=16' %}
-              B2500PKG/B2500_02/CD16/last_updated
+              cd16
+            {% elif wait_command == 'cd=21' %}
+              cd21
+            {% elif wait_command == 'cd=24' %}
+              cd24
             {% else %}
-              B2500PKG/B2500_02/CD01/last_updated
+              cd01
             {% endif %}
+          wait_topic: "B2500PKG/B2500_02/{{ cache_key | upper }}/last_updated"
 
       - if:
           - condition: template
@@ -425,28 +455,27 @@ script:
             {% if wait.trigger is none %}
               false
             {% else %}
+              {% set data = state_attr(cache_entity, cache_key) or {} %}
               {% set ns = namespace(ok=true) %}
-              {% for field, expected in expected_answer_clean.items() %}
-                {% set field_name = field | string | lower %}
-                {% if field_name in ['d1', 'd2', 'd3', 'd4', 'd5'] %}
-                  {% set entity = 'binary_sensor.b2500_02_' ~ field_name %}
-                  {% set actual = 1 if is_state(entity, 'on') else 0 %}
-                {% else %}
-                  {% set entity = 'sensor.b2500_02_' ~ field_name %}
-                  {% set actual = states(entity) %}
-                {% endif %}
-                {% if actual in ['unknown', 'unavailable', 'none', ''] %}
-                  {% set ns.ok = false %}
-                {% elif expected is number %}
-                  {% if actual | float(999999999) != expected | float(999999998) %}
+              {% if data is not mapping %}
+                {% set ns.ok = false %}
+              {% else %}
+                {% for field, expected in expected_answer_clean.items() %}
+                  {% set field_name = field | string | lower %}
+                  {% set actual = data.get(field_name) %}
+                  {% if actual is none or (actual | string | lower) in ['unknown', 'unavailable', 'none', ''] %}
                     {% set ns.ok = false %}
+                  {% elif expected is number %}
+                    {% if actual | float(999999999) != expected | float(999999998) %}
+                      {% set ns.ok = false %}
+                    {% endif %}
+                  {% else %}
+                    {% if actual | string != expected | string %}
+                      {% set ns.ok = false %}
+                    {% endif %}
                   {% endif %}
-                {% else %}
-                  {% if actual | string != expected | string %}
-                    {% set ns.ok = false %}
-                  {% endif %}
-                {% endif %}
-              {% endfor %}
+                {% endfor %}
+              {% endif %}
               {{ ns.ok }}
             {% endif %}
 
@@ -495,28 +524,27 @@ script:
                 {% if wait.trigger is none %}
                   false
                 {% else %}
+                  {% set data = state_attr(cache_entity, cache_key) or {} %}
                   {% set ns = namespace(ok=true) %}
-                  {% for field, expected in expected_answer_clean.items() %}
-                    {% set field_name = field | string | lower %}
-                    {% if field_name in ['d1', 'd2', 'd3', 'd4', 'd5'] %}
-                      {% set entity = 'binary_sensor.b2500_02_' ~ field_name %}
-                      {% set actual = 1 if is_state(entity, 'on') else 0 %}
-                    {% else %}
-                      {% set entity = 'sensor.b2500_02_' ~ field_name %}
-                      {% set actual = states(entity) %}
-                    {% endif %}
-                    {% if actual in ['unknown', 'unavailable', 'none', ''] %}
-                      {% set ns.ok = false %}
-                    {% elif expected is number %}
-                      {% if actual | float(999999999) != expected | float(999999998) %}
+                  {% if data is not mapping %}
+                    {% set ns.ok = false %}
+                  {% else %}
+                    {% for field, expected in expected_answer_clean.items() %}
+                      {% set field_name = field | string | lower %}
+                      {% set actual = data.get(field_name) %}
+                      {% if actual is none or (actual | string | lower) in ['unknown', 'unavailable', 'none', ''] %}
                         {% set ns.ok = false %}
+                      {% elif expected is number %}
+                        {% if actual | float(999999999) != expected | float(999999998) %}
+                          {% set ns.ok = false %}
+                        {% endif %}
+                      {% else %}
+                        {% if actual | string != expected | string %}
+                          {% set ns.ok = false %}
+                        {% endif %}
                       {% endif %}
-                    {% else %}
-                      {% if actual | string != expected | string %}
-                        {% set ns.ok = false %}
-                      {% endif %}
-                    {% endif %}
-                  {% endfor %}
+                    {% endfor %}
+                  {% endif %}
                   {{ ns.ok }}
                 {% endif %}
 
@@ -541,6 +569,8 @@ script:
     mode: queued
     max: 50
 
+    trace:
+      stored_traces: 0
     fields:
       payload:
         required: true
@@ -576,18 +606,28 @@ script:
               {{ {} }}
             {% endif %}
           wait_command: "{{ followup_payload_clean if followup_payload_clean != '' else payload_clean }}"
-          wait_topic: >-
+
+          # Das Repost-Dictionary ist die technische Wahrheit fuer die
+          # Bestaetigung. Die Discovery-Entitaeten koennen Werte fuer die UI
+          # uebersetzen (z. B. cs), werden vom Worker aber nicht mehr gelesen.
+          cache_entity: sensor.b2500_cache_03
+          cache_key: >-
             {% if wait_command == 'cd=01' %}
-              B2500PKG/B2500_03/CD01/last_updated
+              cd01
             {% elif wait_command == 'cd=13' %}
-              B2500PKG/B2500_03/CD13/last_updated
+              cd13
             {% elif wait_command == 'cd=15' %}
-              B2500PKG/B2500_03/CD15/last_updated
+              cd15
             {% elif wait_command == 'cd=16' %}
-              B2500PKG/B2500_03/CD16/last_updated
+              cd16
+            {% elif wait_command == 'cd=21' %}
+              cd21
+            {% elif wait_command == 'cd=24' %}
+              cd24
             {% else %}
-              B2500PKG/B2500_03/CD01/last_updated
+              cd01
             {% endif %}
+          wait_topic: "B2500PKG/B2500_03/{{ cache_key | upper }}/last_updated"
 
       - if:
           - condition: template
@@ -657,28 +697,27 @@ script:
             {% if wait.trigger is none %}
               false
             {% else %}
+              {% set data = state_attr(cache_entity, cache_key) or {} %}
               {% set ns = namespace(ok=true) %}
-              {% for field, expected in expected_answer_clean.items() %}
-                {% set field_name = field | string | lower %}
-                {% if field_name in ['d1', 'd2', 'd3', 'd4', 'd5'] %}
-                  {% set entity = 'binary_sensor.b2500_03_' ~ field_name %}
-                  {% set actual = 1 if is_state(entity, 'on') else 0 %}
-                {% else %}
-                  {% set entity = 'sensor.b2500_03_' ~ field_name %}
-                  {% set actual = states(entity) %}
-                {% endif %}
-                {% if actual in ['unknown', 'unavailable', 'none', ''] %}
-                  {% set ns.ok = false %}
-                {% elif expected is number %}
-                  {% if actual | float(999999999) != expected | float(999999998) %}
+              {% if data is not mapping %}
+                {% set ns.ok = false %}
+              {% else %}
+                {% for field, expected in expected_answer_clean.items() %}
+                  {% set field_name = field | string | lower %}
+                  {% set actual = data.get(field_name) %}
+                  {% if actual is none or (actual | string | lower) in ['unknown', 'unavailable', 'none', ''] %}
                     {% set ns.ok = false %}
+                  {% elif expected is number %}
+                    {% if actual | float(999999999) != expected | float(999999998) %}
+                      {% set ns.ok = false %}
+                    {% endif %}
+                  {% else %}
+                    {% if actual | string != expected | string %}
+                      {% set ns.ok = false %}
+                    {% endif %}
                   {% endif %}
-                {% else %}
-                  {% if actual | string != expected | string %}
-                    {% set ns.ok = false %}
-                  {% endif %}
-                {% endif %}
-              {% endfor %}
+                {% endfor %}
+              {% endif %}
               {{ ns.ok }}
             {% endif %}
 
@@ -727,28 +766,27 @@ script:
                 {% if wait.trigger is none %}
                   false
                 {% else %}
+                  {% set data = state_attr(cache_entity, cache_key) or {} %}
                   {% set ns = namespace(ok=true) %}
-                  {% for field, expected in expected_answer_clean.items() %}
-                    {% set field_name = field | string | lower %}
-                    {% if field_name in ['d1', 'd2', 'd3', 'd4', 'd5'] %}
-                      {% set entity = 'binary_sensor.b2500_03_' ~ field_name %}
-                      {% set actual = 1 if is_state(entity, 'on') else 0 %}
-                    {% else %}
-                      {% set entity = 'sensor.b2500_03_' ~ field_name %}
-                      {% set actual = states(entity) %}
-                    {% endif %}
-                    {% if actual in ['unknown', 'unavailable', 'none', ''] %}
-                      {% set ns.ok = false %}
-                    {% elif expected is number %}
-                      {% if actual | float(999999999) != expected | float(999999998) %}
+                  {% if data is not mapping %}
+                    {% set ns.ok = false %}
+                  {% else %}
+                    {% for field, expected in expected_answer_clean.items() %}
+                      {% set field_name = field | string | lower %}
+                      {% set actual = data.get(field_name) %}
+                      {% if actual is none or (actual | string | lower) in ['unknown', 'unavailable', 'none', ''] %}
                         {% set ns.ok = false %}
+                      {% elif expected is number %}
+                        {% if actual | float(999999999) != expected | float(999999998) %}
+                          {% set ns.ok = false %}
+                        {% endif %}
+                      {% else %}
+                        {% if actual | string != expected | string %}
+                          {% set ns.ok = false %}
+                        {% endif %}
                       {% endif %}
-                    {% else %}
-                      {% if actual | string != expected | string %}
-                        {% set ns.ok = false %}
-                      {% endif %}
-                    {% endif %}
-                  {% endfor %}
+                    {% endfor %}
+                  {% endif %}
                   {{ ns.ok }}
                 {% endif %}
 
@@ -773,6 +811,8 @@ script:
     mode: queued
     max: 50
 
+    trace:
+      stored_traces: 0
     fields:
       payload:
         required: true
@@ -808,18 +848,28 @@ script:
               {{ {} }}
             {% endif %}
           wait_command: "{{ followup_payload_clean if followup_payload_clean != '' else payload_clean }}"
-          wait_topic: >-
+
+          # Das Repost-Dictionary ist die technische Wahrheit fuer die
+          # Bestaetigung. Die Discovery-Entitaeten koennen Werte fuer die UI
+          # uebersetzen (z. B. cs), werden vom Worker aber nicht mehr gelesen.
+          cache_entity: sensor.b2500_cache_04
+          cache_key: >-
             {% if wait_command == 'cd=01' %}
-              B2500PKG/B2500_04/CD01/last_updated
+              cd01
             {% elif wait_command == 'cd=13' %}
-              B2500PKG/B2500_04/CD13/last_updated
+              cd13
             {% elif wait_command == 'cd=15' %}
-              B2500PKG/B2500_04/CD15/last_updated
+              cd15
             {% elif wait_command == 'cd=16' %}
-              B2500PKG/B2500_04/CD16/last_updated
+              cd16
+            {% elif wait_command == 'cd=21' %}
+              cd21
+            {% elif wait_command == 'cd=24' %}
+              cd24
             {% else %}
-              B2500PKG/B2500_04/CD01/last_updated
+              cd01
             {% endif %}
+          wait_topic: "B2500PKG/B2500_04/{{ cache_key | upper }}/last_updated"
 
       - if:
           - condition: template
@@ -889,28 +939,27 @@ script:
             {% if wait.trigger is none %}
               false
             {% else %}
+              {% set data = state_attr(cache_entity, cache_key) or {} %}
               {% set ns = namespace(ok=true) %}
-              {% for field, expected in expected_answer_clean.items() %}
-                {% set field_name = field | string | lower %}
-                {% if field_name in ['d1', 'd2', 'd3', 'd4', 'd5'] %}
-                  {% set entity = 'binary_sensor.b2500_04_' ~ field_name %}
-                  {% set actual = 1 if is_state(entity, 'on') else 0 %}
-                {% else %}
-                  {% set entity = 'sensor.b2500_04_' ~ field_name %}
-                  {% set actual = states(entity) %}
-                {% endif %}
-                {% if actual in ['unknown', 'unavailable', 'none', ''] %}
-                  {% set ns.ok = false %}
-                {% elif expected is number %}
-                  {% if actual | float(999999999) != expected | float(999999998) %}
+              {% if data is not mapping %}
+                {% set ns.ok = false %}
+              {% else %}
+                {% for field, expected in expected_answer_clean.items() %}
+                  {% set field_name = field | string | lower %}
+                  {% set actual = data.get(field_name) %}
+                  {% if actual is none or (actual | string | lower) in ['unknown', 'unavailable', 'none', ''] %}
                     {% set ns.ok = false %}
+                  {% elif expected is number %}
+                    {% if actual | float(999999999) != expected | float(999999998) %}
+                      {% set ns.ok = false %}
+                    {% endif %}
+                  {% else %}
+                    {% if actual | string != expected | string %}
+                      {% set ns.ok = false %}
+                    {% endif %}
                   {% endif %}
-                {% else %}
-                  {% if actual | string != expected | string %}
-                    {% set ns.ok = false %}
-                  {% endif %}
-                {% endif %}
-              {% endfor %}
+                {% endfor %}
+              {% endif %}
               {{ ns.ok }}
             {% endif %}
 
@@ -959,28 +1008,27 @@ script:
                 {% if wait.trigger is none %}
                   false
                 {% else %}
+                  {% set data = state_attr(cache_entity, cache_key) or {} %}
                   {% set ns = namespace(ok=true) %}
-                  {% for field, expected in expected_answer_clean.items() %}
-                    {% set field_name = field | string | lower %}
-                    {% if field_name in ['d1', 'd2', 'd3', 'd4', 'd5'] %}
-                      {% set entity = 'binary_sensor.b2500_04_' ~ field_name %}
-                      {% set actual = 1 if is_state(entity, 'on') else 0 %}
-                    {% else %}
-                      {% set entity = 'sensor.b2500_04_' ~ field_name %}
-                      {% set actual = states(entity) %}
-                    {% endif %}
-                    {% if actual in ['unknown', 'unavailable', 'none', ''] %}
-                      {% set ns.ok = false %}
-                    {% elif expected is number %}
-                      {% if actual | float(999999999) != expected | float(999999998) %}
+                  {% if data is not mapping %}
+                    {% set ns.ok = false %}
+                  {% else %}
+                    {% for field, expected in expected_answer_clean.items() %}
+                      {% set field_name = field | string | lower %}
+                      {% set actual = data.get(field_name) %}
+                      {% if actual is none or (actual | string | lower) in ['unknown', 'unavailable', 'none', ''] %}
                         {% set ns.ok = false %}
+                      {% elif expected is number %}
+                        {% if actual | float(999999999) != expected | float(999999998) %}
+                          {% set ns.ok = false %}
+                        {% endif %}
+                      {% else %}
+                        {% if actual | string != expected | string %}
+                          {% set ns.ok = false %}
+                        {% endif %}
                       {% endif %}
-                    {% else %}
-                      {% if actual | string != expected | string %}
-                        {% set ns.ok = false %}
-                      {% endif %}
-                    {% endif %}
-                  {% endfor %}
+                    {% endfor %}
+                  {% endif %}
                   {{ ns.ok }}
                 {% endif %}
 
@@ -1005,6 +1053,8 @@ script:
     mode: queued
     max: 50
 
+    trace:
+      stored_traces: 0
     fields:
       payload:
         required: true
@@ -1040,18 +1090,28 @@ script:
               {{ {} }}
             {% endif %}
           wait_command: "{{ followup_payload_clean if followup_payload_clean != '' else payload_clean }}"
-          wait_topic: >-
+
+          # Das Repost-Dictionary ist die technische Wahrheit fuer die
+          # Bestaetigung. Die Discovery-Entitaeten koennen Werte fuer die UI
+          # uebersetzen (z. B. cs), werden vom Worker aber nicht mehr gelesen.
+          cache_entity: sensor.b2500_cache_05
+          cache_key: >-
             {% if wait_command == 'cd=01' %}
-              B2500PKG/B2500_05/CD01/last_updated
+              cd01
             {% elif wait_command == 'cd=13' %}
-              B2500PKG/B2500_05/CD13/last_updated
+              cd13
             {% elif wait_command == 'cd=15' %}
-              B2500PKG/B2500_05/CD15/last_updated
+              cd15
             {% elif wait_command == 'cd=16' %}
-              B2500PKG/B2500_05/CD16/last_updated
+              cd16
+            {% elif wait_command == 'cd=21' %}
+              cd21
+            {% elif wait_command == 'cd=24' %}
+              cd24
             {% else %}
-              B2500PKG/B2500_05/CD01/last_updated
+              cd01
             {% endif %}
+          wait_topic: "B2500PKG/B2500_05/{{ cache_key | upper }}/last_updated"
 
       - if:
           - condition: template
@@ -1121,28 +1181,27 @@ script:
             {% if wait.trigger is none %}
               false
             {% else %}
+              {% set data = state_attr(cache_entity, cache_key) or {} %}
               {% set ns = namespace(ok=true) %}
-              {% for field, expected in expected_answer_clean.items() %}
-                {% set field_name = field | string | lower %}
-                {% if field_name in ['d1', 'd2', 'd3', 'd4', 'd5'] %}
-                  {% set entity = 'binary_sensor.b2500_05_' ~ field_name %}
-                  {% set actual = 1 if is_state(entity, 'on') else 0 %}
-                {% else %}
-                  {% set entity = 'sensor.b2500_05_' ~ field_name %}
-                  {% set actual = states(entity) %}
-                {% endif %}
-                {% if actual in ['unknown', 'unavailable', 'none', ''] %}
-                  {% set ns.ok = false %}
-                {% elif expected is number %}
-                  {% if actual | float(999999999) != expected | float(999999998) %}
+              {% if data is not mapping %}
+                {% set ns.ok = false %}
+              {% else %}
+                {% for field, expected in expected_answer_clean.items() %}
+                  {% set field_name = field | string | lower %}
+                  {% set actual = data.get(field_name) %}
+                  {% if actual is none or (actual | string | lower) in ['unknown', 'unavailable', 'none', ''] %}
                     {% set ns.ok = false %}
+                  {% elif expected is number %}
+                    {% if actual | float(999999999) != expected | float(999999998) %}
+                      {% set ns.ok = false %}
+                    {% endif %}
+                  {% else %}
+                    {% if actual | string != expected | string %}
+                      {% set ns.ok = false %}
+                    {% endif %}
                   {% endif %}
-                {% else %}
-                  {% if actual | string != expected | string %}
-                    {% set ns.ok = false %}
-                  {% endif %}
-                {% endif %}
-              {% endfor %}
+                {% endfor %}
+              {% endif %}
               {{ ns.ok }}
             {% endif %}
 
@@ -1191,28 +1250,27 @@ script:
                 {% if wait.trigger is none %}
                   false
                 {% else %}
+                  {% set data = state_attr(cache_entity, cache_key) or {} %}
                   {% set ns = namespace(ok=true) %}
-                  {% for field, expected in expected_answer_clean.items() %}
-                    {% set field_name = field | string | lower %}
-                    {% if field_name in ['d1', 'd2', 'd3', 'd4', 'd5'] %}
-                      {% set entity = 'binary_sensor.b2500_05_' ~ field_name %}
-                      {% set actual = 1 if is_state(entity, 'on') else 0 %}
-                    {% else %}
-                      {% set entity = 'sensor.b2500_05_' ~ field_name %}
-                      {% set actual = states(entity) %}
-                    {% endif %}
-                    {% if actual in ['unknown', 'unavailable', 'none', ''] %}
-                      {% set ns.ok = false %}
-                    {% elif expected is number %}
-                      {% if actual | float(999999999) != expected | float(999999998) %}
+                  {% if data is not mapping %}
+                    {% set ns.ok = false %}
+                  {% else %}
+                    {% for field, expected in expected_answer_clean.items() %}
+                      {% set field_name = field | string | lower %}
+                      {% set actual = data.get(field_name) %}
+                      {% if actual is none or (actual | string | lower) in ['unknown', 'unavailable', 'none', ''] %}
                         {% set ns.ok = false %}
+                      {% elif expected is number %}
+                        {% if actual | float(999999999) != expected | float(999999998) %}
+                          {% set ns.ok = false %}
+                        {% endif %}
+                      {% else %}
+                        {% if actual | string != expected | string %}
+                          {% set ns.ok = false %}
+                        {% endif %}
                       {% endif %}
-                    {% else %}
-                      {% if actual | string != expected | string %}
-                        {% set ns.ok = false %}
-                      {% endif %}
-                    {% endif %}
-                  {% endfor %}
+                    {% endfor %}
+                  {% endif %}
                   {{ ns.ok }}
                 {% endif %}
 
@@ -1237,6 +1295,8 @@ script:
     mode: queued
     max: 50
 
+    trace:
+      stored_traces: 0
     fields:
       payload:
         required: true
@@ -1272,18 +1332,28 @@ script:
               {{ {} }}
             {% endif %}
           wait_command: "{{ followup_payload_clean if followup_payload_clean != '' else payload_clean }}"
-          wait_topic: >-
+
+          # Das Repost-Dictionary ist die technische Wahrheit fuer die
+          # Bestaetigung. Die Discovery-Entitaeten koennen Werte fuer die UI
+          # uebersetzen (z. B. cs), werden vom Worker aber nicht mehr gelesen.
+          cache_entity: sensor.b2500_cache_06
+          cache_key: >-
             {% if wait_command == 'cd=01' %}
-              B2500PKG/B2500_06/CD01/last_updated
+              cd01
             {% elif wait_command == 'cd=13' %}
-              B2500PKG/B2500_06/CD13/last_updated
+              cd13
             {% elif wait_command == 'cd=15' %}
-              B2500PKG/B2500_06/CD15/last_updated
+              cd15
             {% elif wait_command == 'cd=16' %}
-              B2500PKG/B2500_06/CD16/last_updated
+              cd16
+            {% elif wait_command == 'cd=21' %}
+              cd21
+            {% elif wait_command == 'cd=24' %}
+              cd24
             {% else %}
-              B2500PKG/B2500_06/CD01/last_updated
+              cd01
             {% endif %}
+          wait_topic: "B2500PKG/B2500_06/{{ cache_key | upper }}/last_updated"
 
       - if:
           - condition: template
@@ -1353,28 +1423,27 @@ script:
             {% if wait.trigger is none %}
               false
             {% else %}
+              {% set data = state_attr(cache_entity, cache_key) or {} %}
               {% set ns = namespace(ok=true) %}
-              {% for field, expected in expected_answer_clean.items() %}
-                {% set field_name = field | string | lower %}
-                {% if field_name in ['d1', 'd2', 'd3', 'd4', 'd5'] %}
-                  {% set entity = 'binary_sensor.b2500_06_' ~ field_name %}
-                  {% set actual = 1 if is_state(entity, 'on') else 0 %}
-                {% else %}
-                  {% set entity = 'sensor.b2500_06_' ~ field_name %}
-                  {% set actual = states(entity) %}
-                {% endif %}
-                {% if actual in ['unknown', 'unavailable', 'none', ''] %}
-                  {% set ns.ok = false %}
-                {% elif expected is number %}
-                  {% if actual | float(999999999) != expected | float(999999998) %}
+              {% if data is not mapping %}
+                {% set ns.ok = false %}
+              {% else %}
+                {% for field, expected in expected_answer_clean.items() %}
+                  {% set field_name = field | string | lower %}
+                  {% set actual = data.get(field_name) %}
+                  {% if actual is none or (actual | string | lower) in ['unknown', 'unavailable', 'none', ''] %}
                     {% set ns.ok = false %}
+                  {% elif expected is number %}
+                    {% if actual | float(999999999) != expected | float(999999998) %}
+                      {% set ns.ok = false %}
+                    {% endif %}
+                  {% else %}
+                    {% if actual | string != expected | string %}
+                      {% set ns.ok = false %}
+                    {% endif %}
                   {% endif %}
-                {% else %}
-                  {% if actual | string != expected | string %}
-                    {% set ns.ok = false %}
-                  {% endif %}
-                {% endif %}
-              {% endfor %}
+                {% endfor %}
+              {% endif %}
               {{ ns.ok }}
             {% endif %}
 
@@ -1423,28 +1492,27 @@ script:
                 {% if wait.trigger is none %}
                   false
                 {% else %}
+                  {% set data = state_attr(cache_entity, cache_key) or {} %}
                   {% set ns = namespace(ok=true) %}
-                  {% for field, expected in expected_answer_clean.items() %}
-                    {% set field_name = field | string | lower %}
-                    {% if field_name in ['d1', 'd2', 'd3', 'd4', 'd5'] %}
-                      {% set entity = 'binary_sensor.b2500_06_' ~ field_name %}
-                      {% set actual = 1 if is_state(entity, 'on') else 0 %}
-                    {% else %}
-                      {% set entity = 'sensor.b2500_06_' ~ field_name %}
-                      {% set actual = states(entity) %}
-                    {% endif %}
-                    {% if actual in ['unknown', 'unavailable', 'none', ''] %}
-                      {% set ns.ok = false %}
-                    {% elif expected is number %}
-                      {% if actual | float(999999999) != expected | float(999999998) %}
+                  {% if data is not mapping %}
+                    {% set ns.ok = false %}
+                  {% else %}
+                    {% for field, expected in expected_answer_clean.items() %}
+                      {% set field_name = field | string | lower %}
+                      {% set actual = data.get(field_name) %}
+                      {% if actual is none or (actual | string | lower) in ['unknown', 'unavailable', 'none', ''] %}
                         {% set ns.ok = false %}
+                      {% elif expected is number %}
+                        {% if actual | float(999999999) != expected | float(999999998) %}
+                          {% set ns.ok = false %}
+                        {% endif %}
+                      {% else %}
+                        {% if actual | string != expected | string %}
+                          {% set ns.ok = false %}
+                        {% endif %}
                       {% endif %}
-                    {% else %}
-                      {% if actual | string != expected | string %}
-                        {% set ns.ok = false %}
-                      {% endif %}
-                    {% endif %}
-                  {% endfor %}
+                    {% endfor %}
+                  {% endif %}
                   {{ ns.ok }}
                 {% endif %}
 
@@ -1469,6 +1537,8 @@ script:
     mode: queued
     max: 50
 
+    trace:
+      stored_traces: 0
     fields:
       payload:
         required: true
@@ -1504,18 +1574,28 @@ script:
               {{ {} }}
             {% endif %}
           wait_command: "{{ followup_payload_clean if followup_payload_clean != '' else payload_clean }}"
-          wait_topic: >-
+
+          # Das Repost-Dictionary ist die technische Wahrheit fuer die
+          # Bestaetigung. Die Discovery-Entitaeten koennen Werte fuer die UI
+          # uebersetzen (z. B. cs), werden vom Worker aber nicht mehr gelesen.
+          cache_entity: sensor.b2500_cache_07
+          cache_key: >-
             {% if wait_command == 'cd=01' %}
-              B2500PKG/B2500_07/CD01/last_updated
+              cd01
             {% elif wait_command == 'cd=13' %}
-              B2500PKG/B2500_07/CD13/last_updated
+              cd13
             {% elif wait_command == 'cd=15' %}
-              B2500PKG/B2500_07/CD15/last_updated
+              cd15
             {% elif wait_command == 'cd=16' %}
-              B2500PKG/B2500_07/CD16/last_updated
+              cd16
+            {% elif wait_command == 'cd=21' %}
+              cd21
+            {% elif wait_command == 'cd=24' %}
+              cd24
             {% else %}
-              B2500PKG/B2500_07/CD01/last_updated
+              cd01
             {% endif %}
+          wait_topic: "B2500PKG/B2500_07/{{ cache_key | upper }}/last_updated"
 
       - if:
           - condition: template
@@ -1585,28 +1665,27 @@ script:
             {% if wait.trigger is none %}
               false
             {% else %}
+              {% set data = state_attr(cache_entity, cache_key) or {} %}
               {% set ns = namespace(ok=true) %}
-              {% for field, expected in expected_answer_clean.items() %}
-                {% set field_name = field | string | lower %}
-                {% if field_name in ['d1', 'd2', 'd3', 'd4', 'd5'] %}
-                  {% set entity = 'binary_sensor.b2500_07_' ~ field_name %}
-                  {% set actual = 1 if is_state(entity, 'on') else 0 %}
-                {% else %}
-                  {% set entity = 'sensor.b2500_07_' ~ field_name %}
-                  {% set actual = states(entity) %}
-                {% endif %}
-                {% if actual in ['unknown', 'unavailable', 'none', ''] %}
-                  {% set ns.ok = false %}
-                {% elif expected is number %}
-                  {% if actual | float(999999999) != expected | float(999999998) %}
+              {% if data is not mapping %}
+                {% set ns.ok = false %}
+              {% else %}
+                {% for field, expected in expected_answer_clean.items() %}
+                  {% set field_name = field | string | lower %}
+                  {% set actual = data.get(field_name) %}
+                  {% if actual is none or (actual | string | lower) in ['unknown', 'unavailable', 'none', ''] %}
                     {% set ns.ok = false %}
+                  {% elif expected is number %}
+                    {% if actual | float(999999999) != expected | float(999999998) %}
+                      {% set ns.ok = false %}
+                    {% endif %}
+                  {% else %}
+                    {% if actual | string != expected | string %}
+                      {% set ns.ok = false %}
+                    {% endif %}
                   {% endif %}
-                {% else %}
-                  {% if actual | string != expected | string %}
-                    {% set ns.ok = false %}
-                  {% endif %}
-                {% endif %}
-              {% endfor %}
+                {% endfor %}
+              {% endif %}
               {{ ns.ok }}
             {% endif %}
 
@@ -1655,28 +1734,27 @@ script:
                 {% if wait.trigger is none %}
                   false
                 {% else %}
+                  {% set data = state_attr(cache_entity, cache_key) or {} %}
                   {% set ns = namespace(ok=true) %}
-                  {% for field, expected in expected_answer_clean.items() %}
-                    {% set field_name = field | string | lower %}
-                    {% if field_name in ['d1', 'd2', 'd3', 'd4', 'd5'] %}
-                      {% set entity = 'binary_sensor.b2500_07_' ~ field_name %}
-                      {% set actual = 1 if is_state(entity, 'on') else 0 %}
-                    {% else %}
-                      {% set entity = 'sensor.b2500_07_' ~ field_name %}
-                      {% set actual = states(entity) %}
-                    {% endif %}
-                    {% if actual in ['unknown', 'unavailable', 'none', ''] %}
-                      {% set ns.ok = false %}
-                    {% elif expected is number %}
-                      {% if actual | float(999999999) != expected | float(999999998) %}
+                  {% if data is not mapping %}
+                    {% set ns.ok = false %}
+                  {% else %}
+                    {% for field, expected in expected_answer_clean.items() %}
+                      {% set field_name = field | string | lower %}
+                      {% set actual = data.get(field_name) %}
+                      {% if actual is none or (actual | string | lower) in ['unknown', 'unavailable', 'none', ''] %}
                         {% set ns.ok = false %}
+                      {% elif expected is number %}
+                        {% if actual | float(999999999) != expected | float(999999998) %}
+                          {% set ns.ok = false %}
+                        {% endif %}
+                      {% else %}
+                        {% if actual | string != expected | string %}
+                          {% set ns.ok = false %}
+                        {% endif %}
                       {% endif %}
-                    {% else %}
-                      {% if actual | string != expected | string %}
-                        {% set ns.ok = false %}
-                      {% endif %}
-                    {% endif %}
-                  {% endfor %}
+                    {% endfor %}
+                  {% endif %}
                   {{ ns.ok }}
                 {% endif %}
 
@@ -1701,6 +1779,8 @@ script:
     mode: queued
     max: 50
 
+    trace:
+      stored_traces: 0
     fields:
       payload:
         required: true
@@ -1736,18 +1816,28 @@ script:
               {{ {} }}
             {% endif %}
           wait_command: "{{ followup_payload_clean if followup_payload_clean != '' else payload_clean }}"
-          wait_topic: >-
+
+          # Das Repost-Dictionary ist die technische Wahrheit fuer die
+          # Bestaetigung. Die Discovery-Entitaeten koennen Werte fuer die UI
+          # uebersetzen (z. B. cs), werden vom Worker aber nicht mehr gelesen.
+          cache_entity: sensor.b2500_cache_08
+          cache_key: >-
             {% if wait_command == 'cd=01' %}
-              B2500PKG/B2500_08/CD01/last_updated
+              cd01
             {% elif wait_command == 'cd=13' %}
-              B2500PKG/B2500_08/CD13/last_updated
+              cd13
             {% elif wait_command == 'cd=15' %}
-              B2500PKG/B2500_08/CD15/last_updated
+              cd15
             {% elif wait_command == 'cd=16' %}
-              B2500PKG/B2500_08/CD16/last_updated
+              cd16
+            {% elif wait_command == 'cd=21' %}
+              cd21
+            {% elif wait_command == 'cd=24' %}
+              cd24
             {% else %}
-              B2500PKG/B2500_08/CD01/last_updated
+              cd01
             {% endif %}
+          wait_topic: "B2500PKG/B2500_08/{{ cache_key | upper }}/last_updated"
 
       - if:
           - condition: template
@@ -1817,28 +1907,27 @@ script:
             {% if wait.trigger is none %}
               false
             {% else %}
+              {% set data = state_attr(cache_entity, cache_key) or {} %}
               {% set ns = namespace(ok=true) %}
-              {% for field, expected in expected_answer_clean.items() %}
-                {% set field_name = field | string | lower %}
-                {% if field_name in ['d1', 'd2', 'd3', 'd4', 'd5'] %}
-                  {% set entity = 'binary_sensor.b2500_08_' ~ field_name %}
-                  {% set actual = 1 if is_state(entity, 'on') else 0 %}
-                {% else %}
-                  {% set entity = 'sensor.b2500_08_' ~ field_name %}
-                  {% set actual = states(entity) %}
-                {% endif %}
-                {% if actual in ['unknown', 'unavailable', 'none', ''] %}
-                  {% set ns.ok = false %}
-                {% elif expected is number %}
-                  {% if actual | float(999999999) != expected | float(999999998) %}
+              {% if data is not mapping %}
+                {% set ns.ok = false %}
+              {% else %}
+                {% for field, expected in expected_answer_clean.items() %}
+                  {% set field_name = field | string | lower %}
+                  {% set actual = data.get(field_name) %}
+                  {% if actual is none or (actual | string | lower) in ['unknown', 'unavailable', 'none', ''] %}
                     {% set ns.ok = false %}
+                  {% elif expected is number %}
+                    {% if actual | float(999999999) != expected | float(999999998) %}
+                      {% set ns.ok = false %}
+                    {% endif %}
+                  {% else %}
+                    {% if actual | string != expected | string %}
+                      {% set ns.ok = false %}
+                    {% endif %}
                   {% endif %}
-                {% else %}
-                  {% if actual | string != expected | string %}
-                    {% set ns.ok = false %}
-                  {% endif %}
-                {% endif %}
-              {% endfor %}
+                {% endfor %}
+              {% endif %}
               {{ ns.ok }}
             {% endif %}
 
@@ -1887,28 +1976,27 @@ script:
                 {% if wait.trigger is none %}
                   false
                 {% else %}
+                  {% set data = state_attr(cache_entity, cache_key) or {} %}
                   {% set ns = namespace(ok=true) %}
-                  {% for field, expected in expected_answer_clean.items() %}
-                    {% set field_name = field | string | lower %}
-                    {% if field_name in ['d1', 'd2', 'd3', 'd4', 'd5'] %}
-                      {% set entity = 'binary_sensor.b2500_08_' ~ field_name %}
-                      {% set actual = 1 if is_state(entity, 'on') else 0 %}
-                    {% else %}
-                      {% set entity = 'sensor.b2500_08_' ~ field_name %}
-                      {% set actual = states(entity) %}
-                    {% endif %}
-                    {% if actual in ['unknown', 'unavailable', 'none', ''] %}
-                      {% set ns.ok = false %}
-                    {% elif expected is number %}
-                      {% if actual | float(999999999) != expected | float(999999998) %}
+                  {% if data is not mapping %}
+                    {% set ns.ok = false %}
+                  {% else %}
+                    {% for field, expected in expected_answer_clean.items() %}
+                      {% set field_name = field | string | lower %}
+                      {% set actual = data.get(field_name) %}
+                      {% if actual is none or (actual | string | lower) in ['unknown', 'unavailable', 'none', ''] %}
                         {% set ns.ok = false %}
+                      {% elif expected is number %}
+                        {% if actual | float(999999999) != expected | float(999999998) %}
+                          {% set ns.ok = false %}
+                        {% endif %}
+                      {% else %}
+                        {% if actual | string != expected | string %}
+                          {% set ns.ok = false %}
+                        {% endif %}
                       {% endif %}
-                    {% else %}
-                      {% if actual | string != expected | string %}
-                        {% set ns.ok = false %}
-                      {% endif %}
-                    {% endif %}
-                  {% endfor %}
+                    {% endfor %}
+                  {% endif %}
                   {{ ns.ok }}
                 {% endif %}
 
@@ -1933,6 +2021,8 @@ script:
     mode: queued
     max: 50
 
+    trace:
+      stored_traces: 0
     fields:
       payload:
         required: true
@@ -1968,18 +2058,28 @@ script:
               {{ {} }}
             {% endif %}
           wait_command: "{{ followup_payload_clean if followup_payload_clean != '' else payload_clean }}"
-          wait_topic: >-
+
+          # Das Repost-Dictionary ist die technische Wahrheit fuer die
+          # Bestaetigung. Die Discovery-Entitaeten koennen Werte fuer die UI
+          # uebersetzen (z. B. cs), werden vom Worker aber nicht mehr gelesen.
+          cache_entity: sensor.b2500_cache_09
+          cache_key: >-
             {% if wait_command == 'cd=01' %}
-              B2500PKG/B2500_09/CD01/last_updated
+              cd01
             {% elif wait_command == 'cd=13' %}
-              B2500PKG/B2500_09/CD13/last_updated
+              cd13
             {% elif wait_command == 'cd=15' %}
-              B2500PKG/B2500_09/CD15/last_updated
+              cd15
             {% elif wait_command == 'cd=16' %}
-              B2500PKG/B2500_09/CD16/last_updated
+              cd16
+            {% elif wait_command == 'cd=21' %}
+              cd21
+            {% elif wait_command == 'cd=24' %}
+              cd24
             {% else %}
-              B2500PKG/B2500_09/CD01/last_updated
+              cd01
             {% endif %}
+          wait_topic: "B2500PKG/B2500_09/{{ cache_key | upper }}/last_updated"
 
       - if:
           - condition: template
@@ -2049,28 +2149,27 @@ script:
             {% if wait.trigger is none %}
               false
             {% else %}
+              {% set data = state_attr(cache_entity, cache_key) or {} %}
               {% set ns = namespace(ok=true) %}
-              {% for field, expected in expected_answer_clean.items() %}
-                {% set field_name = field | string | lower %}
-                {% if field_name in ['d1', 'd2', 'd3', 'd4', 'd5'] %}
-                  {% set entity = 'binary_sensor.b2500_09_' ~ field_name %}
-                  {% set actual = 1 if is_state(entity, 'on') else 0 %}
-                {% else %}
-                  {% set entity = 'sensor.b2500_09_' ~ field_name %}
-                  {% set actual = states(entity) %}
-                {% endif %}
-                {% if actual in ['unknown', 'unavailable', 'none', ''] %}
-                  {% set ns.ok = false %}
-                {% elif expected is number %}
-                  {% if actual | float(999999999) != expected | float(999999998) %}
+              {% if data is not mapping %}
+                {% set ns.ok = false %}
+              {% else %}
+                {% for field, expected in expected_answer_clean.items() %}
+                  {% set field_name = field | string | lower %}
+                  {% set actual = data.get(field_name) %}
+                  {% if actual is none or (actual | string | lower) in ['unknown', 'unavailable', 'none', ''] %}
                     {% set ns.ok = false %}
+                  {% elif expected is number %}
+                    {% if actual | float(999999999) != expected | float(999999998) %}
+                      {% set ns.ok = false %}
+                    {% endif %}
+                  {% else %}
+                    {% if actual | string != expected | string %}
+                      {% set ns.ok = false %}
+                    {% endif %}
                   {% endif %}
-                {% else %}
-                  {% if actual | string != expected | string %}
-                    {% set ns.ok = false %}
-                  {% endif %}
-                {% endif %}
-              {% endfor %}
+                {% endfor %}
+              {% endif %}
               {{ ns.ok }}
             {% endif %}
 
@@ -2119,28 +2218,27 @@ script:
                 {% if wait.trigger is none %}
                   false
                 {% else %}
+                  {% set data = state_attr(cache_entity, cache_key) or {} %}
                   {% set ns = namespace(ok=true) %}
-                  {% for field, expected in expected_answer_clean.items() %}
-                    {% set field_name = field | string | lower %}
-                    {% if field_name in ['d1', 'd2', 'd3', 'd4', 'd5'] %}
-                      {% set entity = 'binary_sensor.b2500_09_' ~ field_name %}
-                      {% set actual = 1 if is_state(entity, 'on') else 0 %}
-                    {% else %}
-                      {% set entity = 'sensor.b2500_09_' ~ field_name %}
-                      {% set actual = states(entity) %}
-                    {% endif %}
-                    {% if actual in ['unknown', 'unavailable', 'none', ''] %}
-                      {% set ns.ok = false %}
-                    {% elif expected is number %}
-                      {% if actual | float(999999999) != expected | float(999999998) %}
+                  {% if data is not mapping %}
+                    {% set ns.ok = false %}
+                  {% else %}
+                    {% for field, expected in expected_answer_clean.items() %}
+                      {% set field_name = field | string | lower %}
+                      {% set actual = data.get(field_name) %}
+                      {% if actual is none or (actual | string | lower) in ['unknown', 'unavailable', 'none', ''] %}
                         {% set ns.ok = false %}
+                      {% elif expected is number %}
+                        {% if actual | float(999999999) != expected | float(999999998) %}
+                          {% set ns.ok = false %}
+                        {% endif %}
+                      {% else %}
+                        {% if actual | string != expected | string %}
+                          {% set ns.ok = false %}
+                        {% endif %}
                       {% endif %}
-                    {% else %}
-                      {% if actual | string != expected | string %}
-                        {% set ns.ok = false %}
-                      {% endif %}
-                    {% endif %}
-                  {% endfor %}
+                    {% endfor %}
+                  {% endif %}
                   {{ ns.ok }}
                 {% endif %}
 
@@ -2168,6 +2266,8 @@ script:
     mode: parallel
     max: 9
 
+    trace:
+      stored_traces: 0
     fields:
       worker:
         name: Worker

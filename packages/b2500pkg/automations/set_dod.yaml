@@ -1,38 +1,37 @@
 script:
   b2500pkg_set_dod:
     alias: B2500PKG_Set_DOD
-    description: "Setzt die Entladetiefe (DOD) für einen oder alle B2500-Speicher. Leere Aktionsfelder verwenden die vorhandenen Input-Helper."
-
+    description: Setzt die Entladetiefe (DOD) für einen oder alle B2500-Speicher. Leere Aktionsfelder verwenden die vorhandenen
+      Input-Helper.
     fields:
       speicher:
         name: Speicher
         description: Optional. Wenn leer, wird input_select.speicherauswahl verwendet.
         required: false
-        example: "b2500_01"
+        example: b2500_01
         selector:
           select:
             options:
-              - label: "B01"
-                value: "b2500_01"
-              - label: "B02"
-                value: "b2500_02"
-              - label: "B03"
-                value: "b2500_03"
-              - label: "B04"
-                value: "b2500_04"
-              - label: "B05"
-                value: "b2500_05"
-              - label: "B06"
-                value: "b2500_06"
-              - label: "B07"
-                value: "b2500_07"
-              - label: "B08"
-                value: "b2500_08"
-              - label: "B09"
-                value: "b2500_09"
-              - label: "Alle Speicher"
-                value: "Alle_Speicher"
-
+            - label: B01
+              value: b2500_01
+            - label: B02
+              value: b2500_02
+            - label: B03
+              value: b2500_03
+            - label: B04
+              value: b2500_04
+            - label: B05
+              value: b2500_05
+            - label: B06
+              value: b2500_06
+            - label: B07
+              value: b2500_07
+            - label: B08
+              value: b2500_08
+            - label: B09
+              value: b2500_09
+            - label: Alle Speicher
+              value: Alle_Speicher
       dod:
         name: DOD
         description: Optional. Wenn leer, wird input_number.b2500_dod verwendet.
@@ -43,51 +42,102 @@ script:
             min: 0
             max: 100
             step: 1
-            unit_of_measurement: "%"
+            unit_of_measurement: '%'
             mode: box
-
     sequence:
-      - variables:
-          speicher_auswahl: >-
-            {% if speicher is defined and speicher | string | trim != '' %}
-              {{ speicher }}
-            {% else %}
-              {{ states('input_select.speicherauswahl') }}
-            {% endif %}
-
-          dod_value: >-
-            {% if dod is defined and dod | string | trim != '' %}
-              {{ dod | int }}
-            {% else %}
-              {{ states('input_number.b2500_dod') | int }}
-            {% endif %}
-
-          dod_payload: "cd=19,md={{ dod_value | int }}"
-          all_speicher: "{{ states('input_text.b2500_all') | from_json }}"
-
-          targets: >-
-            {% if speicher_auswahl == 'Alle_Speicher' %}
-              {{ all_speicher }}
-            {% else %}
-              {{ [speicher_auswahl] }}
-            {% endif %}
-
-      - repeat:
-          for_each: "{{ targets }}"
-          sequence:
-            - action: script.turn_on
-              target:
-                entity_id: "script.{{ repeat.item }}_worker"
-              data:
-                variables:
-                  payload: "{{ dod_payload }}"
-                  followup_payload: "cd=01"
-                  no_check: false
-                  expected_answer: >-
-                    {{ {'do': dod_value | int} }}
-
-            - delay:
-                seconds: 1
-
+    - variables:
+        speicher_auswahl: "{% if speicher is defined and speicher | string | trim != '' %}\n  {{ speicher | string | trim\
+          \ }}\n{% else %}\n  {{ states('input_select.speicherauswahl') | string | trim }}\n{% endif %}"
+        dod_raw: "{% if dod is defined and dod | string | trim != '' %}\n  {{ dod | string | trim }}\n{% else %}\n  {{ states('input_number.b2500_dod')\
+          \ | string | trim }}\n{% endif %}"
+        dod_value: "{% if dod_raw not in ['unknown', 'unavailable', 'none', 'None', ''] %}\n  {{ dod_raw | int(-1) }}\n{%\
+          \ else %}\n  -1\n{% endif %}"
+        dod_payload: cd=19,md={{ dod_value | int(-1) }}
+        allowed_speicher:
+        - b2500_01
+        - b2500_02
+        - b2500_03
+        - b2500_04
+        - b2500_05
+        - b2500_06
+        - b2500_07
+        - b2500_08
+        - b2500_09
+        - Alle_Speicher
+        all_speicher: "{% set raw = states('input_text.b2500_all') %}\n{% if raw not in ['unknown', 'unavailable', '', 'none',\
+          \ 'None'] %}\n  {{ raw | from_json([]) }}\n{% else %}\n  {{ [] }}\n{% endif %}"
+        targets: "{% if speicher_auswahl == 'Alle_Speicher' %}\n  {{ all_speicher }}\n{% else %}\n  {{ [speicher_auswahl]\
+          \ }}\n{% endif %}"
+    - if:
+      - condition: template
+        value_template: "{{\n  speicher_auswahl not in allowed_speicher\n  or dod_value | int(-1) < 0\n  or dod_value | int(-1)\
+          \ > 100\n  or targets | count == 0\n}}"
+      then:
+      - event: b2500pkg_status
+        event_data:
+          status: FEHLER
+          titel: B2500PKG DOD
+          untertitel: '{{ speicher_auswahl }}'
+          meldung: Ungültige Eingabe
+          details: 'Speicher: {{ speicher_auswahl }} | DOD: {{ dod_raw }}'
+          rueckmeldung: Erwartet wird ein DOD-Wert von 0 bis 100.
+          adresse: script.b2500pkg_set_dod
+          quelle: script.b2500pkg_set_dod
+      - stop: Ungültige Speicher- oder DOD-Eingabe.
+    - repeat:
+        for_each: '{{ targets }}'
+        sequence:
+        - variables:
+            current_storage: '{{ repeat.item }}'
+            worker_entity: script.{{ repeat.item }}_worker
+            worker_status_entity: input_number.b2500_{{ repeat.item[-2:] }}_status
+        - event: b2500pkg_status
+          event_data:
+            status: LAEUFT
+            titel: B2500PKG DOD
+            untertitel: '{{ current_storage | upper | replace(''B2500_'', ''B'') }} – {{ dod_value | int }} %'
+            meldung: DOD wird gesetzt
+            details: Sende {{ dod_payload }}
+            rueckmeldung: Erwartet do={{ dod_value | int }}
+            adresse: '{{ worker_entity }}'
+            quelle: script.b2500pkg_set_dod
+        - action: '{{ worker_entity }}'
+          data:
+            payload: '{{ dod_payload }}'
+            followup_payload: cd=01
+            no_check: false
+            expected_answer:
+              do: '{{ dod_value | int }}'
+        - variables:
+            worker_status: '{{ states(worker_status_entity) | int(0) }}'
+        - if:
+          - condition: template
+            value_template: '{{ worker_status == 3 }}'
+          then:
+          - event: b2500pkg_status
+            event_data:
+              status: ERFOLGREICH
+              titel: B2500PKG DOD
+              untertitel: '{{ current_storage | upper | replace(''B2500_'', ''B'') }} – {{ dod_value | int }} %'
+              meldung: DOD bestätigt
+              details: do={{ dod_value | int }} wurde bestätigt
+              rueckmeldung: Worker-Status {{ worker_status }}
+              adresse: '{{ worker_status_entity }}'
+              quelle: script.b2500pkg_set_dod
+          else:
+          - event: b2500pkg_status
+            event_data:
+              status: FEHLER
+              titel: B2500PKG DOD
+              untertitel: '{{ current_storage | upper | replace(''B2500_'', ''B'') }} – {{ dod_value | int }} %'
+              meldung: DOD konnte nicht bestätigt werden
+              details: Erwartet do={{ dod_value | int }}
+              rueckmeldung: Worker-Status {{ worker_status }}
+              adresse: '{{ worker_status_entity }}'
+              quelle: script.b2500pkg_set_dod
+        - delay:
+            seconds: 1
     mode: queued
     max: 10
+    trace:
+      stored_traces: 0

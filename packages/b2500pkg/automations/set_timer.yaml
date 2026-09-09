@@ -1,62 +1,59 @@
 script:
   b2500pkg_set_timer:
     alias: B2500PKG_Set_Timer
-    description: >
-      Setzt Status, Startzeit, Endzeit und/oder Leistung eines Timers oder aller
-      Timer. Nicht übergebene Timerwerte werden aus den aktuellen Sensoren
-      übernommen. Speicher und Timerslot müssen beim Aufruf angegeben werden.
+    description: 'Setzt Status, Startzeit, Endzeit und/oder Leistung eines Timers oder aller Timer. Nicht übergebene Timerwerte werden aus den aktuellen
+      Sensoren übernommen. Speicher und Timerslot müssen beim Aufruf angegeben werden.
 
+      '
     fields:
       speicher:
         name: Speicher
         description: Muss beim Aufruf übergeben werden.
         required: true
-        example: "b2500_01"
+        example: b2500_01
         selector:
           select:
             options:
-              - label: "B01"
-                value: "b2500_01"
-              - label: "B02"
-                value: "b2500_02"
-              - label: "B03"
-                value: "b2500_03"
-              - label: "B04"
-                value: "b2500_04"
-              - label: "B05"
-                value: "b2500_05"
-              - label: "B06"
-                value: "b2500_06"
-              - label: "B07"
-                value: "b2500_07"
-              - label: "B08"
-                value: "b2500_08"
-              - label: "B09"
-                value: "b2500_09"
-              - label: "Alle Speicher"
-                value: "Alle_Speicher"
-
+            - label: B01
+              value: b2500_01
+            - label: B02
+              value: b2500_02
+            - label: B03
+              value: b2500_03
+            - label: B04
+              value: b2500_04
+            - label: B05
+              value: b2500_05
+            - label: B06
+              value: b2500_06
+            - label: B07
+              value: b2500_07
+            - label: B08
+              value: b2500_08
+            - label: B09
+              value: b2500_09
+            - label: Alle Speicher
+              value: Alle_Speicher
       timerslot:
         name: Timer
         description: Muss beim Aufruf übergeben werden.
         required: true
-        example: "2"
+        example: '2'
         selector:
           select:
             options:
-              - label: "Timer 1"
-                value: "1"
-              - label: "Timer 2"
-                value: "2"
-              - label: "Timer 3"
-                value: "3"
-              - label: "Timer 4"
-                value: "4"
-              - label: "Timer 5"
-                value: "5"
-              - label: "Alle Timer"
-                value: "Alle_Timer"
-
+            - label: Timer 1
+              value: '1'
+            - label: Timer 2
+              value: '2'
+            - label: Timer 3
+              value: '3'
+            - label: Timer 4
+              value: '4'
+            - label: Timer 5
+              value: '5'
+            - label: Alle Timer
+              value: Alle_Timer
       timer_aktiv:
         name: Timerstatus
         description: Optional. Nicht übergeben bedeutet aktuellen Sensorwert beibehalten.
@@ -64,27 +61,24 @@ script:
         selector:
           select:
             options:
-              - label: "Aktiv"
-                value: "1"
-              - label: "Deaktiviert"
-                value: "0"
-
+            - label: Aktiv
+              value: '1'
+            - label: Deaktiviert
+              value: '0'
       startzeit:
         name: Startzeit
         description: Optional. Nicht übergeben bedeutet aktuellen Sensorwert beibehalten.
         required: false
-        example: "03:05"
+        example: 03:05
         selector:
-          time:
-
+          time: null
       endzeit:
         name: Endzeit
         description: Optional. Nicht übergeben bedeutet aktuellen Sensorwert beibehalten.
         required: false
-        example: "23:59"
+        example: '23:59'
         selector:
-          time:
-
+          time: null
       leistung:
         name: Leistung
         description: Optional. Nicht übergeben bedeutet aktuellen Sensorwert beibehalten.
@@ -92,676 +86,626 @@ script:
         example: 300
         selector:
           number:
-            min: 0
+            min: 40
             max: 800
             step: 1
             unit_of_measurement: W
             mode: box
-
     sequence:
-      - variables:
-          speicher_auswahl: >-
-            {{ speicher | default('', true) | string | trim }}
-          timerslot_auswahl: >-
-            {{ timerslot | default('', true) | string | trim }}
-          erlaubte_speicher:
-            - "b2500_01"
-            - "b2500_02"
-            - "b2500_03"
-            - "b2500_04"
-            - "b2500_05"
-            - "b2500_06"
-            - "b2500_07"
-            - "b2500_08"
-            - "b2500_09"
-            - "Alle_Speicher"
-
-      - if:
-          - condition: template
-            value_template: "{{ speicher_auswahl == '' }}"
-        then:
-          - variables:
-              response:
-                success: false
-                code: "MISSING_STORAGE"
-                message: "Abbruch: Pflichtfeld 'speicher' wurde nicht übergeben."
-          - stop: "Pflichtfeld 'speicher' fehlt."
-            response_variable: response
-
-      - if:
-          - condition: template
-            value_template: "{{ speicher_auswahl not in erlaubte_speicher }}"
-        then:
-          - variables:
-              response:
-                success: false
-                code: "INVALID_STORAGE"
-                message: >-
-                  Abbruch: Speicher '{{ speicher_auswahl }}' ist ungültig.
-                  Erlaubt sind b2500_01 bis b2500_09 sowie Alle_Speicher.
-          - stop: "Ungültiger Speicher."
-            response_variable: response
-
-      - if:
-          - condition: template
-            value_template: "{{ timerslot_auswahl == '' }}"
-        then:
-          - variables:
-              response:
-                success: false
-                code: "MISSING_TIMERSLOT"
-                message: "Abbruch: Pflichtfeld 'timerslot' wurde nicht übergeben."
-          - stop: "Pflichtfeld 'timerslot' fehlt."
-            response_variable: response
-
-      - if:
-          - condition: template
-            value_template: >-
-              {{ (timerslot_auswahl | string | trim)
-                 not in ['1', '2', '3', '4', '5', 'Alle_Timer'] }}
-        then:
-          - variables:
-              response:
-                success: false
-                code: "INVALID_TIMERSLOT"
-                message: >-
-                  Abbruch: Timerslot '{{ timerslot_auswahl }}' ist ungültig.
-                  Erlaubt sind 1 bis 5 sowie Alle_Timer.
-          - stop: "Ungültiger Timerslot."
-            response_variable: response
-
-      - variables:
-
-          set_status: >-
-            {{ timer_aktiv is defined and timer_aktiv | string | trim != '' }}
-          set_start: >-
-            {{ startzeit is defined and startzeit | string | trim != '' }}
-          set_ende: >-
-            {{ endzeit is defined and endzeit | string | trim != '' }}
-          set_leistung: >-
-            {{ leistung is defined and leistung | string | trim != '' }}
-
-          status_value: >-
-            {{ timer_aktiv | int if set_status else 0 }}
-
-          start_roh: >-
-            {{ startzeit | string | trim if set_start else '' }}
-          ende_roh: >-
-            {{ endzeit | string | trim if set_ende else '' }}
-
-          start_format_ok: >-
-            {{ not set_start or
-               (start_roh | regex_match('^\\d{1,2}:\\d{1,2}(:\\d{1,2})?$')) }}
-          ende_format_ok: >-
-            {{ not set_ende or
-               (ende_roh | regex_match('^\\d{1,2}:\\d{1,2}(:\\d{1,2})?$')) }}
-
-          start_stunde: >-
-            {{ start_roh.split(':')[0] | int if start_format_ok and set_start else 0 }}
-          start_minute: >-
-            {{ start_roh.split(':')[1] | int if start_format_ok and set_start else 0 }}
-          start_sekunde: >-
-            {{ start_roh.split(':')[2] | int
-               if start_format_ok and set_start and start_roh.split(':') | count == 3
-               else 0 }}
-
-          ende_stunde: >-
-            {{ ende_roh.split(':')[0] | int if ende_format_ok and set_ende else 0 }}
-          ende_minute: >-
-            {{ ende_roh.split(':')[1] | int if ende_format_ok and set_ende else 0 }}
-          ende_sekunde: >-
-            {{ ende_roh.split(':')[2] | int
-               if ende_format_ok and set_ende and ende_roh.split(':') | count == 3
-               else 0 }}
-
-          start_gueltig: >-
-            {{ not set_start or
-               (start_format_ok and
-                0 <= start_stunde <= 23 and
-                0 <= start_minute <= 59) }}
-
-          ende_gueltig: >-
-            {{ not set_ende or
-               (ende_format_ok and
-                0 <= ende_stunde <= 23 and
-                0 <= ende_minute <= 59) }}
-
-          start_value: >-
-            {{ start_stunde ~ ':' ~ start_minute if set_start and start_gueltig else '' }}
-          ende_value: >-
-            {{ ende_stunde ~ ':' ~ ende_minute if set_ende and ende_gueltig else '' }}
-
-          leistung_value: >-
-            {{ leistung | int if set_leistung else 0 }}
-
-          status_gueltig: >-
-            {{ not set_status or (timer_aktiv | string | trim) in ['0', '1'] }}
-          leistung_gueltig: >-
-            {{ not set_leistung or
-               ((leistung | string | trim) | regex_match('^\\d+$') and
-                0 <= (leistung | int) <= 800) }}
-
-          all_speicher: "{{ states('input_text.b2500_all') | from_json }}"
-
-          targets: >-
-            {% if speicher_auswahl == 'Alle_Speicher' %}
-              {{ all_speicher }}
-            {% else %}
-              {{ [speicher_auswahl] }}
-            {% endif %}
-
-          slot_all: >-
-            {{ (timerslot_auswahl | string | trim) == 'Alle_Timer' }}
-          slot_nummer: >-
-            {{ 0 if slot_all else (timerslot_auswahl | string | trim) | int }}
-
-      - if:
-          - condition: template
-            value_template: "{{ set_status and not status_gueltig }}"
-        then:
-          - variables:
-              response:
-                success: false
-                code: "INVALID_STATUS"
-                message: >-
-                  Abbruch: Timerstatus '{{ timer_aktiv }}' ist ungültig.
-                  Erlaubt sind 0 (deaktiviert) und 1 (aktiv).
-          - stop: "Ungültiger Timerstatus."
-            response_variable: response
-
-      - if:
-          - condition: template
-            value_template: "{{ set_start and not start_gueltig }}"
-        then:
-          - variables:
-              response:
-                success: false
-                code: "INVALID_START_TIME"
-                message: >-
-                  Abbruch: Startzeit '{{ start_roh }}' ist ungültig.
-                  Erlaubt sind 0:0 bis 23:59; Sekunden müssen 00 sein.
-          - stop: "Ungültige Startzeit."
-            response_variable: response
-
-      - if:
-          - condition: template
-            value_template: "{{ set_ende and not ende_gueltig }}"
-        then:
-          - variables:
-              response:
-                success: false
-                code: "INVALID_END_TIME"
-                message: >-
-                  Abbruch: Endzeit '{{ ende_roh }}' ist ungültig.
-                  Erlaubt sind 0:0 bis 23:59; Sekunden müssen 00 sein.
-          - stop: "Ungültige Endzeit."
-            response_variable: response
-
-      - if:
-          - condition: template
-            value_template: "{{ set_leistung and not leistung_gueltig }}"
-        then:
-          - variables:
-              response:
-                success: false
-                code: "INVALID_POWER"
-                message: >-
-                  Abbruch: Leistung '{{ leistung }}' ist ungültig.
-                  Erlaubt sind ganzzahlige Werte von 0 bis 800 W.
-          - stop: "Ungültige Leistung."
-            response_variable: response
-
-      - if:
-          - condition: template
-            value_template: >-
-              {{ not (set_status or set_start or set_ende or set_leistung) }}
-        then:
-          - variables:
-              response:
-                success: false
-                code: "NO_CHANGE_PARAMETER"
-                message: >-
-                  Abbruch: Es wurde kein zu ändernder Timerwert übergeben.
-                  Übergib mindestens timer_aktiv, startzeit, endzeit oder leistung.
-          - stop: "Kein Änderungsparameter übergeben."
-            response_variable: response
-
-      - repeat:
-          for_each: "{{ targets }}"
-          sequence:
-            - variables:
-                num: "{{ repeat.item.split('_')[-1] }}"
-
-                a1: >-
-                  {{ status_value | int
-                     if set_status and (slot_all or slot_nummer == 1)
-                     else (1 if is_state('binary_sensor.b2500_' ~ num ~ '_d1', 'on') else 0) }}
-                a2: >-
-                  {{ status_value | int
-                     if set_status and (slot_all or slot_nummer == 2)
-                     else (1 if is_state('binary_sensor.b2500_' ~ num ~ '_d2', 'on') else 0) }}
-                a3: >-
-                  {{ status_value | int
-                     if set_status and (slot_all or slot_nummer == 3)
-                     else (1 if is_state('binary_sensor.b2500_' ~ num ~ '_d3', 'on') else 0) }}
-                a4: >-
-                  {{ status_value | int
-                     if set_status and (slot_all or slot_nummer == 4)
-                     else (1 if is_state('binary_sensor.b2500_' ~ num ~ '_d4', 'on') else 0) }}
-                a5: >-
-                  {{ status_value | int
-                     if set_status and (slot_all or slot_nummer == 5)
-                     else (1 if is_state('binary_sensor.b2500_' ~ num ~ '_d5', 'on') else 0) }}
-
-                b1: >-
-                  {{ start_value
-                     if set_start and (slot_all or slot_nummer == 1)
-                     else states('sensor.b2500_' ~ num ~ '_e1') }}
-                b2: >-
-                  {{ start_value
-                     if set_start and (slot_all or slot_nummer == 2)
-                     else states('sensor.b2500_' ~ num ~ '_e2') }}
-                b3: >-
-                  {{ start_value
-                     if set_start and (slot_all or slot_nummer == 3)
-                     else states('sensor.b2500_' ~ num ~ '_e3') }}
-                b4: >-
-                  {{ start_value
-                     if set_start and (slot_all or slot_nummer == 4)
-                     else states('sensor.b2500_' ~ num ~ '_e4') }}
-                b5: >-
-                  {{ start_value
-                     if set_start and (slot_all or slot_nummer == 5)
-                     else states('sensor.b2500_' ~ num ~ '_e5') }}
-
-                e1: >-
-                  {{ ende_value
-                     if set_ende and (slot_all or slot_nummer == 1)
-                     else states('sensor.b2500_' ~ num ~ '_f1') }}
-                e2: >-
-                  {{ ende_value
-                     if set_ende and (slot_all or slot_nummer == 2)
-                     else states('sensor.b2500_' ~ num ~ '_f2') }}
-                e3: >-
-                  {{ ende_value
-                     if set_ende and (slot_all or slot_nummer == 3)
-                     else states('sensor.b2500_' ~ num ~ '_f3') }}
-                e4: >-
-                  {{ ende_value
-                     if set_ende and (slot_all or slot_nummer == 4)
-                     else states('sensor.b2500_' ~ num ~ '_f4') }}
-                e5: >-
-                  {{ ende_value
-                     if set_ende and (slot_all or slot_nummer == 5)
-                     else states('sensor.b2500_' ~ num ~ '_f5') }}
-
-                v1: >-
-                  {{ leistung_value | int
-                     if set_leistung and (slot_all or slot_nummer == 1)
-                     else states('sensor.b2500_' ~ num ~ '_h1') | int }}
-                v2: >-
-                  {{ leistung_value | int
-                     if set_leistung and (slot_all or slot_nummer == 2)
-                     else states('sensor.b2500_' ~ num ~ '_h2') | int }}
-                v3: >-
-                  {{ leistung_value | int
-                     if set_leistung and (slot_all or slot_nummer == 3)
-                     else states('sensor.b2500_' ~ num ~ '_h3') | int }}
-                v4: >-
-                  {{ leistung_value | int
-                     if set_leistung and (slot_all or slot_nummer == 4)
-                     else states('sensor.b2500_' ~ num ~ '_h4') | int }}
-                v5: >-
-                  {{ leistung_value | int
-                     if set_leistung and (slot_all or slot_nummer == 5)
-                     else states('sensor.b2500_' ~ num ~ '_h5') | int }}
-
-                timer_payload: >-
-                  cd=20,md=0,
-                  a1={{ a1 }},b1={{ b1 }},e1={{ e1 }},v1={{ v1 }},
-                  a2={{ a2 }},b2={{ b2 }},e2={{ e2 }},v2={{ v2 }},
-                  a3={{ a3 }},b3={{ b3 }},e3={{ e3 }},v3={{ v3 }},
-                  a4={{ a4 }},b4={{ b4 }},e4={{ e4 }},v4={{ v4 }},
-                  a5={{ a5 }},b5={{ b5 }},e5={{ e5 }},v5={{ v5 }}
-
-                expected_answer: >-
-                  {{
-                    {
-                      'd1': a1 | int,
-                      'e1': b1 | string,
-                      'f1': e1 | string,
-                      'h1': v1 | int,
-                      'd2': a2 | int,
-                      'e2': b2 | string,
-                      'f2': e2 | string,
-                      'h2': v2 | int,
-                      'd3': a3 | int,
-                      'e3': b3 | string,
-                      'f3': e3 | string,
-                      'h3': v3 | int,
-                      'd4': a4 | int,
-                      'e4': b4 | string,
-                      'f4': e4 | string,
-                      'h4': v4 | int,
-                      'd5': a5 | int,
-                      'e5': b5 | string,
-                      'f5': e5 | string,
-                      'h5': v5 | int
-                    }
-                  }}
-
-            - action: script.turn_on
-              target:
-                entity_id: "script.{{ repeat.item }}_worker"
-              data:
-                variables:
-                  payload: "{{ timer_payload | replace('\n', '') | replace(' ', '') }}"
-                  followup_payload: "cd=01"
-                  no_check: false
-                  expected_answer: "{{ expected_answer }}"
-
-            - delay:
-                seconds: 1
-
+    - variables:
+        speicher_auswahl: '{{ speicher | default('''', true) | string | trim }}'
+        timerslot_auswahl: '{{ timerslot | default('''', true) | string | trim }}'
+        erlaubte_speicher:
+        - b2500_01
+        - b2500_02
+        - b2500_03
+        - b2500_04
+        - b2500_05
+        - b2500_06
+        - b2500_07
+        - b2500_08
+        - b2500_09
+        - Alle_Speicher
+    - if:
+      - condition: template
+        value_template: '{{ speicher_auswahl == '''' }}'
+      then:
       - variables:
           response:
-            success: true
-            code: "WORKER_STARTED"
-            message: >-
-              Timerauftrag wurde für {{ targets | count }} Speicher gestartet.
-            speicher: "{{ speicher_auswahl }}"
-            timerslot: "{{ timerslot_auswahl }}"
-            geaendert:
-              timer_aktiv: "{{ set_status }}"
-              startzeit: "{{ set_start }}"
-              endzeit: "{{ set_ende }}"
-              leistung: "{{ set_leistung }}"
-
-      - stop: "Timerauftrag gestartet."
+            success: false
+            code: MISSING_STORAGE
+            message: 'Abbruch: Pflichtfeld ''speicher'' wurde nicht übergeben.'
+      - event: b2500pkg_status
+        event_data:
+          status: FEHLER
+          titel: B2500PKG Timer
+          untertitel: Eingabeprüfung
+          meldung: '{{ response.message | default(''Ungültige Eingabe'') }}'
+          details: '{{ response.code | default(''FEHLER'') }}'
+          rueckmeldung: '{{ response.message | default('''') }}'
+          adresse: script.b2500pkg_set_timer
+          quelle: script.b2500pkg_set_timer
+      - stop: Pflichtfeld 'speicher' fehlt.
         response_variable: response
+    - if:
+      - condition: template
+        value_template: '{{ speicher_auswahl not in erlaubte_speicher }}'
+      then:
+      - variables:
+          response:
+            success: false
+            code: INVALID_STORAGE
+            message: 'Abbruch: Speicher ''{{ speicher_auswahl }}'' ist ungültig. Erlaubt sind b2500_01 bis b2500_09 sowie Alle_Speicher.'
+      - event: b2500pkg_status
+        event_data:
+          status: FEHLER
+          titel: B2500PKG Timer
+          untertitel: Eingabeprüfung
+          meldung: '{{ response.message | default(''Ungültige Eingabe'') }}'
+          details: '{{ response.code | default(''FEHLER'') }}'
+          rueckmeldung: '{{ response.message | default('''') }}'
+          adresse: script.b2500pkg_set_timer
+          quelle: script.b2500pkg_set_timer
+      - stop: Ungültiger Speicher.
+        response_variable: response
+    - if:
+      - condition: template
+        value_template: '{{ timerslot_auswahl == '''' }}'
+      then:
+      - variables:
+          response:
+            success: false
+            code: MISSING_TIMERSLOT
+            message: 'Abbruch: Pflichtfeld ''timerslot'' wurde nicht übergeben.'
+      - event: b2500pkg_status
+        event_data:
+          status: FEHLER
+          titel: B2500PKG Timer
+          untertitel: Eingabeprüfung
+          meldung: '{{ response.message | default(''Ungültige Eingabe'') }}'
+          details: '{{ response.code | default(''FEHLER'') }}'
+          rueckmeldung: '{{ response.message | default('''') }}'
+          adresse: script.b2500pkg_set_timer
+          quelle: script.b2500pkg_set_timer
+      - stop: Pflichtfeld 'timerslot' fehlt.
+        response_variable: response
+    - if:
+      - condition: template
+        value_template: "{{ (timerslot_auswahl | string | trim)\n   not in ['1', '2', '3', '4', '5', 'Alle_Timer'] }}"
+      then:
+      - variables:
+          response:
+            success: false
+            code: INVALID_TIMERSLOT
+            message: 'Abbruch: Timerslot ''{{ timerslot_auswahl }}'' ist ungültig. Erlaubt sind 1 bis 5 sowie Alle_Timer.'
+      - event: b2500pkg_status
+        event_data:
+          status: FEHLER
+          titel: B2500PKG Timer
+          untertitel: Eingabeprüfung
+          meldung: '{{ response.message | default(''Ungültige Eingabe'') }}'
+          details: '{{ response.code | default(''FEHLER'') }}'
+          rueckmeldung: '{{ response.message | default('''') }}'
+          adresse: script.b2500pkg_set_timer
+          quelle: script.b2500pkg_set_timer
+      - stop: Ungültiger Timerslot.
+        response_variable: response
+    - variables:
+        set_status: '{{ timer_aktiv is defined and timer_aktiv | string | trim != '''' }}'
+        set_start: '{{ startzeit is defined and startzeit | string | trim != '''' }}'
+        set_ende: '{{ endzeit is defined and endzeit | string | trim != '''' }}'
+        set_leistung: '{{ leistung is defined and leistung | string | trim != '''' }}'
+        status_value: '{{ timer_aktiv | int if set_status else 0 }}'
+        start_roh: '{{ startzeit | string | trim if set_start else '''' }}'
+        ende_roh: '{{ endzeit | string | trim if set_ende else '''' }}'
+        start_format_ok: "{{ not set_start or\n   (start_roh | regex_match('^\\\\d{1,2}:\\\\d{1,2}(:\\\\d{1,2})?$')) }}"
+        ende_format_ok: "{{ not set_ende or\n   (ende_roh | regex_match('^\\\\d{1,2}:\\\\d{1,2}(:\\\\d{1,2})?$')) }}"
+        start_stunde: '{{ start_roh.split('':'')[0] | int if start_format_ok and set_start else 0 }}'
+        start_minute: '{{ start_roh.split('':'')[1] | int if start_format_ok and set_start else 0 }}'
+        start_sekunde: "{{ start_roh.split(':')[2] | int\n   if start_format_ok and set_start and start_roh.split(':') | count == 3\n   else 0 }}"
+        ende_stunde: '{{ ende_roh.split('':'')[0] | int if ende_format_ok and set_ende else 0 }}'
+        ende_minute: '{{ ende_roh.split('':'')[1] | int if ende_format_ok and set_ende else 0 }}'
+        ende_sekunde: "{{ ende_roh.split(':')[2] | int\n   if ende_format_ok and set_ende and ende_roh.split(':') | count == 3\n   else 0 }}"
+        start_gueltig: "{{ not set_start or\n   (start_format_ok and\n    0 <= start_stunde <= 23 and\n    0 <= start_minute <= 59) }}"
+        ende_gueltig: "{{ not set_ende or\n   (ende_format_ok and\n    0 <= ende_stunde <= 23 and\n    0 <= ende_minute <= 59) }}"
+        start_value: '{{ start_stunde ~ '':'' ~ start_minute if set_start and start_gueltig else '''' }}'
+        ende_value: '{{ ende_stunde ~ '':'' ~ ende_minute if set_ende and ende_gueltig else '''' }}'
+        leistung_value: '{{ leistung | int if set_leistung else 0 }}'
+        status_gueltig: '{{ not set_status or (timer_aktiv | string | trim) in [''0'', ''1''] }}'
+        leistung_gueltig: "{{ not set_leistung or\n   ((leistung | string | trim) | regex_match('^\\d+$') and\n    40 <= (leistung | int) <= 800) }}"
+        all_speicher: '{{ states(''input_text.b2500_all'') | from_json }}'
+        targets: "{% if speicher_auswahl == 'Alle_Speicher' %}\n  {{ all_speicher }}\n{% else %}\n  {{ [speicher_auswahl] }}\n{% endif %}"
+        slot_all: '{{ (timerslot_auswahl | string | trim) == ''Alle_Timer'' }}'
+        slot_nummer: '{{ 0 if slot_all else (timerslot_auswahl | string | trim) | int }}'
+    - if:
+      - condition: template
+        value_template: '{{ set_status and not status_gueltig }}'
+      then:
+      - variables:
+          response:
+            success: false
+            code: INVALID_STATUS
+            message: 'Abbruch: Timerstatus ''{{ timer_aktiv }}'' ist ungültig. Erlaubt sind 0 (deaktiviert) und 1 (aktiv).'
+      - event: b2500pkg_status
+        event_data:
+          status: FEHLER
+          titel: B2500PKG Timer
+          untertitel: Eingabeprüfung
+          meldung: '{{ response.message | default(''Ungültige Eingabe'') }}'
+          details: '{{ response.code | default(''FEHLER'') }}'
+          rueckmeldung: '{{ response.message | default('''') }}'
+          adresse: script.b2500pkg_set_timer
+          quelle: script.b2500pkg_set_timer
+      - stop: Ungültiger Timerstatus.
+        response_variable: response
+    - if:
+      - condition: template
+        value_template: '{{ set_start and not start_gueltig }}'
+      then:
+      - variables:
+          response:
+            success: false
+            code: INVALID_START_TIME
+            message: 'Abbruch: Startzeit ''{{ start_roh }}'' ist ungültig. Erlaubt sind 0:0 bis 23:59; Sekunden müssen 00 sein.'
+      - event: b2500pkg_status
+        event_data:
+          status: FEHLER
+          titel: B2500PKG Timer
+          untertitel: Eingabeprüfung
+          meldung: '{{ response.message | default(''Ungültige Eingabe'') }}'
+          details: '{{ response.code | default(''FEHLER'') }}'
+          rueckmeldung: '{{ response.message | default('''') }}'
+          adresse: script.b2500pkg_set_timer
+          quelle: script.b2500pkg_set_timer
+      - stop: Ungültige Startzeit.
+        response_variable: response
+    - if:
+      - condition: template
+        value_template: '{{ set_ende and not ende_gueltig }}'
+      then:
+      - variables:
+          response:
+            success: false
+            code: INVALID_END_TIME
+            message: 'Abbruch: Endzeit ''{{ ende_roh }}'' ist ungültig. Erlaubt sind 0:0 bis 23:59; Sekunden müssen 00 sein.'
+      - event: b2500pkg_status
+        event_data:
+          status: FEHLER
+          titel: B2500PKG Timer
+          untertitel: Eingabeprüfung
+          meldung: '{{ response.message | default(''Ungültige Eingabe'') }}'
+          details: '{{ response.code | default(''FEHLER'') }}'
+          rueckmeldung: '{{ response.message | default('''') }}'
+          adresse: script.b2500pkg_set_timer
+          quelle: script.b2500pkg_set_timer
+      - stop: Ungültige Endzeit.
+        response_variable: response
+    - if:
+      - condition: template
+        value_template: '{{ set_leistung and not leistung_gueltig }}'
+      then:
+      - variables:
+          response:
+            success: false
+            code: INVALID_POWER
+            message: 'Abbruch: Leistung ''{{ leistung }}'' ist ungültig. Erlaubt sind ganzzahlige Werte von 40 bis 800 W.'
+      - event: b2500pkg_status
+        event_data:
+          status: FEHLER
+          titel: B2500PKG Timer
+          untertitel: Eingabeprüfung
+          meldung: '{{ response.message | default(''Ungültige Eingabe'') }}'
+          details: '{{ response.code | default(''FEHLER'') }}'
+          rueckmeldung: '{{ response.message | default('''') }}'
+          adresse: script.b2500pkg_set_timer
+          quelle: script.b2500pkg_set_timer
+      - stop: Ungültige Leistung.
+        response_variable: response
+    - if:
+      - condition: template
+        value_template: '{{ not (set_status or set_start or set_ende or set_leistung) }}'
+      then:
+      - variables:
+          response:
+            success: false
+            code: NO_CHANGE_PARAMETER
+            message: 'Abbruch: Es wurde kein zu ändernder Timerwert übergeben. Übergib mindestens timer_aktiv, startzeit, endzeit oder leistung.'
+      - event: b2500pkg_status
+        event_data:
+          status: FEHLER
+          titel: B2500PKG Timer
+          untertitel: Eingabeprüfung
+          meldung: '{{ response.message | default(''Ungültige Eingabe'') }}'
+          details: '{{ response.code | default(''FEHLER'') }}'
+          rueckmeldung: '{{ response.message | default('''') }}'
+          adresse: script.b2500pkg_set_timer
+          quelle: script.b2500pkg_set_timer
+      - stop: Kein Änderungsparameter übergeben.
+        response_variable: response
+    - repeat:
+        for_each: '{{ targets }}'
+        sequence:
+        - variables:
+            current_storage: '{{ repeat.item }}'
+            num: '{{ repeat.item.split(''_'')[-1] }}'
+            cache_entity: sensor.b2500_cache_{{ repeat.item.split('_')[-1] }}
+            worker_entity: script.{{ repeat.item }}_worker
+            worker_status_entity: input_number.b2500_{{ repeat.item[-2:] }}_status
+        - variables:
+            cd01_cache: '{{ state_attr(cache_entity, ''cd01'') | default({}, true) }}'
+        - variables:
+            missing_cache_keys: "{% if cd01_cache is not mapping %}\n  {{ ['cd01'] }}\n{% else %}\n  {% set ns = namespace(missing=[]) %}\n  {% for i in\
+              \ range(1, 6) %}\n    {% set slot_target = slot_all or slot_nummer == i %}\n\n    {% set kd = 'd' ~ i %}\n    {% set ke = 'e' ~ i %}\n   \
+              \ {% set kf = 'f' ~ i %}\n    {% set kh = 'h' ~ i %}\n\n    {% if not (set_status and slot_target) and (kd not in cd01_cache or cd01_cache.get(kd)\
+              \ in [none, '', 'unknown', 'unavailable']) %}\n      {% set ns.missing = ns.missing + [kd] %}\n    {% endif %}\n\n    {% if not (set_start\
+              \ and slot_target) and (ke not in cd01_cache or cd01_cache.get(ke) in [none, '', 'unknown', 'unavailable']) %}\n      {% set ns.missing =\
+              \ ns.missing + [ke] %}\n    {% endif %}\n\n    {% if not (set_ende and slot_target) and (kf not in cd01_cache or cd01_cache.get(kf) in [none,\
+              \ '', 'unknown', 'unavailable']) %}\n      {% set ns.missing = ns.missing + [kf] %}\n    {% endif %}\n\n    {% if not (set_leistung and slot_target)\
+              \ and (kh not in cd01_cache or cd01_cache.get(kh) in [none, '', 'unknown', 'unavailable']) %}\n      {% set ns.missing = ns.missing + [kh]\
+              \ %}\n    {% endif %}\n  {% endfor %}\n  {{ ns.missing }}\n{% endif %}"
+        - if:
+          - condition: template
+            value_template: '{{ missing_cache_keys | count > 0 }}'
+          then:
+          - variables:
+              response:
+                success: false
+                code: CACHE_INCOMPLETE
+                message: CD01-Cache für {{ current_storage }} ist unvollständig.
+                speicher: '{{ current_storage }}'
+                timerslot: '{{ timerslot_auswahl }}'
+                missing_keys: '{{ missing_cache_keys }}'
+          - event: b2500pkg_status
+            event_data:
+              status: FEHLER
+              titel: B2500PKG Timer
+              untertitel: '{{ current_storage | upper | replace(''B2500_'', ''B'') }} – Timer {{ timerslot_auswahl }}'
+              meldung: CD01-Cache unvollständig
+              details: 'Fehlende Rohwerte: {{ missing_cache_keys | join('', '') }}'
+              rueckmeldung: Timer wurde nicht gesendet.
+              adresse: '{{ cache_entity }}'
+              quelle: script.b2500pkg_set_timer
+          - stop: CD01-Cache unvollständig.
+            response_variable: response
+        - variables:
+            a1: '{{ status_value | int if set_status and (slot_all or slot_nummer == 1) else cd01_cache.get(''d1'') | int(0) }}'
+            a2: '{{ status_value | int if set_status and (slot_all or slot_nummer == 2) else cd01_cache.get(''d2'') | int(0) }}'
+            a3: '{{ status_value | int if set_status and (slot_all or slot_nummer == 3) else cd01_cache.get(''d3'') | int(0) }}'
+            a4: '{{ status_value | int if set_status and (slot_all or slot_nummer == 4) else cd01_cache.get(''d4'') | int(0) }}'
+            a5: '{{ status_value | int if set_status and (slot_all or slot_nummer == 5) else cd01_cache.get(''d5'') | int(0) }}'
+            b1: '{{ start_value if set_start and (slot_all or slot_nummer == 1) else cd01_cache.get(''e1'', '''') | string }}'
+            b2: '{{ start_value if set_start and (slot_all or slot_nummer == 2) else cd01_cache.get(''e2'', '''') | string }}'
+            b3: '{{ start_value if set_start and (slot_all or slot_nummer == 3) else cd01_cache.get(''e3'', '''') | string }}'
+            b4: '{{ start_value if set_start and (slot_all or slot_nummer == 4) else cd01_cache.get(''e4'', '''') | string }}'
+            b5: '{{ start_value if set_start and (slot_all or slot_nummer == 5) else cd01_cache.get(''e5'', '''') | string }}'
+            e1: '{{ ende_value if set_ende and (slot_all or slot_nummer == 1) else cd01_cache.get(''f1'', '''') | string }}'
+            e2: '{{ ende_value if set_ende and (slot_all or slot_nummer == 2) else cd01_cache.get(''f2'', '''') | string }}'
+            e3: '{{ ende_value if set_ende and (slot_all or slot_nummer == 3) else cd01_cache.get(''f3'', '''') | string }}'
+            e4: '{{ ende_value if set_ende and (slot_all or slot_nummer == 4) else cd01_cache.get(''f4'', '''') | string }}'
+            e5: '{{ ende_value if set_ende and (slot_all or slot_nummer == 5) else cd01_cache.get(''f5'', '''') | string }}'
+            v1: '{{ leistung_value | int if set_leistung and (slot_all or slot_nummer == 1) else cd01_cache.get(''h1'') | int(0) }}'
+            v2: '{{ leistung_value | int if set_leistung and (slot_all or slot_nummer == 2) else cd01_cache.get(''h2'') | int(0) }}'
+            v3: '{{ leistung_value | int if set_leistung and (slot_all or slot_nummer == 3) else cd01_cache.get(''h3'') | int(0) }}'
+            v4: '{{ leistung_value | int if set_leistung and (slot_all or slot_nummer == 4) else cd01_cache.get(''h4'') | int(0) }}'
+            v5: '{{ leistung_value | int if set_leistung and (slot_all or slot_nummer == 5) else cd01_cache.get(''h5'') | int(0) }}'
+            timer_payload: 'cd=20,md=0,
 
+              a1={{ a1 }},b1={{ b1 }},e1={{ e1 }},v1={{ v1 }},
+
+              a2={{ a2 }},b2={{ b2 }},e2={{ e2 }},v2={{ v2 }},
+
+              a3={{ a3 }},b3={{ b3 }},e3={{ e3 }},v3={{ v3 }},
+
+              a4={{ a4 }},b4={{ b4 }},e4={{ e4 }},v4={{ v4 }},
+
+              a5={{ a5 }},b5={{ b5 }},e5={{ e5 }},v5={{ v5 }}'
+            expected_answer: "{{\n  {\n    'd1': a1 | int,\n    'e1': b1 | string,\n    'f1': e1 | string,\n    'h1': v1 | int,\n    'd2': a2 | int,\n \
+              \   'e2': b2 | string,\n    'f2': e2 | string,\n    'h2': v2 | int,\n    'd3': a3 | int,\n    'e3': b3 | string,\n    'f3': e3 | string,\n\
+              \    'h3': v3 | int,\n    'd4': a4 | int,\n    'e4': b4 | string,\n    'f4': e4 | string,\n    'h4': v4 | int,\n    'd5': a5 | int,\n    'e5':\
+              \ b5 | string,\n    'f5': e5 | string,\n    'h5': v5 | int\n  }\n}}"
+        - event: b2500pkg_status
+          event_data:
+            status: LAEUFT
+            titel: B2500PKG Timer
+            untertitel: '{{ current_storage | upper | replace(''B2500_'', ''B'') }} – Timer {{ timerslot_auswahl }}'
+            meldung: Timer wird gesetzt
+            details: Sende cd=20,md=0 mit Timerdaten
+            rueckmeldung: Erwartete CD01-Timerwerte werden vollständig geprüft.
+            adresse: '{{ worker_entity }}'
+            quelle: script.b2500pkg_set_timer
+        - action: '{{ worker_entity }}'
+          data:
+            payload: '{{ timer_payload | replace(''\n'', '''') | replace('' '', '''') }}'
+            followup_payload: cd=01
+            no_check: false
+            expected_answer: '{{ expected_answer }}'
+        - variables:
+            worker_status: '{{ states(worker_status_entity) | int(0) }}'
+        - if:
+          - condition: template
+            value_template: '{{ worker_status == 3 }}'
+          then:
+          - event: b2500pkg_status
+            event_data:
+              status: ERFOLGREICH
+              titel: B2500PKG Timer
+              untertitel: '{{ current_storage | upper | replace(''B2500_'', ''B'') }} – Timer {{ timerslot_auswahl }}'
+              meldung: Timer bestätigt
+              details: CD01-Timerwerte wurden bestätigt
+              rueckmeldung: Worker-Status {{ worker_status }}
+              adresse: '{{ worker_status_entity }}'
+              quelle: script.b2500pkg_set_timer
+          else:
+          - variables:
+              response:
+                success: false
+                code: WORKER_FAILED
+                message: Timer konnte für {{ current_storage }} nicht bestätigt werden.
+                speicher: '{{ current_storage }}'
+                timerslot: '{{ timerslot_auswahl }}'
+                worker_status: '{{ worker_status }}'
+          - event: b2500pkg_status
+            event_data:
+              status: FEHLER
+              titel: B2500PKG Timer
+              untertitel: '{{ current_storage | upper | replace(''B2500_'', ''B'') }} – Timer {{ timerslot_auswahl }}'
+              meldung: Timer konnte nicht bestätigt werden
+              details: Worker-Prüfung fehlgeschlagen
+              rueckmeldung: Worker-Status {{ worker_status }}
+              adresse: '{{ worker_status_entity }}'
+              quelle: script.b2500pkg_set_timer
+          - stop: Timer konnte nicht bestätigt werden.
+            response_variable: response
+        - delay:
+            seconds: 1
+    - variables:
+        response:
+          success: true
+          code: WORKER_CONFIRMED
+          message: Timerauftrag wurde für {{ targets | count }} Speicher bestätigt.
+          speicher: '{{ speicher_auswahl }}'
+          timerslot: '{{ timerslot_auswahl }}'
+          geaendert:
+            timer_aktiv: '{{ set_status }}'
+            startzeit: '{{ set_start }}'
+            endzeit: '{{ set_ende }}'
+            leistung: '{{ set_leistung }}'
+    - stop: Timerauftrag abgeschlossen.
+      response_variable: response
     mode: queued
     max: 20
-
-
+    trace:
+      stored_traces: 0
   b2500pkg_set_selbstanpassung:
     alias: B2500PKG_Set_Selbstanpassung
-    description: >
-      Aktiviert die Selbstanpassung für einen oder alle Speicher. Leeres
-      Aktionsfeld verwendet input_select.speicherauswahl.
+    description: 'Aktiviert die Selbstanpassung für einen oder alle B2500-Speicher. Wenn das Aktionsfeld Speicher leer bleibt, wird input_select.speicherauswahl
+      verwendet.
 
+      '
     fields:
       speicher:
         name: Speicher
         description: Optional. Wenn leer, wird input_select.speicherauswahl verwendet.
         required: false
-        example: "b2500_01"
+        example: b2500_01
         selector:
           select:
             options:
-              - label: "B01"
-                value: "b2500_01"
-              - label: "B02"
-                value: "b2500_02"
-              - label: "B03"
-                value: "b2500_03"
-              - label: "B04"
-                value: "b2500_04"
-              - label: "B05"
-                value: "b2500_05"
-              - label: "B06"
-                value: "b2500_06"
-              - label: "B07"
-                value: "b2500_07"
-              - label: "B08"
-                value: "b2500_08"
-              - label: "B09"
-                value: "b2500_09"
-              - label: "Alle Speicher"
-                value: "Alle_Speicher"
-
+            - label: B01
+              value: b2500_01
+            - label: B02
+              value: b2500_02
+            - label: B03
+              value: b2500_03
+            - label: B04
+              value: b2500_04
+            - label: B05
+              value: b2500_05
+            - label: B06
+              value: b2500_06
+            - label: B07
+              value: b2500_07
+            - label: B08
+              value: b2500_08
+            - label: B09
+              value: b2500_09
+            - label: Alle Speicher
+              value: Alle_Speicher
     sequence:
-      - variables:
-          speicher_auswahl: >-
-            {% if speicher is defined and speicher | string | trim != '' %}
-              {{ speicher }}
-            {% else %}
-              {{ states('input_select.speicherauswahl') }}
-            {% endif %}
-
-          all_speicher: "{{ states('input_text.b2500_all') | from_json }}"
-
-          targets: >-
-            {% if speicher_auswahl == 'Alle_Speicher' %}
-              {{ all_speicher }}
-            {% else %}
-              {{ [speicher_auswahl] }}
-            {% endif %}
-
-      - repeat:
-          for_each: "{{ targets }}"
-          sequence:
-            - action: script.turn_on
-              target:
-                entity_id: "script.{{ repeat.item }}_worker"
-              data:
-                variables:
-                  payload: "cd=20,md=1"
-                  followup_payload: "cd=01"
-                  no_check: false
-                  expected_answer: >-
-                    {{ {'md': 'Selbstanpassung'} }}
-
-            - delay:
-                seconds: 1
-
+    - variables:
+        speicher_auswahl: "{% if speicher is defined and speicher | string | trim != '' %}\n  {{ speicher | string | trim }}\n{% else %}\n  {{ states('input_select.speicherauswahl')\
+          \ | string | trim }}\n{% endif %}"
+        erlaubte_speicher:
+        - b2500_01
+        - b2500_02
+        - b2500_03
+        - b2500_04
+        - b2500_05
+        - b2500_06
+        - b2500_07
+        - b2500_08
+        - b2500_09
+        - Alle_Speicher
+        all_speicher: "{% set raw = states('input_text.b2500_all') %}\n{% if raw not in ['unknown', 'unavailable', '', 'none', 'None'] %}\n  {{ raw | from_json([])\
+          \ }}\n{% else %}\n  {{ [] }}\n{% endif %}"
+        targets: "{% if speicher_auswahl == 'Alle_Speicher' %}\n  {{ all_speicher }}\n{% else %}\n  {{ [speicher_auswahl] }}\n{% endif %}"
+    - if:
+      - condition: template
+        value_template: '{{ speicher_auswahl not in erlaubte_speicher or targets | count == 0 }}'
+      then:
+      - event: b2500pkg_status
+        event_data:
+          status: FEHLER
+          titel: B2500PKG Selbstanpassung
+          untertitel: '{{ speicher_auswahl }}'
+          meldung: Ungültige Speicherauswahl
+          details: Selbstanpassung wurde nicht gestartet
+          rueckmeldung: 'Erlaubt: b2500_01 bis b2500_09 oder Alle_Speicher.'
+          adresse: script.b2500pkg_set_selbstanpassung
+          quelle: script.b2500pkg_set_selbstanpassung
+      - stop: Ungültige Speicherauswahl.
+    - repeat:
+        for_each: '{{ targets }}'
+        sequence:
+        - variables:
+            current_storage: '{{ repeat.item }}'
+            worker_entity: script.{{ repeat.item }}_worker
+            worker_status_entity: input_number.b2500_{{ repeat.item[-2:] }}_status
+        - event: b2500pkg_status
+          event_data:
+            status: LAEUFT
+            titel: B2500PKG Selbstanpassung
+            untertitel: '{{ current_storage | upper | replace(''B2500_'', ''B'') }}'
+            meldung: Selbstanpassung wird aktiviert
+            details: Sende cd=20,md=1
+            rueckmeldung: Erwartet md=1
+            adresse: '{{ worker_entity }}'
+            quelle: script.b2500pkg_set_selbstanpassung
+        - action: '{{ worker_entity }}'
+          data:
+            payload: cd=20,md=1
+            followup_payload: cd=01
+            no_check: false
+            expected_answer:
+              md: 1
+        - variables:
+            worker_status: '{{ states(worker_status_entity) | int(0) }}'
+        - if:
+          - condition: template
+            value_template: '{{ worker_status == 3 }}'
+          then:
+          - event: b2500pkg_status
+            event_data:
+              status: ERFOLGREICH
+              titel: B2500PKG Selbstanpassung
+              untertitel: '{{ current_storage | upper | replace(''B2500_'', ''B'') }}'
+              meldung: Selbstanpassung bestätigt
+              details: md=1 wurde bestätigt
+              rueckmeldung: Worker-Status {{ worker_status }}
+              adresse: '{{ worker_status_entity }}'
+              quelle: script.b2500pkg_set_selbstanpassung
+          else:
+          - event: b2500pkg_status
+            event_data:
+              status: FEHLER
+              titel: B2500PKG Selbstanpassung
+              untertitel: '{{ current_storage | upper | replace(''B2500_'', ''B'') }}'
+              meldung: Selbstanpassung konnte nicht bestätigt werden
+              details: Erwartet md=1
+              rueckmeldung: Worker-Status {{ worker_status }}
+              adresse: '{{ worker_status_entity }}'
+              quelle: script.b2500pkg_set_selbstanpassung
+          - stop: Selbstanpassung konnte nicht bestätigt werden.
+        - delay:
+            seconds: 1
     mode: queued
     max: 10
-
-
+    trace:
+      stored_traces: 0
   b2500pkg_timer_dashboard:
     alias: B2500PKG Timer Dashboard
-    description: >
-      Liest die Timer-Helper des Dashboards und ruft das universelle
-      Script b2500pkg_set_timer nur mit den ausgewählten Änderungswerten auf.
+    description: 'Liest die Timer-Helper des Dashboards und ruft das universelle Script b2500pkg_set_timer nur mit den ausgewählten Änderungswerten auf.
+
+      '
     icon: mdi:timer-edit
-
     sequence:
+    - variables:
+        speicher_auswahl: '{{ states(''input_select.speicherauswahl'') }}'
+        timerslot_auswahl: '{{ states(''input_select.timerslot'') }}'
+        timer_ein: '{{ is_state(''input_boolean.b2500_timer_ein'', ''on'') }}'
+        timer_aus: '{{ is_state(''input_boolean.b2500_timer_aus'', ''on'') }}'
+        startzeit_aendern: '{{ is_state(''input_boolean.b2500_timer_startzeit_aendern'', ''on'') }}'
+        endzeit_aendern: '{{ is_state(''input_boolean.b2500_timer_endzeit_aendern'', ''on'') }}'
+        leistung_aendern: '{{ is_state(''input_boolean.b2500_timer_leistung_aendern'', ''on'') }}'
+    - if:
+      - condition: template
+        value_template: '{{ timer_ein and timer_aus }}'
+      then:
       - variables:
-          speicher_auswahl: "{{ states('input_select.speicherauswahl') }}"
-          timerslot_auswahl: "{{ states('input_select.timerslot') }}"
-
-          timer_ein: "{{ is_state('input_boolean.b2500_timer_ein', 'on') }}"
-          timer_aus: "{{ is_state('input_boolean.b2500_timer_aus', 'on') }}"
-
-          startzeit_aendern: >-
-            {{ is_state('input_boolean.b2500_timer_startzeit_aendern', 'on') }}
-          endzeit_aendern: >-
-            {{ is_state('input_boolean.b2500_timer_endzeit_aendern', 'on') }}
-          leistung_aendern: >-
-            {{ is_state('input_boolean.b2500_timer_leistung_aendern', 'on') }}
-
-      - if:
-          - condition: template
-            value_template: "{{ timer_ein and timer_aus }}"
-        then:
-          - variables:
-              response:
-                success: false
-                code: "CONFLICTING_TIMER_STATUS"
-                message: >-
-                  Abbruch: „Timer einschalten“ und „Timer ausschalten“
-                  sind gleichzeitig ausgewählt.
-          - stop: "Widersprüchliche Timerstatus-Auswahl."
-            response_variable: response
-
-      - if:
-          - condition: template
-            value_template: >-
-              {{ not (
-                   timer_ein
-                   or timer_aus
-                   or startzeit_aendern
-                   or endzeit_aendern
-                   or leistung_aendern
-                 ) }}
-        then:
-          - variables:
-              response:
-                success: false
-                code: "NO_CHANGE_SELECTED"
-                message: >-
-                  Abbruch: Es wurde kein zu ändernder Timerwert ausgewählt.
-          - stop: "Keine Änderung ausgewählt."
-            response_variable: response
-
-      - variables:
-          timer_daten: >-
-            {% set ns = namespace(data={
-              'speicher': speicher_auswahl,
-              'timerslot': timerslot_auswahl
-            }) %}
-
-            {% if timer_ein %}
-              {% set ns.data = dict(ns.data, timer_aktiv=1) %}
-            {% elif timer_aus %}
-              {% set ns.data = dict(ns.data, timer_aktiv=0) %}
-            {% endif %}
-
-            {% if startzeit_aendern %}
-              {% set ns.data = dict(
-                ns.data,
-                startzeit=states('input_datetime.timer_beginn')
-              ) %}
-            {% endif %}
-
-            {% if endzeit_aendern %}
-              {% set ns.data = dict(
-                ns.data,
-                endzeit=states('input_datetime.timer_ende')
-              ) %}
-            {% endif %}
-
-            {% if leistung_aendern %}
-              {% set ns.data = dict(
-                ns.data,
-                leistung=states('input_number.timer_leistung') | int
-              ) %}
-            {% endif %}
-
-            {{ ns.data }}
-
-      - action: script.b2500pkg_set_timer
-        data: "{{ timer_daten }}"
-        response_variable: timer_response
-
-      - if:
-          - condition: template
-            value_template: >-
-              {{ timer_response is mapping
-                 and timer_response.success | default(false) }}
-        then:
-          - action: input_boolean.turn_off
-            target:
-              entity_id:
-                - input_boolean.b2500_timer_ein
-                - input_boolean.b2500_timer_aus
-                - input_boolean.b2500_timer_startzeit_aendern
-                - input_boolean.b2500_timer_endzeit_aendern
-                - input_boolean.b2500_timer_leistung_aendern
-
-      - variables:
-          response: >-
-            {% if timer_response is mapping %}
-              {{ timer_response }}
-            {% else %}
-              {{
-                {
-                  'success': false,
-                  'code': 'NO_TIMER_RESPONSE',
-                  'message': 'Das Timer-Script hat keine gültige Response geliefert.'
-                }
-              }}
-            {% endif %}
-
-      - stop: "Dashboard-Timerauftrag abgeschlossen."
+          response:
+            success: false
+            code: CONFLICTING_TIMER_STATUS
+            message: 'Abbruch: „Timer einschalten“ und „Timer ausschalten“ sind gleichzeitig ausgewählt.'
+      - event: b2500pkg_status
+        event_data:
+          status: FEHLER
+          titel: B2500PKG Timer Dashboard
+          untertitel: Eingabeprüfung
+          meldung: '{{ response.message | default(''Ungültige Eingabe'') }}'
+          details: '{{ response.code | default(''FEHLER'') }}'
+          rueckmeldung: '{{ response.message | default('''') }}'
+          adresse: script.b2500pkg_timer_dashboard
+          quelle: script.b2500pkg_timer_dashboard
+      - stop: Widersprüchliche Timerstatus-Auswahl.
         response_variable: response
-
-    mode: single
-    
-    
-
-  b2500pkg_set_selbstanpassung:
-    alias: B2500PKG_Set_Selbstanpassung
-    description: >
-      Aktiviert die Selbstanpassung für einen oder alle B2500-Speicher.
-      Wenn das Aktionsfeld Speicher leer bleibt, wird
-      input_select.speicherauswahl verwendet.
-
-    fields:
-      speicher:
-        name: Speicher
-        description: Optional. Wenn leer, wird input_select.speicherauswahl verwendet.
-        required: false
-        example: "b2500_01"
-        selector:
-          select:
-            options:
-              - label: "B01"
-                value: "b2500_01"
-              - label: "B02"
-                value: "b2500_02"
-              - label: "B03"
-                value: "b2500_03"
-              - label: "B04"
-                value: "b2500_04"
-              - label: "B05"
-                value: "b2500_05"
-              - label: "B06"
-                value: "b2500_06"
-              - label: "B07"
-                value: "b2500_07"
-              - label: "B08"
-                value: "b2500_08"
-              - label: "B09"
-                value: "b2500_09"
-              - label: "Alle Speicher"
-                value: "Alle_Speicher"
-
-    sequence:
+    - if:
+      - condition: template
+        value_template: "{{ not (\n     timer_ein\n     or timer_aus\n     or startzeit_aendern\n     or endzeit_aendern\n     or leistung_aendern\n   )\
+          \ }}"
+      then:
       - variables:
-          speicher_auswahl: >-
-            {% if speicher is defined and speicher | string | trim != '' %}
-              {{ speicher }}
-            {% else %}
-              {{ states('input_select.speicherauswahl') }}
-            {% endif %}
-
-          all_speicher: "{{ states('input_text.b2500_all') | from_json }}"
-
-          targets: >-
-            {% if speicher_auswahl == 'Alle_Speicher' %}
-              {{ all_speicher }}
-            {% else %}
-              {{ [speicher_auswahl] }}
-            {% endif %}
-
-      - repeat:
-          for_each: "{{ targets }}"
-          sequence:
-            - action: script.turn_on
-              target:
-                entity_id: "script.{{ repeat.item }}_worker"
-              data:
-                variables:
-                  payload: "cd=20,md=1"
-                  followup_payload: "cd=01"
-                  no_check: false
-                  expected_answer:
-                    md: "Selbstanpassung"
-
-            - delay:
-                seconds: 1
-
-    mode: queued
-    max: 10
+          response:
+            success: false
+            code: NO_CHANGE_SELECTED
+            message: 'Abbruch: Es wurde kein zu ändernder Timerwert ausgewählt.'
+      - event: b2500pkg_status
+        event_data:
+          status: FEHLER
+          titel: B2500PKG Timer Dashboard
+          untertitel: Eingabeprüfung
+          meldung: '{{ response.message | default(''Ungültige Eingabe'') }}'
+          details: '{{ response.code | default(''FEHLER'') }}'
+          rueckmeldung: '{{ response.message | default('''') }}'
+          adresse: script.b2500pkg_timer_dashboard
+          quelle: script.b2500pkg_timer_dashboard
+      - stop: Keine Änderung ausgewählt.
+        response_variable: response
+    - variables:
+        timer_daten: "{% set ns = namespace(data={\n  'speicher': speicher_auswahl,\n  'timerslot': timerslot_auswahl\n}) %}\n{% if timer_ein %}\n  {% set\
+          \ ns.data = dict(ns.data, timer_aktiv=1) %}\n{% elif timer_aus %}\n  {% set ns.data = dict(ns.data, timer_aktiv=0) %}\n{% endif %}\n{% if startzeit_aendern\
+          \ %}\n  {% set ns.data = dict(\n    ns.data,\n    startzeit=states('input_datetime.timer_beginn')\n  ) %}\n{% endif %}\n{% if endzeit_aendern\
+          \ %}\n  {% set ns.data = dict(\n    ns.data,\n    endzeit=states('input_datetime.timer_ende')\n  ) %}\n{% endif %}\n{% if leistung_aendern %}\n\
+          \  {% set ns.data = dict(\n    ns.data,\n    leistung=states('input_number.timer_leistung') | int\n  ) %}\n{% endif %}\n{{ ns.data }}"
+    - event: b2500pkg_status
+      event_data:
+        status: LAEUFT
+        titel: B2500PKG Timer Dashboard
+        untertitel: '{{ speicher_auswahl }} – Timer {{ timerslot_auswahl }}'
+        meldung: Timerauftrag wird ausgeführt
+        details: Dashboard-Werte werden an das Timer-Script übergeben
+        rueckmeldung: ''
+        adresse: script.b2500pkg_set_timer
+        quelle: script.b2500pkg_timer_dashboard
+    - action: script.b2500pkg_set_timer
+      data: '{{ timer_daten }}'
+      response_variable: timer_response
+    - if:
+      - condition: template
+        value_template: "{{ timer_response is mapping\n   and timer_response.success | default(false) }}"
+      then:
+      - action: input_boolean.turn_off
+        target:
+          entity_id:
+          - input_boolean.b2500_timer_ein
+          - input_boolean.b2500_timer_aus
+          - input_boolean.b2500_timer_startzeit_aendern
+          - input_boolean.b2500_timer_endzeit_aendern
+          - input_boolean.b2500_timer_leistung_aendern
+    - variables:
+        response: "{% if timer_response is mapping %}\n  {{ timer_response }}\n{% else %}\n  {{\n    {\n      'success': false,\n      'code': 'NO_TIMER_RESPONSE',\n\
+          \      'message': 'Das Timer-Script hat keine gültige Response geliefert.'\n    }\n  }}\n{% endif %}"
+    - event: b2500pkg_status
+      event_data:
+        status: '{{ ''ERFOLGREICH'' if response is mapping and response.success | default(false) else ''FEHLER'' }}'
+        titel: B2500PKG Timer Dashboard
+        untertitel: '{{ speicher_auswahl }} – Timer {{ timerslot_auswahl }}'
+        meldung: '{{ response.message | default(''Timerauftrag abgeschlossen'') if response is mapping else ''Keine gültige Timer-Rückmeldung'' }}'
+        details: '{{ response.code | default(''NO_TIMER_RESPONSE'') if response is mapping else ''NO_TIMER_RESPONSE'' }}'
+        rueckmeldung: '{{ response.message | default('''') if response is mapping else '''' }}'
+        adresse: script.b2500pkg_set_timer
+        quelle: script.b2500pkg_timer_dashboard
+    - stop: Dashboard-Timerauftrag abgeschlossen.
+      response_variable: response
+    mode: single
+    trace:
+      stored_traces: 0

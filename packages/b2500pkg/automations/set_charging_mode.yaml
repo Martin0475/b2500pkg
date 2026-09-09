@@ -1,85 +1,152 @@
+# ============================================================
+# B2500PKG - Lademodus setzen
+#
+# Unterstützte Eingaben für lademodus:
+#   - Laden vor dem Entladen           -> cs = 1
+#   - Laden und Entladen gleichzeitig  -> cs = 0
+#   - 1 / "1"                          -> cs = 1
+#   - 0 / "0"                          -> cs = 0
+#
+# Ohne Übergabe werden die vorhandenen Helper verwendet:
+#   - input_select.speicherauswahl
+#   - input_select.lademodus
+# ============================================================
+
 input_select:
   lademodus:
-    name: Lademodus auswählen
-    options: 
-      - "Laden vor dem Entladen"
-      - "Laden und Entladen gleichzeitig"
+    name: Lademodus
+    options:
+      - Laden vor dem Entladen
+      - Laden und Entladen gleichzeitig
 
 script:
   b2500pkg_set_charging_mode:
-    alias: B2500PKG_Set_Charging_Mode
-    description: >
-      Setzt den Lademodus für einen oder alle B2500-Speicher.
-      Leere Aktionsfelder verwenden die vorhandenen Input-Helper.
+    alias: B2500PKG Set Charging Mode
+    description: >-
+      Setzt den Lademodus für einen oder alle B2500-Speicher. Leere
+      Aktionsfelder verwenden die vorhandenen Input-Helper. Friendly Names
+      sowie rohe 0/1-Werte werden unterstützt.
+    mode: queued
+    max: 10
+
+    trace:
+      stored_traces: 0
 
     fields:
       speicher:
         name: Speicher
         description: Optional. Wenn leer, wird input_select.speicherauswahl verwendet.
         required: false
-        example: "b2500_01"
+        example: b2500_01
         selector:
           select:
             options:
-              - label: "B01"
-                value: "b2500_01"
-              - label: "B02"
-                value: "b2500_02"
-              - label: "B03"
-                value: "b2500_03"
-              - label: "B04"
-                value: "b2500_04"
-              - label: "B05"
-                value: "b2500_05"
-              - label: "B06"
-                value: "b2500_06"
-              - label: "B07"
-                value: "b2500_07"
-              - label: "B08"
-                value: "b2500_08"
-              - label: "B09"
-                value: "b2500_09"
-              - label: "Alle Speicher"
-                value: "Alle_Speicher"
+              - label: B01
+                value: b2500_01
+              - label: B02
+                value: b2500_02
+              - label: B03
+                value: b2500_03
+              - label: B04
+                value: b2500_04
+              - label: B05
+                value: b2500_05
+              - label: B06
+                value: b2500_06
+              - label: B07
+                value: b2500_07
+              - label: B08
+                value: b2500_08
+              - label: B09
+                value: b2500_09
+              - label: Alle Speicher
+                value: Alle_Speicher
 
       lademodus:
         name: Lademodus
-        description: Optional. Wenn leer, wird input_select.lademodus verwendet.
+        description: >-
+          Optional. Wenn leer, wird input_select.lademodus verwendet.
+          Direkte Aufrufe akzeptieren zusätzlich die Rohwerte 0 und 1.
         required: false
-        example: "Laden vor dem Entladen"
+        example: Laden vor dem Entladen
         selector:
           select:
             options:
-              - "Laden vor dem Entladen"
-              - "Laden und Entladen gleichzeitig"
+              - Laden vor dem Entladen
+              - Laden und Entladen gleichzeitig
 
     sequence:
+      # --------------------------------------------------------
+      # Eingaben / Fallbacks normalisieren
+      # --------------------------------------------------------
       - variables:
-          speicher_auswahl: >-
+          speicher_raw: >-
             {% if speicher is defined and speicher | string | trim != '' %}
-              {{ speicher }}
+              {{ speicher | string | trim }}
             {% else %}
-              {{ states('input_select.speicherauswahl') }}
+              {{ states('input_select.speicherauswahl') | string | trim }}
+            {% endif %}
+
+          speicher_auswahl: >-
+            {% set v = speicher_raw | string | trim %}
+            {% set vl = v | lower %}
+            {% if vl in ['alle_speicher', 'alle speicher'] %}
+              Alle_Speicher
+            {% elif vl.startswith('b2500_') %}
+              {{ vl }}
+            {% elif vl.startswith('b') and (vl | length) >= 3 %}
+              b2500_{{ vl[-2:] }}
+            {% else %}
+              {{ v }}
             {% endif %}
 
           lademodus_auswahl: >-
             {% if lademodus is defined and lademodus | string | trim != '' %}
-              {{ lademodus }}
+              {{ lademodus | string | trim }}
             {% else %}
-              {{ states('input_select.lademodus') }}
+              {{ states('input_select.lademodus') | string | trim }}
             {% endif %}
 
-          lademodus_value: >-
-            {% if lademodus_auswahl == 'Laden vor dem Entladen' %}
+          cs_raw: >-
+            {% set v = lademodus_auswahl | string | trim | lower %}
+            {% if v in ['1', 'laden vor dem entladen'] %}
               1
-            {% else %}
+            {% elif v in ['0', 'laden und entladen gleichzeitig'] %}
               0
+            {% else %}
+              -1
             {% endif %}
 
-          charging_payload: >-
-            cd=17,md={{ lademodus_value | int }}
+          lademodus_name: >-
+            {% if cs_raw | int(-1) == 1 %}
+              Laden vor dem Entladen
+            {% elif cs_raw | int(-1) == 0 %}
+              Laden und Entladen gleichzeitig
+            {% else %}
+              Ungültig
+            {% endif %}
 
-          all_speicher: "{{ states('input_text.b2500_all') | from_json }}"
+          charging_payload: "cd=17,md={{ cs_raw | int(-1) }}"
+
+          allowed_speicher:
+            - b2500_01
+            - b2500_02
+            - b2500_03
+            - b2500_04
+            - b2500_05
+            - b2500_06
+            - b2500_07
+            - b2500_08
+            - b2500_09
+            - Alle_Speicher
+
+          all_speicher: >-
+            {% set raw = states('input_text.b2500_all') %}
+            {% if raw not in ['unknown', 'unavailable', '', 'none', 'None'] %}
+              {{ raw | from_json([]) }}
+            {% else %}
+              {{ [] }}
+            {% endif %}
 
           targets: >-
             {% if speicher_auswahl == 'Alle_Speicher' %}
@@ -88,22 +155,93 @@ script:
               {{ [speicher_auswahl] }}
             {% endif %}
 
+      # --------------------------------------------------------
+      # Eingaben prüfen
+      # --------------------------------------------------------
+      - if:
+          - condition: template
+            value_template: >-
+              {{ speicher_auswahl not in allowed_speicher
+                 or cs_raw | int(-1) not in [0, 1]
+                 or targets | count == 0 }}
+        then:
+          - event: b2500pkg_status
+            event_data:
+              status: FEHLER
+              titel: B2500PKG Lademodus
+              untertitel: "{{ speicher_auswahl }}"
+              meldung: Ungültige Eingabe
+              details: >-
+                Speicher: {{ speicher_auswahl }} | Lademodus: {{ lademodus_auswahl }}
+              rueckmeldung: >-
+                Erwartet: Laden vor dem Entladen, Laden und Entladen gleichzeitig, 1 oder 0
+              adresse: script.b2500pkg_set_charging_mode
+              quelle: script.b2500pkg_set_charging_mode
+          - stop: Ungültige Speicher- oder Lademodus-Eingabe.
+
+      # --------------------------------------------------------
+      # Speicher nacheinander über den Worker setzen
+      # Direkter action-Aufruf: wartet auf Worker-Abschluss.
+      # --------------------------------------------------------
       - repeat:
           for_each: "{{ targets }}"
           sequence:
-            - action: script.turn_on
-              target:
-                entity_id: "script.{{ repeat.item }}_worker"
+            - variables:
+                current_storage: "{{ repeat.item }}"
+                worker_entity: "script.{{ repeat.item }}_worker"
+                worker_status_entity: >-
+                  input_number.b2500_{{ repeat.item[-2:] }}_status
+
+            - event: b2500pkg_status
+              event_data:
+                status: LAEUFT
+                titel: B2500PKG Lademodus
+                untertitel: >-
+                  {{ current_storage | upper | replace('B2500_', 'B') }} – {{ lademodus_name }}
+                meldung: Lademodus wird gesetzt
+                details: "Sende {{ charging_payload }}"
+                rueckmeldung: "Erwartet cs={{ cs_raw | int }}"
+                adresse: "{{ worker_entity }}"
+                quelle: script.b2500pkg_set_charging_mode
+
+            - action: "{{ worker_entity }}"
               data:
-                variables:
-                  payload: "{{ charging_payload }}"
-                  followup_payload: "cd=01"
-                  no_check: false
-                  expected_answer:
-                    cs: "{{ lademodus_auswahl }}"
+                payload: "{{ charging_payload }}"
+                followup_payload: cd=01
+                no_check: false
+                expected_answer:
+                  cs: "{{ cs_raw | int }}"
+
+            - variables:
+                worker_status: "{{ states(worker_status_entity) | int(0) }}"
+
+            - if:
+                - condition: template
+                  value_template: "{{ worker_status == 3 }}"
+              then:
+                - event: b2500pkg_status
+                  event_data:
+                    status: ERFOLGREICH
+                    titel: B2500PKG Lademodus
+                    untertitel: >-
+                      {{ current_storage | upper | replace('B2500_', 'B') }} – {{ lademodus_name }}
+                    meldung: Lademodus bestätigt
+                    details: "cs={{ cs_raw | int }} wurde bestätigt"
+                    rueckmeldung: "Worker-Status {{ worker_status }}"
+                    adresse: "{{ worker_status_entity }}"
+                    quelle: script.b2500pkg_set_charging_mode
+              else:
+                - event: b2500pkg_status
+                  event_data:
+                    status: FEHLER
+                    titel: B2500PKG Lademodus
+                    untertitel: >-
+                      {{ current_storage | upper | replace('B2500_', 'B') }} – {{ lademodus_name }}
+                    meldung: Lademodus konnte nicht bestätigt werden
+                    details: "Erwartet cs={{ cs_raw | int }}"
+                    rueckmeldung: "Worker-Status {{ worker_status }}"
+                    adresse: "{{ worker_status_entity }}"
+                    quelle: script.b2500pkg_set_charging_mode
 
             - delay:
                 seconds: 1
-
-    mode: queued
-    max: 10
