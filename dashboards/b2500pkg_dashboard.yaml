@@ -3520,6 +3520,130 @@ views:
         entity: sensor.b2500_status_zeile
   - type: sections
     max_columns: 4
+    title: Kalibrierung/Optimierung
+    path: kalibrierung-optimierung
+    sections:
+      - type: grid
+        cards:
+          - type: tile
+            grid_options:
+              columns: full
+            entity: script.b2500pkg_akkupflege_vollzyklus
+            vertical: false
+            features_position: bottom
+          - type: heading
+            heading: Neuer Abschnitt
+          - type: markdown
+            title: B2500PKG Akkupflege
+            content: >-
+              {% set s = 'sensor.b2500pkg_akkupflege_status' %}
+
+              {% set status = states(s) %} {% set phase = state_attr(s, 'phase')
+              | default('-', true) %} {% set ablauf = state_attr(s, 'ablauf') |
+              default('-', true) %} {% set speicher = state_attr(s, 'speicher')
+              | default('-', true) %}
+
+              {% set soc = state_attr(s, 'soc') | default('-', true) %} {% set
+              leistung = state_attr(s, 'leistung') | default('-', true) %} {%
+              set restzeit = state_attr(s, 'restzeit') | default('-', true) %}
+              {% set zielzeit = state_attr(s, 'zielzeit') | default('-', true)
+              %}
+
+              {% set zmin = state_attr(s, 'zell_min') | default('', true) %} {%
+              set zmin_nr = state_attr(s, 'zell_min_nr') | default('', true) %}
+              {% set zmax = state_attr(s, 'zell_max') | default('', true) %} {%
+              set zmax_nr = state_attr(s, 'zell_max_nr') | default('', true) %}
+              {% set drift = state_attr(s, 'zelldrift') | default('', true) %}
+
+              {% set pt = state_attr(s, 'passthrough') | default('-', true) %}
+              {% set pt_rest = state_attr(s, 'pt_nachlauf_rest') | default('',
+              true) %}
+
+              {% set gesichert =
+                   state_attr(s, 'einstellungen_gesichert') | default(false, true) %}
+              {% set restore =
+                   state_attr(s, 'wiederherstellen') | default(false, true) %}
+              {% set restored =
+                   state_attr(s, 'einstellungen_wiederhergestellt')
+                   | default(false, true) %}
+
+              {% set cd21_start = state_attr(s, 'cd21_start') | default('',
+              true) %} {% set cd21_ende = state_attr(s, 'cd21_ende') |
+              default('', true) %} {% set cd21_diff = state_attr(s,
+              'cd21_differenz') | default('', true) %}
+
+              {% set snap0 = state_attr(s, 'snapshot_0') | default('', true) %}
+              {% set snap100 = state_attr(s, 'snapshot_100') | default('', true)
+              %}
+
+              {% set hinweis = state_attr(s, 'hinweis') | default('', true) %}
+
+              {% set log = state_attr(s, 'log')
+                   | default('Noch kein Akkupflege-Lauf gestartet.', true) %}
+
+              **Speicher:** {{ speicher }}   **Ablauf:** {{ ablauf }}  
+              **Status:** {{ status }} · **Phase:** {{ phase }}
+
+              {% if zielzeit not in ['', '-'] %} **Zielzeit:** {{ zielzeit }} {%
+              endif %}
+
+              {% if soc not in ['', '-'] %} **SOC:** {{ soc }} % {% endif %}
+
+              {% if leistung not in ['', '-'] %} **Timer 1:** {{ leistung }} W
+              {% endif %}
+
+              {% if restzeit not in ['', '-'] %} **Restzeit Entladen:** {{
+              restzeit }} {% endif %}
+
+              {% if phase == 'PT_NACHLAUF' and pt_rest != '' %} **PT-Nachlauf
+              Rest:** {{ pt_rest }} {% endif %}
+
+              {% if zmin != '' and zmax != '' %} **Zellen:** Min Z{{ '%02d' |
+              format(zmin_nr | int) }} {{ zmin }} mV · Max Z{{ '%02d' |
+              format(zmax_nr | int) }} {{ zmax }} mV · **Δ {{ drift }} mV** {%
+              endif %}
+
+              {% if pt not in ['', '-'] %} **Passthrough:** {{ pt }} {% endif %}
+
+              **Einstellungen gesichert:** {{ 'Ja' if gesichert else 'Nein' }}  
+              **Wiederherstellung gewählt:** {{ 'Ja' if restore else 'Nein' }}
+
+              {% if restored %} **Alte Einstellungen:** wiederhergestellt {%
+              endif %}
+
+              {% if snap0 != '' %} **0-%-Messung:** {{ snap0 }} {% endif %}
+
+              {% if snap100 != '' %} **100-%-Messung:** {{ snap100 }} {% endif
+              %}
+
+              {% if cd21_start != '' %} **CD21 Start roh:** {{ cd21_start }} {%
+              endif %}
+
+              {% if cd21_ende != '' %} **CD21 Ende roh:** {{ cd21_ende }} {%
+              endif %}
+
+              {% if cd21_diff != '' %} **CD21 Differenz roh:** {{ cd21_diff }}
+              {% endif %}
+
+              {% if hinweis != '' %} **Hinweis:** {{ hinweis }} {% endif %}
+
+              ---
+
+              ### Protokoll
+
+              ```text {{ log }}
+            grid_options:
+              columns: full
+              rows: auto
+          - type: tile
+            grid_options:
+              columns: full
+            entity: script.b2500pkg_balancetest
+            vertical: false
+            features_position: bottom
+        column_span: 2
+  - type: sections
+    max_columns: 4
     title: Unterspannungsschutz
     path: unterspannungsschutz
     sections:
@@ -3673,120 +3797,6 @@ views:
             state_not: '0'
   - type: sections
     max_columns: 4
-    title: Überschusseinspeisung
-    path: uberschusseinspeisung
-    sections:
-      - type: grid
-        cards:
-          - type: heading
-            heading: Überschusseinspeisung
-            heading_style: title
-          - type: entities
-            entities:
-              - entity: input_select.speicherauswahl
-              - entity: input_select.surplus
-            footer:
-              type: buttons
-              entities:
-                - entity: script.b2500pkg_set_surplus
-                  name: Surplus_Mode setzen
-          - type: vertical-stack
-            cards:
-              - type: conditional
-                conditions:
-                  - condition: state
-                    entity: input_text.b01_mac
-                    state_not: '0'
-                card:
-                  type: entities
-                  entities:
-                    - entity: sensor.b2500_01_tc_dis
-                  show_header_toggle: false
-              - type: conditional
-                conditions:
-                  - condition: state
-                    entity: input_text.b02_mac
-                    state_not: '0'
-                card:
-                  type: entities
-                  entities:
-                    - entity: sensor.b2500_02_tc_dis
-                  show_header_toggle: false
-              - type: conditional
-                conditions:
-                  - condition: state
-                    entity: input_text.b03_mac
-                    state_not: '0'
-                card:
-                  type: entities
-                  entities:
-                    - entity: sensor.b2500_03_tc_dis
-                  show_header_toggle: false
-              - type: conditional
-                conditions:
-                  - condition: state
-                    entity: input_text.b04_mac
-                    state_not: '0'
-                card:
-                  type: entities
-                  entities:
-                    - entity: sensor.b2500_04_tc_dis
-                  show_header_toggle: false
-              - type: conditional
-                conditions:
-                  - condition: state
-                    entity: input_text.b05_mac
-                    state_not: '0'
-                card:
-                  type: entities
-                  entities:
-                    - entity: sensor.b2500_05_tc_dis
-                  show_header_toggle: false
-              - type: conditional
-                conditions:
-                  - condition: state
-                    entity: input_text.b06_mac
-                    state_not: '0'
-                card:
-                  type: entities
-                  entities:
-                    - entity: sensor.b2500_06_tc_dis
-                  show_header_toggle: false
-              - type: conditional
-                conditions:
-                  - condition: state
-                    entity: input_text.b07_mac
-                    state_not: '0'
-                card:
-                  type: entities
-                  entities:
-                    - entity: sensor.b2500_07_tc_dis
-                  show_header_toggle: false
-              - type: conditional
-                conditions:
-                  - condition: state
-                    entity: input_text.b08_mac
-                    state_not: '0'
-                card:
-                  type: entities
-                  entities:
-                    - entity: sensor.b2500_08_tc_dis
-                  show_header_toggle: false
-              - type: conditional
-                conditions:
-                  - condition: state
-                    entity: input_text.b09_mac
-                    state_not: '0'
-                card:
-                  type: entities
-                  entities:
-                    - entity: sensor.b2500_09_tc_dis
-                  show_header_toggle: false
-    badges:
-      - type: entity
-        entity: sensor.b2500_status_zeile
-  - type: sections
-    max_columns: 4
     title: Smartmeter
     path: smartmeter
     sections:
@@ -3799,9 +3809,13 @@ views:
             entities:
               - entity: input_select.speicherauswahl
               - entity: input_select.smartmeter
-              - entity: input_button.b2500_smartmeter_setzen
             title: Smartmeter
             show_header_toggle: false
+            footer:
+              type: buttons
+              entities:
+                - entity: script.b2500pkg_set_smartmeter
+                  name: Smartmeter Typ setzen
           - type: markdown
             content: >-
               **Nach setzen des Smartmeter Typs ist evtl ein Restart des
@@ -3988,6 +4002,123 @@ views:
                     - entity: sensor.b2500_09_st
                     - entity: sensor.b2500_09_it
                   show_header_toggle: false
+    badges:
+      - type: entity
+        entity: sensor.b2500_status_zeile
+  - type: sections
+    max_columns: 4
+    title: Überschusseinspeisung
+    path: uberschusseinspeisung
+    sections:
+      - type: grid
+        cards:
+          - type: heading
+            heading: Überschusseinspeisung
+            heading_style: title
+          - type: entities
+            entities:
+              - entity: input_select.speicherauswahl
+              - entity: input_select.surplus
+            footer:
+              type: buttons
+              entities:
+                - entity: script.b2500pkg_set_surplus
+                  name: Surplus_Mode setzen
+          - type: vertical-stack
+            cards:
+              - type: conditional
+                conditions:
+                  - condition: state
+                    entity: input_text.b01_mac
+                    state_not: '0'
+                card:
+                  type: entities
+                  entities:
+                    - entity: sensor.b2500_01_tc_dis
+                  show_header_toggle: false
+              - type: conditional
+                conditions:
+                  - condition: state
+                    entity: input_text.b02_mac
+                    state_not: '0'
+                card:
+                  type: entities
+                  entities:
+                    - entity: sensor.b2500_02_tc_dis
+                  show_header_toggle: false
+              - type: conditional
+                conditions:
+                  - condition: state
+                    entity: input_text.b03_mac
+                    state_not: '0'
+                card:
+                  type: entities
+                  entities:
+                    - entity: sensor.b2500_03_tc_dis
+                  show_header_toggle: false
+              - type: conditional
+                conditions:
+                  - condition: state
+                    entity: input_text.b04_mac
+                    state_not: '0'
+                card:
+                  type: entities
+                  entities:
+                    - entity: sensor.b2500_04_tc_dis
+                  show_header_toggle: false
+              - type: conditional
+                conditions:
+                  - condition: state
+                    entity: input_text.b05_mac
+                    state_not: '0'
+                card:
+                  type: entities
+                  entities:
+                    - entity: sensor.b2500_05_tc_dis
+                  show_header_toggle: false
+              - type: conditional
+                conditions:
+                  - condition: state
+                    entity: input_text.b06_mac
+                    state_not: '0'
+                card:
+                  type: entities
+                  entities:
+                    - entity: sensor.b2500_06_tc_dis
+                  show_header_toggle: false
+              - type: conditional
+                conditions:
+                  - condition: state
+                    entity: input_text.b07_mac
+                    state_not: '0'
+                card:
+                  type: entities
+                  entities:
+                    - entity: sensor.b2500_07_tc_dis
+                  show_header_toggle: false
+              - type: conditional
+                conditions:
+                  - condition: state
+                    entity: input_text.b08_mac
+                    state_not: '0'
+                card:
+                  type: entities
+                  entities:
+                    - entity: sensor.b2500_08_tc_dis
+                  show_header_toggle: false
+              - type: conditional
+                conditions:
+                  - condition: state
+                    entity: input_text.b09_mac
+                    state_not: '0'
+                card:
+                  type: entities
+                  entities:
+                    - entity: sensor.b2500_09_tc_dis
+                  show_header_toggle: false
+    badges:
+      - type: entity
+        entity: sensor.b2500_status_zeile
   - type: sections
     max_columns: 4
     title: Restart
@@ -4001,13 +4132,16 @@ views:
           - type: entities
             entities:
               - entity: input_select.speicherauswahl
-              - entity: input_button.b2500_restart
-              - entity: automation.b2500pkg_send_restart
-                secondary_info: none
-                icon: mdi:restart
-                name: Restart Funktion aus/einschalten
             show_header_toggle: false
+            footer:
+              type: buttons
+              entities:
+                - entity: script.b2500pkg_send_restart
+                  name: Sende Restart Befehl
     cards: []
+    badges:
+      - type: entity
+        entity: sensor.b2500_status_zeile
   - type: sections
     max_columns: 4
     title: Spannungen
@@ -5669,23 +5803,3 @@ views:
             entity: binary_sensor.b2500_09_b2
             state: 'on'
     cards: []
-  - type: sections
-    max_columns: 4
-    title: Kalibrierung/Optimierung
-    path: kalibrierung-optimierung
-    sections:
-      - type: grid
-        cards:
-          - type: heading
-            heading: Neuer Abschnitt
-          - type: markdown
-            title: B2500PKG Speicheroptimierung
-            content: |-
-              {{ state_attr('sensor.b2500pkg_optimierungslog', 'log')
-                 | default('Noch kein Optimierungslauf gestartet.', true) }}
-            grid_options:
-              rows: auto
-          - type: tile
-            entity: script.b2500pkg_speicher_optimieren
-            grid_options:
-              columns: full
