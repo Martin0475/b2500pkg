@@ -1,0 +1,34 @@
+recorder:
+  exclude:
+    entity_globs:
+    - sensor.b2500_cache_*
+    - input_number.b2500_*_status
+    - script.b2500_*_worker
+    - automation.b2500pkg_repost_*
+    - script.b2500pkg_test_*
+    - input_select.b2500pkg_test_*
+    entities:
+    - script.b2500pkg_worker_sequence
+    - script.b2500pkg_set_charging_mode
+    - input_select.speicherauswahl
+    - input_select.lademodus
+    - input_text.b2500_all
+    - input_number.b2500_dod
+    - script.b2500pkg_set_dod
+    - script.b2500pkg_set_timer
+    - script.b2500pkg_set_selbstanpassung
+    - script.b2500pkg_timer_dashboard
+    - input_select.timerslot
+    - input_boolean.b2500_timer_ein
+    - input_boolean.b2500_timer_aus
+    - input_boolean.b2500_timer_startzeit_aendern
+    - input_boolean.b2500_timer_endzeit_aendern
+    - input_boolean.b2500_timer_leistung_aendern
+    - input_datetime.timer_beginn
+    - input_datetime.timer_ende
+    - input_number.timer_leistung
+    - input_select.smartmeter
+    - script.b2500pkg_set_surplus
+    - input_select.surplus
+    - script.b2500pkg_send_restart
+    - script.b2500pkg_set_smartmeter

@@ -54,7 +54,7 @@ input_number:
   timer_leistung:
     name: Timer Ausgabeleistung  
     mode: box
-    min: 80
+    min: 40
     max: 800
     step: 1
   b2500_dod:
@@ -64,12 +64,5 @@ input_number:
     max: 100
     step: 1
 
-input_button:
-  b2500_timer_status_setzen:
-    name: Timer ein/ausschalten
-  zeit_setzen:
-    name: B2500 Zeit setzen    
-  b2500_leistung_setzen:
-    name: B2500 Leistung setzen
-  b2500_selbstanpassung:
-    name: B2500 auf Selbstanpassung stellen
+
+ 
