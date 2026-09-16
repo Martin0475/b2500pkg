@@ -7,6 +7,13 @@ recorder:
     - automation.b2500pkg_repost_*
     - script.b2500pkg_test_*
     - input_select.b2500pkg_test_*
+    - input_boolean.zeropower_*
+    - input_select.zeropower_*
+    - input_text.zeropower_*
+    - input_number.zeropower_*
+    - sensor.zeropower_*
+    - script.b2500pkg_zeropower_*
+    - automation.b2500pkg_zeropower_*
     entities:
     - script.b2500pkg_worker_sequence
     - script.b2500pkg_set_charging_mode
@@ -32,3 +39,4 @@ recorder:
     - input_select.surplus
     - script.b2500pkg_send_restart
     - script.b2500pkg_set_smartmeter
+    - script.b2500pkg_discovery_script
