@@ -1,6 +1,6 @@
 {
-  "version": "09.09.2026",
-  "changes": "Bugfix, set_scripte überarbeitet",
+  "version": "16.09.2026",
+  "changes": "Min/Max/Diff Spannungen und Info min/max Zelle",
   "b2500pkg": [
     "b2500pkg_input.yaml",
     "b2500pkg_templates.yaml",
