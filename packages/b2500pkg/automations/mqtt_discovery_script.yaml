@@ -978,6 +978,32 @@ script:
                               payload: ""
                               retain: true
 
+                    # Abgeleitete Spannungswerte ebenfalls vollständig löschen.
+                    - repeat:
+                        for_each:
+                          - voltage_min
+                          - voltage_min_cell
+                          - voltage_max
+                          - voltage_max_cell
+                          - voltage_diff
+                          - extern1_voltage_min
+                          - extern1_voltage_min_cell
+                          - extern1_voltage_max
+                          - extern1_voltage_max_cell
+                          - extern1_voltage_diff
+                          - extern2_voltage_min
+                          - extern2_voltage_min_cell
+                          - extern2_voltage_max
+                          - extern2_voltage_max_cell
+                          - extern2_voltage_diff
+                        sequence:
+                          - action: mqtt.publish
+                            data:
+                              topic: >-
+                                homeassistant/sensor/b2500_{{ current_number }}/{{ repeat.item }}/config
+                              payload: ""
+                              retain: true
+
                     - event: b2500pkg_status
                       event_data:
                         status: LAEUFT
@@ -1415,6 +1441,378 @@ script:
                                       } | to_json
                                     }}
 
+
+                    # --------------------------------------------------
+                    # HAUPTSPEICHER – Min/Max/Zellnummer/Spannungsdifferenz
+                    # Trigger ist CD13/last_updated; die Berechnung liest
+                    # danach den fertigen CD13-Cache des Geräts.
+                    # --------------------------------------------------
+                    - repeat:
+                        for_each:
+                          - suffix: voltage_min
+                            name: "Minimale Zellspannung"
+                            result: min
+                            voltage: true
+                          - suffix: voltage_min_cell
+                            name: "Zelle Minimum"
+                            result: min_cell
+                            voltage: false
+                          - suffix: voltage_max
+                            name: "Maximale Zellspannung"
+                            result: max
+                            voltage: true
+                          - suffix: voltage_max_cell
+                            name: "Zelle Maximum"
+                            result: max_cell
+                            voltage: false
+                          - suffix: voltage_diff
+                            name: "Spannungsdifferenz"
+                            result: diff
+                            voltage: true
+                        sequence:
+                          - variables:
+                              derived_suffix: "{{ repeat.item.suffix }}"
+                              derived_name: "{{ repeat.item.name }}"
+                              derived_result: "{{ repeat.item.result }}"
+                              derived_is_voltage: "{{ repeat.item.voltage }}"
+                              # Bestehendes Hauptspeicher-Namensschema beibehalten.
+                              # Beispiel B01:
+                              #   sensor.b01_min_spannung
+                              #   sensor.b01_min_spannung_zelle
+                              #   sensor.b01_max_spannung
+                              #   sensor.b01_max_spannung_zelle
+                              #   sensor.b01_spannungsdifferenz
+                              derived_entity_id: >-
+                                {% if repeat.item.suffix == 'voltage_min' %}
+                                  sensor.b{{ current_number }}_min_spannung
+                                {% elif repeat.item.suffix == 'voltage_min_cell' %}
+                                  sensor.b{{ current_number }}_min_spannung_zelle
+                                {% elif repeat.item.suffix == 'voltage_max' %}
+                                  sensor.b{{ current_number }}_max_spannung
+                                {% elif repeat.item.suffix == 'voltage_max_cell' %}
+                                  sensor.b{{ current_number }}_max_spannung_zelle
+                                {% elif repeat.item.suffix == 'voltage_diff' %}
+                                  sensor.b{{ current_number }}_spannungsdifferenz
+                                {% else %}
+                                  sensor.b2500_{{ current_number }}_{{ repeat.item.suffix }}
+                                {% endif %}
+                              derived_template: >-
+                                {% set cache_entity = 'sensor.b2500_cache_' ~ current_number %}
+                                {% set keys_literal = "['a0','a1','a2','a3','a4','a5','a6','a7','a8','a9','aa','ab','ac','ad']" %}
+                                {% set common =
+                                  "{% set data = state_attr('" ~ cache_entity ~ "', 'cd13') or {} %}"
+                                  ~ "{% set keys = " ~ keys_literal ~ " %}"
+                                  ~ "{% set ns = namespace(min=99999,min_cell=0,max=-1,max_cell=0,count=0) %}"
+                                  ~ "{% for key in keys %}"
+                                  ~ "{% set v = data.get(key,-1) | int(-1) %}"
+                                  ~ "{% if v > 0 %}"
+                                  ~ "{% set ns.count = ns.count + 1 %}"
+                                  ~ "{% if v < ns.min %}{% set ns.min = v %}{% set ns.min_cell = loop.index %}{% endif %}"
+                                  ~ "{% if v > ns.max %}{% set ns.max = v %}{% set ns.max_cell = loop.index %}{% endif %}"
+                                  ~ "{% endif %}"
+                                  ~ "{% endfor %}"
+                                %}
+                                {% if derived_result == 'min' %}
+                                  {{ common ~ "{% if ns.count > 0 %}{{ ns.min }}{% else %}{{ none }}{% endif %}" }}
+                                {% elif derived_result == 'min_cell' %}
+                                  {{ common ~ "{% if ns.count > 0 %}{{ ns.min_cell }}{% else %}{{ none }}{% endif %}" }}
+                                {% elif derived_result == 'max' %}
+                                  {{ common ~ "{% if ns.count > 0 %}{{ ns.max }}{% else %}{{ none }}{% endif %}" }}
+                                {% elif derived_result == 'max_cell' %}
+                                  {{ common ~ "{% if ns.count > 0 %}{{ ns.max_cell }}{% else %}{{ none }}{% endif %}" }}
+                                {% else %}
+                                  {{ common ~ "{% if ns.count > 0 %}{{ ns.max - ns.min }}{% else %}{{ none }}{% endif %}" }}
+                                {% endif %}
+
+                          - action: mqtt.publish
+                            data:
+                              topic: >-
+                                homeassistant/sensor/b2500_{{ current_number }}/{{ derived_suffix }}/config
+                              retain: true
+                              payload: >-
+                                {% if derived_is_voltage | bool %}
+                                  {{
+                                    {
+                                      'name': derived_name,
+                                      'state_topic':
+                                        'B2500PKG/B2500_' ~ current_number ~ '/CD13/last_updated',
+                                      'value_template': derived_template,
+                                      'device_class': 'voltage',
+                                      'state_class': 'measurement',
+                                      'unit_of_measurement': 'mV',
+                                      'default_entity_id':
+                                        derived_entity_id,
+                                      'unique_id':
+                                        'b2500_' ~ current_number ~ '_' ~ derived_suffix,
+                                      'entity_category': 'diagnostic',
+                                      'device': {
+                                        'identifiers': ['b2500_' ~ current_number],
+                                        'name': 'B' ~ current_number,
+                                        'manufacturer': 'B2500PKG',
+                                        'model': current_typ,
+                                        'serial_number': current_mac
+                                      }
+                                    } | to_json
+                                  }}
+                                {% else %}
+                                  {{
+                                    {
+                                      'name': derived_name,
+                                      'state_topic':
+                                        'B2500PKG/B2500_' ~ current_number ~ '/CD13/last_updated',
+                                      'value_template': derived_template,
+                                      'default_entity_id':
+                                        derived_entity_id,
+                                      'unique_id':
+                                        'b2500_' ~ current_number ~ '_' ~ derived_suffix,
+                                      'entity_category': 'diagnostic',
+                                      'device': {
+                                        'identifiers': ['b2500_' ~ current_number],
+                                        'name': 'B' ~ current_number,
+                                        'manufacturer': 'B2500PKG',
+                                        'model': current_typ,
+                                        'serial_number': current_mac
+                                      }
+                                    } | to_json
+                                  }}
+                                {% endif %}
+
+                    # --------------------------------------------------
+                    # ERWEITERUNG 1 – Min/Max/Zellnummer/Spannungsdifferenz
+                    # Trigger ist CD13/last_updated; die Berechnung liest
+                    # danach den fertigen CD13-Cache des Geräts.
+                    # --------------------------------------------------
+                    - if:
+                        - condition: template
+                          value_template: "{{ expansion1_present }}"
+                      then:
+                        - repeat:
+                            for_each:
+                              - suffix: extern1_voltage_min
+                                name: "E1 Minimale Zellspannung"
+                                result: min
+                                voltage: true
+                              - suffix: extern1_voltage_min_cell
+                                name: "E1 Zelle Minimum"
+                                result: min_cell
+                                voltage: false
+                              - suffix: extern1_voltage_max
+                                name: "E1 Maximale Zellspannung"
+                                result: max
+                                voltage: true
+                              - suffix: extern1_voltage_max_cell
+                                name: "E1 Zelle Maximum"
+                                result: max_cell
+                                voltage: false
+                              - suffix: extern1_voltage_diff
+                                name: "E1 Spannungsdifferenz"
+                                result: diff
+                                voltage: true
+                            sequence:
+                              - variables:
+                                  derived_suffix: "{{ repeat.item.suffix }}"
+                                  derived_name: "{{ repeat.item.name }}"
+                                  derived_result: "{{ repeat.item.result }}"
+                                  derived_is_voltage: "{{ repeat.item.voltage }}"
+                                  derived_template: >-
+                                    {% set cache_entity = 'sensor.b2500_cache_' ~ current_number %}
+                                    {% set keys_literal = "['b0','b1','b2','b3','b4','b5','b6','b7','b8','b9','ba','bb','bc','bd','be','bf']" %}
+                                    {% set common =
+                                      "{% set data = state_attr('" ~ cache_entity ~ "', 'cd13') or {} %}"
+                                      ~ "{% set keys = " ~ keys_literal ~ " %}"
+                                      ~ "{% set ns = namespace(min=99999,min_cell=0,max=-1,max_cell=0,count=0) %}"
+                                      ~ "{% for key in keys %}"
+                                      ~ "{% set v = data.get(key,-1) | int(-1) %}"
+                                      ~ "{% if v > 0 %}"
+                                      ~ "{% set ns.count = ns.count + 1 %}"
+                                      ~ "{% if v < ns.min %}{% set ns.min = v %}{% set ns.min_cell = loop.index %}{% endif %}"
+                                      ~ "{% if v > ns.max %}{% set ns.max = v %}{% set ns.max_cell = loop.index %}{% endif %}"
+                                      ~ "{% endif %}"
+                                      ~ "{% endfor %}"
+                                    %}
+                                    {% if derived_result == 'min' %}
+                                      {{ common ~ "{% if ns.count > 0 %}{{ ns.min }}{% else %}{{ none }}{% endif %}" }}
+                                    {% elif derived_result == 'min_cell' %}
+                                      {{ common ~ "{% if ns.count > 0 %}{{ ns.min_cell }}{% else %}{{ none }}{% endif %}" }}
+                                    {% elif derived_result == 'max' %}
+                                      {{ common ~ "{% if ns.count > 0 %}{{ ns.max }}{% else %}{{ none }}{% endif %}" }}
+                                    {% elif derived_result == 'max_cell' %}
+                                      {{ common ~ "{% if ns.count > 0 %}{{ ns.max_cell }}{% else %}{{ none }}{% endif %}" }}
+                                    {% else %}
+                                      {{ common ~ "{% if ns.count > 0 %}{{ ns.max - ns.min }}{% else %}{{ none }}{% endif %}" }}
+                                    {% endif %}
+
+                              - action: mqtt.publish
+                                data:
+                                  topic: >-
+                                    homeassistant/sensor/b2500_{{ current_number }}/{{ derived_suffix }}/config
+                                  retain: true
+                                  payload: >-
+                                    {% if derived_is_voltage | bool %}
+                                      {{
+                                        {
+                                          'name': derived_name,
+                                          'state_topic':
+                                            'B2500PKG/B2500_' ~ current_number ~ '/CD13/last_updated',
+                                          'value_template': derived_template,
+                                          'device_class': 'voltage',
+                                          'state_class': 'measurement',
+                                          'unit_of_measurement': 'mV',
+                                          'default_entity_id':
+                                            'sensor.b2500_' ~ current_number ~ '_' ~ derived_suffix,
+                                          'unique_id':
+                                            'b2500_' ~ current_number ~ '_' ~ derived_suffix,
+                                          'entity_category': 'diagnostic',
+                                          'device': {
+                                            'identifiers': ['b2500_' ~ current_number],
+                                            'name': 'B' ~ current_number,
+                                            'manufacturer': 'B2500PKG',
+                                            'model': current_typ,
+                                            'serial_number': current_mac
+                                          }
+                                        } | to_json
+                                      }}
+                                    {% else %}
+                                      {{
+                                        {
+                                          'name': derived_name,
+                                          'state_topic':
+                                            'B2500PKG/B2500_' ~ current_number ~ '/CD13/last_updated',
+                                          'value_template': derived_template,
+                                          'default_entity_id':
+                                            'sensor.b2500_' ~ current_number ~ '_' ~ derived_suffix,
+                                          'unique_id':
+                                            'b2500_' ~ current_number ~ '_' ~ derived_suffix,
+                                          'entity_category': 'diagnostic',
+                                          'device': {
+                                            'identifiers': ['b2500_' ~ current_number],
+                                            'name': 'B' ~ current_number,
+                                            'manufacturer': 'B2500PKG',
+                                            'model': current_typ,
+                                            'serial_number': current_mac
+                                          }
+                                        } | to_json
+                                      }}
+                                    {% endif %}
+
+                    # --------------------------------------------------
+                    # ERWEITERUNG 2 – Min/Max/Zellnummer/Spannungsdifferenz
+                    # Trigger ist CD13/last_updated; die Berechnung liest
+                    # danach den fertigen CD13-Cache des Geräts.
+                    # --------------------------------------------------
+                    - if:
+                        - condition: template
+                          value_template: "{{ expansion2_present }}"
+                      then:
+                        - repeat:
+                            for_each:
+                              - suffix: extern2_voltage_min
+                                name: "E2 Minimale Zellspannung"
+                                result: min
+                                voltage: true
+                              - suffix: extern2_voltage_min_cell
+                                name: "E2 Zelle Minimum"
+                                result: min_cell
+                                voltage: false
+                              - suffix: extern2_voltage_max
+                                name: "E2 Maximale Zellspannung"
+                                result: max
+                                voltage: true
+                              - suffix: extern2_voltage_max_cell
+                                name: "E2 Zelle Maximum"
+                                result: max_cell
+                                voltage: false
+                              - suffix: extern2_voltage_diff
+                                name: "E2 Spannungsdifferenz"
+                                result: diff
+                                voltage: true
+                            sequence:
+                              - variables:
+                                  derived_suffix: "{{ repeat.item.suffix }}"
+                                  derived_name: "{{ repeat.item.name }}"
+                                  derived_result: "{{ repeat.item.result }}"
+                                  derived_is_voltage: "{{ repeat.item.voltage }}"
+                                  derived_template: >-
+                                    {% set cache_entity = 'sensor.b2500_cache_' ~ current_number %}
+                                    {% set keys_literal = "['c0','c1','c2','c3','c4','c5','c6','c7','c8','c9','ca','cb','cc','cd','ce','cf']" %}
+                                    {% set common =
+                                      "{% set data = state_attr('" ~ cache_entity ~ "', 'cd13') or {} %}"
+                                      ~ "{% set keys = " ~ keys_literal ~ " %}"
+                                      ~ "{% set ns = namespace(min=99999,min_cell=0,max=-1,max_cell=0,count=0) %}"
+                                      ~ "{% for key in keys %}"
+                                      ~ "{% set v = data.get(key,-1) | int(-1) %}"
+                                      ~ "{% if v > 0 %}"
+                                      ~ "{% set ns.count = ns.count + 1 %}"
+                                      ~ "{% if v < ns.min %}{% set ns.min = v %}{% set ns.min_cell = loop.index %}{% endif %}"
+                                      ~ "{% if v > ns.max %}{% set ns.max = v %}{% set ns.max_cell = loop.index %}{% endif %}"
+                                      ~ "{% endif %}"
+                                      ~ "{% endfor %}"
+                                    %}
+                                    {% if derived_result == 'min' %}
+                                      {{ common ~ "{% if ns.count > 0 %}{{ ns.min }}{% else %}{{ none }}{% endif %}" }}
+                                    {% elif derived_result == 'min_cell' %}
+                                      {{ common ~ "{% if ns.count > 0 %}{{ ns.min_cell }}{% else %}{{ none }}{% endif %}" }}
+                                    {% elif derived_result == 'max' %}
+                                      {{ common ~ "{% if ns.count > 0 %}{{ ns.max }}{% else %}{{ none }}{% endif %}" }}
+                                    {% elif derived_result == 'max_cell' %}
+                                      {{ common ~ "{% if ns.count > 0 %}{{ ns.max_cell }}{% else %}{{ none }}{% endif %}" }}
+                                    {% else %}
+                                      {{ common ~ "{% if ns.count > 0 %}{{ ns.max - ns.min }}{% else %}{{ none }}{% endif %}" }}
+                                    {% endif %}
+
+                              - action: mqtt.publish
+                                data:
+                                  topic: >-
+                                    homeassistant/sensor/b2500_{{ current_number }}/{{ derived_suffix }}/config
+                                  retain: true
+                                  payload: >-
+                                    {% if derived_is_voltage | bool %}
+                                      {{
+                                        {
+                                          'name': derived_name,
+                                          'state_topic':
+                                            'B2500PKG/B2500_' ~ current_number ~ '/CD13/last_updated',
+                                          'value_template': derived_template,
+                                          'device_class': 'voltage',
+                                          'state_class': 'measurement',
+                                          'unit_of_measurement': 'mV',
+                                          'default_entity_id':
+                                            'sensor.b2500_' ~ current_number ~ '_' ~ derived_suffix,
+                                          'unique_id':
+                                            'b2500_' ~ current_number ~ '_' ~ derived_suffix,
+                                          'entity_category': 'diagnostic',
+                                          'device': {
+                                            'identifiers': ['b2500_' ~ current_number],
+                                            'name': 'B' ~ current_number,
+                                            'manufacturer': 'B2500PKG',
+                                            'model': current_typ,
+                                            'serial_number': current_mac
+                                          }
+                                        } | to_json
+                                      }}
+                                    {% else %}
+                                      {{
+                                        {
+                                          'name': derived_name,
+                                          'state_topic':
+                                            'B2500PKG/B2500_' ~ current_number ~ '/CD13/last_updated',
+                                          'value_template': derived_template,
+                                          'default_entity_id':
+                                            'sensor.b2500_' ~ current_number ~ '_' ~ derived_suffix,
+                                          'unique_id':
+                                            'b2500_' ~ current_number ~ '_' ~ derived_suffix,
+                                          'entity_category': 'diagnostic',
+                                          'device': {
+                                            'identifiers': ['b2500_' ~ current_number],
+                                            'name': 'B' ~ current_number,
+                                            'manufacturer': 'B2500PKG',
+                                            'model': current_typ,
+                                            'serial_number': current_mac
+                                          }
+                                        } | to_json
+                                      }}
+                                    {% endif %}
+
                     - event: b2500pkg_status
                       event_data:
                         status: LAEUFT
@@ -1740,3 +2138,5 @@ script:
       - action: mqtt.reload
     mode: queued
     max: 10
+    trace:
+      stored_traces: 0

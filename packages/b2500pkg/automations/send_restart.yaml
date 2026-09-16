@@ -1,7 +1,7 @@
 script:
   b2500pkg_send_restart:
     alias: B2500PKG_Send_Restart
-    description: Sendet den Restart-Befehl an einen B2500-Speicher. Wenn speicher leer bleibt, wird input_select.speicherauswahl verwendet.
+    description: Sendet den Restart-Befehl an einen oder alle B2500-Speicher. Wenn speicher leer bleibt, wird input_select.speicherauswahl verwendet.
     fields:
       speicher:
         name: Speicher
@@ -29,10 +29,16 @@ script:
               value: b2500_08
             - label: B09
               value: b2500_09
+            - label: Alle Speicher
+              value: Alle_Speicher
     sequence:
     - variables:
-        speicher_auswahl: "{% if speicher is defined and speicher | string | trim != '' %}\n  {{ speicher | string | trim }}\n{% else %}\n  {{\
-          \ states('input_select.speicherauswahl') | string | trim }}\n{% endif %}"
+        speicher_auswahl: >-
+          {% if speicher is defined and speicher | string | trim != '' %}
+            {{ speicher | string | trim }}
+          {% else %}
+            {{ states('input_select.speicherauswahl') | string | trim }}
+          {% endif %}
         erlaubte_speicher:
         - b2500_01
         - b2500_02
@@ -43,17 +49,30 @@ script:
         - b2500_07
         - b2500_08
         - b2500_09
-        worker_entity: script.{{ speicher_auswahl }}_worker
-        worker_status_entity: input_number.b2500_{{ speicher_auswahl[-2:] }}_status
+        - Alle_Speicher
+        all_speicher: >-
+          {% set raw = states('input_text.b2500_all') %}
+          {% if raw not in ['unknown', 'unavailable', '', 'none', 'None'] %}
+            {{ raw | from_json([]) }}
+          {% else %}
+            {{ [] }}
+          {% endif %}
+        targets: >-
+          {% if speicher_auswahl == 'Alle_Speicher' %}
+            {{ all_speicher }}
+          {% else %}
+            {{ [speicher_auswahl] }}
+          {% endif %}
     - if:
       - condition: template
-        value_template: '{{ speicher_auswahl not in erlaubte_speicher }}'
+        value_template: >-
+          {{ speicher_auswahl not in erlaubte_speicher or targets | count == 0 }}
       then:
       - variables:
           response:
             success: false
             code: INVALID_STORAGE
-            message: Ungültiger Speicher '{{ speicher_auswahl }}'.
+            message: "Ungültiger Speicher '{{ speicher_auswahl }}'."
             speicher: '{{ speicher_auswahl }}'
       - event: b2500pkg_status
         event_data:
@@ -62,71 +81,81 @@ script:
           untertitel: '{{ speicher_auswahl }}'
           meldung: Ungültige Speicherauswahl
           details: Restart wurde nicht gesendet
-          rueckmeldung: Erlaubt sind b2500_01 bis b2500_09.
+          rueckmeldung: Erlaubt sind b2500_01 bis b2500_09 oder Alle_Speicher. Bei Alle_Speicher darf input_text.b2500_all nicht leer sein.
           adresse: script.b2500pkg_send_restart
           quelle: script.b2500pkg_send_restart
       - stop: Ungültige Speicherauswahl.
         response_variable: response
-    - event: b2500pkg_status
-      event_data:
-        status: LAEUFT
-        titel: B2500PKG Restart
-        untertitel: '{{ speicher_auswahl | upper | replace(''B2500_'', ''B'') }}'
-        meldung: Restart wird gesendet
-        details: Sende cd=10
-        rueckmeldung: Keine Rückprüfung, da das Gerät neu startet.
-        adresse: '{{ worker_entity }}'
-        quelle: script.b2500pkg_send_restart
-    - action: '{{ worker_entity }}'
-      data:
-        payload: cd=10
-        followup_payload: ''
-        no_check: true
-        expected_answer: {}
+    - repeat:
+        for_each: '{{ targets }}'
+        sequence:
+        - variables:
+            current_storage: '{{ repeat.item }}'
+            worker_entity: 'script.{{ repeat.item }}_worker'
+            worker_status_entity: 'input_number.b2500_{{ repeat.item[-2:] }}_status'
+        - event: b2500pkg_status
+          event_data:
+            status: LAEUFT
+            titel: B2500PKG Restart
+            untertitel: '{{ current_storage | upper | replace(''B2500_'', ''B'') }}'
+            meldung: Restart wird gesendet
+            details: Sende cd=10
+            rueckmeldung: Keine Rückprüfung, da das Gerät neu startet.
+            adresse: '{{ worker_entity }}'
+            quelle: script.b2500pkg_send_restart
+        - action: '{{ worker_entity }}'
+          data:
+            payload: cd=10
+            followup_payload: ''
+            no_check: true
+            expected_answer: {}
+        - variables:
+            worker_status: '{{ states(worker_status_entity) | int(0) }}'
+        - if:
+          - condition: template
+            value_template: '{{ worker_status == 4 }}'
+          then:
+          - event: b2500pkg_status
+            event_data:
+              status: ERFOLGREICH
+              titel: B2500PKG Restart
+              untertitel: '{{ current_storage | upper | replace(''B2500_'', ''B'') }}'
+              meldung: Restart-Befehl gesendet
+              details: 'Worker-Status {{ worker_status }}'
+              rueckmeldung: cd=10
+              adresse: '{{ worker_status_entity }}'
+              quelle: script.b2500pkg_send_restart
+          else:
+          - variables:
+              response:
+                success: false
+                code: WORKER_FAILED
+                message: 'Restart-Befehl konnte für {{ current_storage }} nicht gesendet werden.'
+                speicher: '{{ current_storage }}'
+                worker_status: '{{ worker_status }}'
+          - event: b2500pkg_status
+            event_data:
+              status: FEHLER
+              titel: B2500PKG Restart
+              untertitel: '{{ current_storage | upper | replace(''B2500_'', ''B'') }}'
+              meldung: Restart-Befehl konnte nicht gesendet werden
+              details: 'Worker-Status {{ worker_status }}'
+              rueckmeldung: cd=10
+              adresse: '{{ worker_status_entity }}'
+              quelle: script.b2500pkg_send_restart
+          - stop: Restart-Befehl fehlgeschlagen.
+            response_variable: response
+        - delay:
+            seconds: 1
     - variables:
-        worker_status: '{{ states(worker_status_entity) | int(0) }}'
-    - if:
-      - condition: template
-        value_template: '{{ worker_status == 4 }}'
-      then:
-      - event: b2500pkg_status
-        event_data:
-          status: ERFOLGREICH
-          titel: B2500PKG Restart
-          untertitel: '{{ speicher_auswahl | upper | replace(''B2500_'', ''B'') }}'
-          meldung: Restart-Befehl gesendet
-          details: Worker-Status {{ worker_status }}
-          rueckmeldung: cd=10
-          adresse: '{{ worker_status_entity }}'
-          quelle: script.b2500pkg_send_restart
-      - variables:
-          response:
-            success: true
-            code: RESTART_SENT
-            message: Restart-Befehl wurde gesendet.
-            speicher: '{{ speicher_auswahl }}'
-      - stop: Restart-Befehl gesendet.
-        response_variable: response
-      else:
-      - event: b2500pkg_status
-        event_data:
-          status: FEHLER
-          titel: B2500PKG Restart
-          untertitel: '{{ speicher_auswahl | upper | replace(''B2500_'', ''B'') }}'
-          meldung: Restart-Befehl konnte nicht gesendet werden
-          details: Worker-Status {{ worker_status }}
-          rueckmeldung: cd=10
-          adresse: '{{ worker_status_entity }}'
-          quelle: script.b2500pkg_send_restart
-      - variables:
-          response:
-            success: false
-            code: WORKER_FAILED
-            message: Restart-Befehl konnte nicht gesendet werden.
-            speicher: '{{ speicher_auswahl }}'
-            worker_status: '{{ worker_status }}'
-      - stop: Restart-Befehl fehlgeschlagen.
-        response_variable: response
+        response:
+          success: true
+          code: RESTART_SENT
+          message: 'Restart-Befehl wurde an {{ targets | count }} Speicher gesendet.'
+          speicher: '{{ speicher_auswahl }}'
+          anzahl: '{{ targets | count }}'
+    - stop: Restart-Befehl gesendet.
+      response_variable: response
     mode: queued
     max: 10
     trace:

@@ -2,17 +2,117 @@ input_select:
   smartmeter:
     name: Smartmeter auswählen
     options:
-    - Eco Tracker
-    - CT002
-    - Shelly Pro 3EM
-    - Shelly EM gen3
-    - Shelly Pro EM50
-    - CT003
-    - CT001
+      - Eco Tracker
+      - CT002
+      - Shelly Pro 3EM
+      - Shelly EM gen3
+      - Shelly Pro EM50
+      - CT003
+      - CT001
+
+input_text:
+  ecotrackerip:
+    name: EcoTracker IP
+    icon: mdi:ip-network
+    mode: text
+    max: 15
+    # Leer ist erlaubt. Wenn gefüllt, muss die Anzeige immer NNN.NNN.NNN.NNN sein.
+    # Den Wertebereich 000..255 prüft zusätzlich das Script.
+    pattern: '(^$)|(^[0-9]{3}\.[0-9]{3}\.[0-9]{3}\.[0-9]{3}$)'
+
 script:
+  # ============================================================================
+  # Interner Helfer: cd=35,ip? senden und die native MQTT-Antwort zurückgeben.
+  # Zwei Versuche, weil die Antwort direkt vom B2500 kommt und nicht über den
+  # normalen B2500PKG-Repost-Cache läuft.
+  # ============================================================================
+  b2500pkg_smartmeter_cd35_query:
+    alias: B2500PKG Smartmeter CD35 Query
+    mode: parallel
+    max: 20
+    trace:
+      stored_traces: 0
+    fields:
+      request_topic:
+        required: true
+        selector:
+          text:
+      device_topic:
+        required: true
+        selector:
+          text:
+    sequence:
+      - action: mqtt.publish
+        data:
+          topic: '{{ request_topic }}'
+          payload: 'cd=35,ip?'
+          qos: 1
+          retain: false
+
+      - wait_for_trigger:
+          - trigger: mqtt
+            topic: '{{ device_topic }}'
+            payload: cd35
+            value_template: >-
+              {{ 'cd35' if (value | string).startswith('cd=35,') else 'other' }}
+        timeout: '00:00:03'
+        continue_on_timeout: true
+
+      - if:
+          - condition: template
+            value_template: '{{ wait.trigger is not none }}'
+        then:
+          - variables:
+              response:
+                success: true
+                raw: '{{ wait.trigger.payload | string | trim }}'
+          - stop: CD35-Antwort empfangen.
+            response_variable: response
+
+      - action: mqtt.publish
+        data:
+          topic: '{{ request_topic }}'
+          payload: 'cd=35,ip?'
+          qos: 1
+          retain: false
+
+      - wait_for_trigger:
+          - trigger: mqtt
+            topic: '{{ device_topic }}'
+            payload: cd35
+            value_template: >-
+              {{ 'cd35' if (value | string).startswith('cd=35,') else 'other' }}
+        timeout: '00:00:03'
+        continue_on_timeout: true
+
+      - variables:
+          response:
+            success: '{{ wait.trigger is not none }}'
+            raw: >-
+              {% if wait.trigger is not none %}
+                {{ wait.trigger.payload | string | trim }}
+              {% else %}
+                {{ '' }}
+              {% endif %}
+      - stop: CD35-Abfrage beendet.
+        response_variable: response
+
+  # ============================================================================
+  # Smartmeter setzen
+  # ============================================================================
   b2500pkg_set_smartmeter:
     alias: B2500PKG_Set_Smartmeter
-    description: Setzt den Smartmeter-Typ für einen B2500-Speicher. Leere Aktionsfelder verwenden input_select.speicherauswahl und input_select.smartmeter.
+    description: >-
+      Setzt den Smartmeter-Typ für einen oder alle B2500-Speicher.
+      Bei Eco Tracker wird vorher die im B2500 gespeicherte Monitor-IP per
+      cd=35,ip? geprüft. Falls input_text.ecotrackerip gefüllt ist und von der
+      gespeicherten IP abweicht (oder keine IP gespeichert ist), wird cd=35
+      gesetzt, erneut abgefragt und erst danach meter=7 gesetzt.
+    mode: queued
+    max: 10
+    trace:
+      stored_traces: 0
+
     fields:
       speicher:
         name: Speicher
@@ -22,24 +122,26 @@ script:
         selector:
           select:
             options:
-            - label: B01
-              value: b2500_01
-            - label: B02
-              value: b2500_02
-            - label: B03
-              value: b2500_03
-            - label: B04
-              value: b2500_04
-            - label: B05
-              value: b2500_05
-            - label: B06
-              value: b2500_06
-            - label: B07
-              value: b2500_07
-            - label: B08
-              value: b2500_08
-            - label: B09
-              value: b2500_09
+              - label: B01
+                value: b2500_01
+              - label: B02
+                value: b2500_02
+              - label: B03
+                value: b2500_03
+              - label: B04
+                value: b2500_04
+              - label: B05
+                value: b2500_05
+              - label: B06
+                value: b2500_06
+              - label: B07
+                value: b2500_07
+              - label: B08
+                value: b2500_08
+              - label: B09
+                value: b2500_09
+              - label: Alle Speicher
+                value: Alle_Speicher
       smartmeter:
         name: Smartmeter
         description: Optional. Wenn leer, wird input_select.smartmeter verwendet.
@@ -48,138 +150,600 @@ script:
         selector:
           select:
             options:
-            - Eco Tracker
-            - CT002
-            - Shelly Pro 3EM
-            - Shelly EM gen3
-            - Shelly Pro EM50
-            - CT003
-            - CT001
+              - Eco Tracker
+              - CT002
+              - Shelly Pro 3EM
+              - Shelly EM gen3
+              - Shelly Pro EM50
+              - CT003
+              - CT001
+
     sequence:
-    - variables:
-        speicher_auswahl: "{% if speicher is defined and speicher | string | trim != '' %}\n  {{ speicher | string | trim }}\n{% else %}\n  {{\
-          \ states('input_select.speicherauswahl') | string | trim }}\n{% endif %}"
-        smartmeter_auswahl: "{% if smartmeter is defined and smartmeter | string | trim != '' %}\n  {{ smartmeter | string | trim }}\n{% else\
-          \ %}\n  {{ states('input_select.smartmeter') | string | trim }}\n{% endif %}"
-        erlaubte_speicher:
-        - b2500_01
-        - b2500_02
-        - b2500_03
-        - b2500_04
-        - b2500_05
-        - b2500_06
-        - b2500_07
-        - b2500_08
-        - b2500_09
-        meter_set_map:
-          CT001: 0
-          Shelly Pro 3EM: 1
-          CT002: 3
-          CT003: 4
-          Shelly EM gen3: 5
-          Shelly Pro EM50: 6
-          Eco Tracker: 7
-        ct_t_raw_map:
-          CT001: 1
-          CT002: 3
-          Shelly Pro 3EM: 4
-          CT003: 6
-          Shelly EM gen3: 7
-          Shelly Pro EM50: 8
-          Eco Tracker: 9
-        meter_set: '{{ meter_set_map.get(smartmeter_auswahl, -1) }}'
-        ct_t_expected: '{{ ct_t_raw_map.get(smartmeter_auswahl, -1) }}'
-        smartmeter_payload: cd=27,meter={{ meter_set | int(-1) }},mac=000000000000
-        worker_entity: script.{{ speicher_auswahl }}_worker
-        worker_status_entity: input_number.b2500_{{ speicher_auswahl[-2:] }}_status
-    - if:
-      - condition: template
-        value_template: '{{ speicher_auswahl not in erlaubte_speicher or meter_set | int(-1) < 0 or ct_t_expected | int(-1) < 0 }}'
-      then:
+      # ------------------------------------------------------------------------
+      # Eingaben / Konstanten
+      # ------------------------------------------------------------------------
       - variables:
-          response:
-            success: false
-            code: INVALID_INPUT
-            message: Speicher oder Smartmeter-Typ ist ungültig.
-            speicher: '{{ speicher_auswahl }}'
-            smartmeter: '{{ smartmeter_auswahl }}'
+          speicher_auswahl: >-
+            {% if speicher is defined and speicher | string | trim != '' %}
+              {{ speicher | string | trim }}
+            {% else %}
+              {{ states('input_select.speicherauswahl') | string | trim }}
+            {% endif %}
+          smartmeter_auswahl: >-
+            {% if smartmeter is defined and smartmeter | string | trim != '' %}
+              {{ smartmeter | string | trim }}
+            {% else %}
+              {{ states('input_select.smartmeter') | string | trim }}
+            {% endif %}
+          ecotracker_helper_raw: "{{ states('input_text.ecotrackerip') | string | trim }}"
+          erlaubte_speicher:
+            - b2500_01
+            - b2500_02
+            - b2500_03
+            - b2500_04
+            - b2500_05
+            - b2500_06
+            - b2500_07
+            - b2500_08
+            - b2500_09
+            - Alle_Speicher
+          all_speicher: >-
+            {% set raw = states('input_text.b2500_all') %}
+            {% if raw not in ['unknown', 'unavailable', '', 'none', 'None'] %}
+              {{ raw | from_json([]) }}
+            {% else %}
+              {{ [] }}
+            {% endif %}
+          meter_set_map:
+            CT001: 0
+            Shelly Pro 3EM: 1
+            CT002: 3
+            CT003: 4
+            Shelly EM gen3: 5
+            Shelly Pro EM50: 6
+            Eco Tracker: 7
+          ct_t_raw_map:
+            CT001: 1
+            CT002: 3
+            Shelly Pro 3EM: 4
+            CT003: 6
+            Shelly EM gen3: 7
+            Shelly Pro EM50: 8
+            Eco Tracker: 9
+
+      - variables:
+          targets: >-
+            {% if speicher_auswahl == 'Alle_Speicher' %}
+              {{ all_speicher }}
+            {% else %}
+              {{ [speicher_auswahl] }}
+            {% endif %}
+          meter_set: '{{ meter_set_map.get(smartmeter_auswahl, -1) }}'
+          ct_t_expected: '{{ ct_t_raw_map.get(smartmeter_auswahl, -1) }}'
+          smartmeter_payload: >-
+            cd=27,meter={{ meter_set_map.get(smartmeter_auswahl, -1) | int(-1) }},mac=000000000000
+          ecotracker_helper_valid: >-
+            {% set ip = ecotracker_helper_raw %}
+            {% set p = ip.split('.') %}
+            {{
+              ip == ''
+              or (
+                (ip | regex_match('^[0-9]{3}\.[0-9]{3}\.[0-9]{3}\.[0-9]{3}$'))
+                and p | count == 4
+                and (p[0] | int(-1)) >= 0 and (p[0] | int(-1)) <= 255
+                and (p[1] | int(-1)) >= 0 and (p[1] | int(-1)) <= 255
+                and (p[2] | int(-1)) >= 0 and (p[2] | int(-1)) <= 255
+                and (p[3] | int(-1)) >= 0 and (p[3] | int(-1)) <= 255
+              )
+            }}
+
+      # ------------------------------------------------------------------------
+      # Allgemeine Validierung
+      # ------------------------------------------------------------------------
+      - if:
+          - condition: template
+            value_template: >-
+              {{ speicher_auswahl not in erlaubte_speicher
+                 or meter_set | int(-1) < 0
+                 or ct_t_expected | int(-1) < 0
+                 or targets | count == 0 }}
+        then:
+          - variables:
+              response:
+                success: false
+                code: INVALID_INPUT
+                message: Speicher oder Smartmeter-Typ ist ungültig.
+                speicher: '{{ speicher_auswahl }}'
+                smartmeter: '{{ smartmeter_auswahl }}'
+          - event: b2500pkg_status
+            event_data:
+              status: FEHLER
+              titel: B2500PKG Smartmeter
+              untertitel: '{{ speicher_auswahl }}'
+              meldung: Ungültige Eingabe
+              details: 'Smartmeter: {{ smartmeter_auswahl }}'
+              rueckmeldung: Speicher oder Smartmeter-Typ ist ungültig oder input_text.b2500_all ist leer.
+              adresse: script.b2500pkg_set_smartmeter
+              quelle: script.b2500pkg_set_smartmeter
+          - stop: Ungültige Smartmeter-Eingabe.
+            response_variable: response
+
+      # Helper darf leer sein; gefüllt nur exakt NNN.NNN.NNN.NNN und 000..255.
+      - if:
+          - condition: template
+            value_template: >-
+              {{ smartmeter_auswahl == 'Eco Tracker'
+                 and ecotracker_helper_raw != ''
+                 and not ecotracker_helper_valid }}
+        then:
+          - variables:
+              response:
+                success: false
+                code: ECOTRACKER_IP_INVALID
+                message: EcoTracker-IP im Helper hat ein ungültiges Format.
+                speicher: '{{ speicher_auswahl }}'
+                smartmeter: '{{ smartmeter_auswahl }}'
+                ecotrackerip: '{{ ecotracker_helper_raw }}'
+          - event: b2500pkg_status
+            event_data:
+              status: FEHLER
+              titel: B2500PKG Smartmeter
+              untertitel: '{{ speicher_auswahl }} – Eco Tracker'
+              meldung: EcoTracker-IP ungültig
+              details: 'Helper: {{ ecotracker_helper_raw }}'
+              rueckmeldung: 'Erwartet NNN.NNN.NNN.NNN, z. B. 192.168.169.023; jedes Oktett 000–255.'
+              adresse: input_text.ecotrackerip
+              quelle: script.b2500pkg_set_smartmeter
+          - stop: Ungültige EcoTracker-IP.
+            response_variable: response
+
+      # Nach erfolgreicher Helper-Prüfung in kanonische Schreibform umwandeln.
+      # Beispiel: 192.168.169.023 -> 192.168.169.23 (len=14).
+      - variables:
+          ecotracker_helper_canonical: >-
+            {% if smartmeter_auswahl == 'Eco Tracker' and ecotracker_helper_raw != '' %}
+              {% set p = ecotracker_helper_raw.split('.') %}
+              {{ '%d.%d.%d.%d' | format(p[0] | int, p[1] | int, p[2] | int, p[3] | int) }}
+            {% else %}
+              {{ '' }}
+            {% endif %}
+          ecotracker_helper_padded: >-
+            {{ ecotracker_helper_raw if smartmeter_auswahl == 'Eco Tracker' else '' }}
+
+      # Neues Statusfenster starten; die folgenden Schritte werden angehängt.
       - event: b2500pkg_status
         event_data:
-          status: FEHLER
+          status: LAEUFT
           titel: B2500PKG Smartmeter
-          untertitel: '{{ speicher_auswahl }}'
-          meldung: Ungültige Eingabe
-          details: 'Smartmeter: {{ smartmeter_auswahl }}'
-          rueckmeldung: Speicher oder Smartmeter-Typ ist ungültig.
+          untertitel: '{{ speicher_auswahl }} – {{ smartmeter_auswahl }}'
+          meldung: Smartmeter-Vorgang gestartet
+          details: >-
+            Ziel: {{ speicher_auswahl }} | Smartmeter: {{ smartmeter_auswahl }}
+            {% if smartmeter_auswahl == 'Eco Tracker' %}
+            | Helper: {{ ecotracker_helper_raw if ecotracker_helper_raw != '' else 'leer' }}
+            {% endif %}
+          rueckmeldung: ''
           adresse: script.b2500pkg_set_smartmeter
           quelle: script.b2500pkg_set_smartmeter
-      - stop: Ungültige Smartmeter-Eingabe.
-        response_variable: response
-    - event: b2500pkg_status
-      event_data:
-        status: LAEUFT
-        titel: B2500PKG Smartmeter
-        untertitel: '{{ speicher_auswahl | upper | replace(''B2500_'', ''B'') }} – {{ smartmeter_auswahl }}'
-        meldung: Smartmeter wird gesetzt
-        details: Sende {{ smartmeter_payload }}
-        rueckmeldung: Erwartet ct_t={{ ct_t_expected | int }}
-        adresse: '{{ worker_entity }}'
-        quelle: script.b2500pkg_set_smartmeter
-    - action: '{{ worker_entity }}'
-      data:
-        payload: '{{ smartmeter_payload }}'
-        followup_payload: cd=01
-        no_check: false
-        expected_answer:
-          ct_t: '{{ ct_t_expected | int }}'
-    - variables:
-        worker_status: '{{ states(worker_status_entity) | int(0) }}'
-    - if:
-      - condition: template
-        value_template: '{{ worker_status == 3 }}'
-      then:
-      - event: b2500pkg_status
-        event_data:
-          status: ERFOLGREICH
-          titel: B2500PKG Smartmeter
-          untertitel: '{{ speicher_auswahl | upper | replace(''B2500_'', ''B'') }} – {{ smartmeter_auswahl }}'
-          meldung: Smartmeter bestätigt
-          details: ct_t={{ ct_t_expected | int }} wurde bestätigt
-          rueckmeldung: Worker-Status {{ worker_status }}
-          adresse: '{{ worker_status_entity }}'
-          quelle: script.b2500pkg_set_smartmeter
+
+      # ------------------------------------------------------------------------
+      # Speicher sequenziell bearbeiten
+      # ------------------------------------------------------------------------
+      - repeat:
+          for_each: '{{ targets }}'
+          sequence:
+            - variables:
+                current_storage: '{{ repeat.item }}'
+                current_number: '{{ repeat.item[-2:] }}'
+                worker_entity: 'script.{{ repeat.item }}_worker'
+                worker_status_entity: 'input_number.b2500_{{ repeat.item[-2:] }}_status'
+
+            - variables:
+                request_topic: >-
+                  {{ states('input_text.b' ~ current_number ~ '_topic') }}/{{ states('input_text.b' ~ current_number ~ '_typ') }}/App/{{ states('input_text.b' ~ current_number ~ '_mac') }}/ctrl
+                device_topic: >-
+                  {{ states('input_text.b' ~ current_number ~ '_topic') }}/{{ states('input_text.b' ~ current_number ~ '_typ') }}/device/{{ states('input_text.b' ~ current_number ~ '_mac') }}/ctrl
+
+            # ==================================================================
+            # EcoTracker-IP prüfen
+            # ==================================================================
+            - if:
+                - condition: template
+                  value_template: "{{ smartmeter_auswahl == 'Eco Tracker' }}"
+              then:
+                - event: b2500pkg_status
+                  event_data:
+                    status: LAEUFT
+                    titel: B2500PKG Smartmeter
+                    untertitel: '{{ current_storage | upper | replace(''B2500_'', ''B'') }} – Eco Tracker'
+                    meldung: EcoTracker-IP wird abgefragt
+                    details: 'Sende cd=35,ip?'
+                    append: true
+                    rueckmeldung: 'Helper: {{ ecotracker_helper_raw if ecotracker_helper_raw != "" else "leer" }}'
+                    adresse: '{{ request_topic }}'
+                    quelle: script.b2500pkg_set_smartmeter
+
+                - action: script.b2500pkg_smartmeter_cd35_query
+                  data:
+                    request_topic: '{{ request_topic }}'
+                    device_topic: '{{ device_topic }}'
+                  response_variable: cd35_query
+
+                - variables:
+                    cd35_raw: "{{ cd35_query.raw | default('') | string | trim }}"
+
+                # Antwort cd=35,len=N,ip=x.x.x.x zerlegen.
+                - variables:
+                    cd35_ip_raw: >-
+                      {% set ns = namespace(ip='') %}
+                      {% for item in cd35_raw.split(',') %}
+                        {% set kv = item.split('=', 1) %}
+                        {% if kv | count == 2 and kv[0] | trim == 'ip' %}
+                          {% set ns.ip = kv[1] | trim %}
+                        {% endif %}
+                      {% endfor %}
+                      {{ ns.ip }}
+                    cd35_len_raw: >-
+                      {% set ns = namespace(length='') %}
+                      {% for item in cd35_raw.split(',') %}
+                        {% set kv = item.split('=', 1) %}
+                        {% if kv | count == 2 and kv[0] | trim == 'len' %}
+                          {% set ns.length = kv[1] | trim %}
+                        {% endif %}
+                      {% endfor %}
+                      {{ ns.length }}
+
+                # Native Antwort darf normale IPv4-Schreibweise mit 1..3 Stellen
+                # je Oktett verwenden. Für Vergleich/Anzeige wird auf 3 Stellen
+                # normalisiert.
+                - variables:
+                    cd35_ip_valid: >-
+                      {% set ip = cd35_ip_raw %}
+                      {% set p = ip.split('.') %}
+                      {{
+                        cd35_raw.startswith('cd=35,')
+                        and (ip | regex_match('^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$'))
+                        and p | count == 4
+                        and (p[0] | int(-1)) >= 0 and (p[0] | int(-1)) <= 255
+                        and (p[1] | int(-1)) >= 0 and (p[1] | int(-1)) <= 255
+                        and (p[2] | int(-1)) >= 0 and (p[2] | int(-1)) <= 255
+                        and (p[3] | int(-1)) >= 0 and (p[3] | int(-1)) <= 255
+                        and (cd35_len_raw | int(-1)) == (ip | length)
+                      }}
+                    cd35_ip_empty: >-
+                      {{ cd35_raw.startswith('cd=35,')
+                         and (cd35_len_raw | int(-1)) == 0
+                         and cd35_ip_raw == '' }}
+
+                - variables:
+                    cd35_ip_padded: >-
+                      {% if cd35_ip_valid %}
+                        {% set p = cd35_ip_raw.split('.') %}
+                        {{ '%03d.%03d.%03d.%03d' | format(p[0] | int, p[1] | int, p[2] | int, p[3] | int) }}
+                      {% else %}
+                        {{ '' }}
+                      {% endif %}
+
+                - event: b2500pkg_status
+                  event_data:
+                    status: LAEUFT
+                    titel: B2500PKG Smartmeter
+                    untertitel: '{{ current_storage | upper | replace(''B2500_'', ''B'') }} – Eco Tracker'
+                    meldung: EcoTracker-IP abgefragt
+                    details: 'Antwort: {{ cd35_raw if cd35_raw != "" else "keine Antwort" }}'
+                    append: true
+                    rueckmeldung: >-
+                      {% if cd35_ip_valid %}
+                        IP gültig: {{ cd35_ip_padded }}
+                      {% elif cd35_ip_empty %}
+                        Im Speicher ist keine EcoTracker-IP hinterlegt.
+                      {% else %}
+                        Antwort leer, ungültig oder nicht empfangen.
+                      {% endif %}
+                    adresse: '{{ device_topic }}'
+                    quelle: script.b2500pkg_set_smartmeter
+
+                # --------------------------------------------------------------
+                # Helper leer: gültige IP im B2500 reicht aus.
+                # --------------------------------------------------------------
+                - if:
+                    - condition: template
+                      value_template: "{{ ecotracker_helper_raw == '' and cd35_ip_valid }}"
+                  then:
+                    - event: b2500pkg_status
+                      event_data:
+                        status: LAEUFT
+                        titel: B2500PKG Smartmeter
+                        untertitel: '{{ current_storage | upper | replace(''B2500_'', ''B'') }} – Eco Tracker'
+                        meldung: Gespeicherte EcoTracker-IP wird verwendet
+                        details: 'IP: {{ cd35_ip_padded }}'
+                        append: true
+                        rueckmeldung: 'Helper ist leer – cd=35 bleibt unverändert.'
+                        adresse: '{{ device_topic }}'
+                        quelle: script.b2500pkg_set_smartmeter
+
+                # Helper leer und keine gültige gespeicherte IP: NICHT meter=7
+                # aktivieren; das verhindert den reproduzierten Hänger.
+                - if:
+                    - condition: template
+                      value_template: "{{ ecotracker_helper_raw == '' and not cd35_ip_valid }}"
+                  then:
+                    - variables:
+                        response:
+                          success: false
+                          code: ECOTRACKER_IP_MISSING
+                          message: Keine gültige EcoTracker-IP im B2500 gespeichert und Helper ist leer.
+                          speicher: '{{ current_storage }}'
+                          smartmeter: Eco Tracker
+                          cd35: '{{ cd35_raw }}'
+                    - event: b2500pkg_status
+                      event_data:
+                        status: FEHLER
+                        titel: B2500PKG Smartmeter
+                        untertitel: '{{ current_storage | upper | replace(''B2500_'', ''B'') }} – Eco Tracker'
+                        meldung: EcoTracker-IP fehlt
+                        details: 'cd35: {{ cd35_raw if cd35_raw != "" else "keine Antwort" }}'
+                        append: true
+                        rueckmeldung: 'input_text.ecotrackerip ist leer. EcoTracker wird NICHT aktiviert.'
+                        adresse: input_text.ecotrackerip
+                        quelle: script.b2500pkg_set_smartmeter
+                    - stop: EcoTracker-IP fehlt.
+                      response_variable: response
+
+                # --------------------------------------------------------------
+                # Helper gefüllt und IP stimmt nicht / fehlt: cd35 setzen.
+                # --------------------------------------------------------------
+                - if:
+                    - condition: template
+                      value_template: >-
+                        {{ ecotracker_helper_raw != ''
+                           and (not cd35_ip_valid or cd35_ip_padded != ecotracker_helper_padded) }}
+                  then:
+                    - variables:
+                        cd35_set_payload: >-
+                          cd=35,len={{ ecotracker_helper_canonical | length }},ip={{ ecotracker_helper_canonical }}
+
+                    - event: b2500pkg_status
+                      event_data:
+                        status: LAEUFT
+                        titel: B2500PKG Smartmeter
+                        untertitel: '{{ current_storage | upper | replace(''B2500_'', ''B'') }} – Eco Tracker'
+                        meldung: EcoTracker-IP wird gesetzt
+                        details: 'Sende {{ cd35_set_payload }}'
+                        append: true
+                        rueckmeldung: >-
+                          {% if cd35_ip_valid %}
+                            Ist: {{ cd35_ip_padded }} | Soll: {{ ecotracker_helper_padded }}
+                          {% else %}
+                            Keine gültige gespeicherte IP | Soll: {{ ecotracker_helper_padded }}
+                          {% endif %}
+                        adresse: '{{ request_topic }}'
+                        quelle: script.b2500pkg_set_smartmeter
+
+                    - action: mqtt.publish
+                      data:
+                        topic: '{{ request_topic }}'
+                        payload: '{{ cd35_set_payload }}'
+                        qos: 1
+                        retain: false
+
+                    # Set-Antwort auslaufen lassen, dann ausdrücklich neu abfragen.
+                    - delay:
+                        milliseconds: 500
+
+                    - event: b2500pkg_status
+                      event_data:
+                        status: LAEUFT
+                        titel: B2500PKG Smartmeter
+                        untertitel: '{{ current_storage | upper | replace(''B2500_'', ''B'') }} – Eco Tracker'
+                        meldung: EcoTracker-IP wird kontrolliert
+                        details: 'Sende erneut cd=35,ip?'
+                        append: true
+                        rueckmeldung: 'Erwartet: {{ ecotracker_helper_padded }}'
+                        adresse: '{{ request_topic }}'
+                        quelle: script.b2500pkg_set_smartmeter
+
+                    - action: script.b2500pkg_smartmeter_cd35_query
+                      data:
+                        request_topic: '{{ request_topic }}'
+                        device_topic: '{{ device_topic }}'
+                      response_variable: cd35_verify_query
+
+                    - variables:
+                        cd35_verify_raw: "{{ cd35_verify_query.raw | default('') | string | trim }}"
+
+                    - variables:
+                        cd35_verify_ip_raw: >-
+                          {% set ns = namespace(ip='') %}
+                          {% for item in cd35_verify_raw.split(',') %}
+                            {% set kv = item.split('=', 1) %}
+                            {% if kv | count == 2 and kv[0] | trim == 'ip' %}
+                              {% set ns.ip = kv[1] | trim %}
+                            {% endif %}
+                          {% endfor %}
+                          {{ ns.ip }}
+                        cd35_verify_len_raw: >-
+                          {% set ns = namespace(length='') %}
+                          {% for item in cd35_verify_raw.split(',') %}
+                            {% set kv = item.split('=', 1) %}
+                            {% if kv | count == 2 and kv[0] | trim == 'len' %}
+                              {% set ns.length = kv[1] | trim %}
+                            {% endif %}
+                          {% endfor %}
+                          {{ ns.length }}
+
+                    - variables:
+                        cd35_verify_valid: >-
+                          {% set ip = cd35_verify_ip_raw %}
+                          {% set p = ip.split('.') %}
+                          {{
+                            cd35_verify_raw.startswith('cd=35,')
+                            and (ip | regex_match('^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$'))
+                            and p | count == 4
+                            and (p[0] | int(-1)) >= 0 and (p[0] | int(-1)) <= 255
+                            and (p[1] | int(-1)) >= 0 and (p[1] | int(-1)) <= 255
+                            and (p[2] | int(-1)) >= 0 and (p[2] | int(-1)) <= 255
+                            and (p[3] | int(-1)) >= 0 and (p[3] | int(-1)) <= 255
+                            and (cd35_verify_len_raw | int(-1)) == (ip | length)
+                          }}
+
+                    - variables:
+                        cd35_verify_padded: >-
+                          {% if cd35_verify_valid %}
+                            {% set p = cd35_verify_ip_raw.split('.') %}
+                            {{ '%03d.%03d.%03d.%03d' | format(p[0] | int, p[1] | int, p[2] | int, p[3] | int) }}
+                          {% else %}
+                            {{ '' }}
+                          {% endif %}
+
+                    - event: b2500pkg_status
+                      event_data:
+                        status: >-
+                          {{ 'LAEUFT' if cd35_verify_valid and cd35_verify_padded == ecotracker_helper_padded else 'FEHLER' }}
+                        titel: B2500PKG Smartmeter
+                        untertitel: '{{ current_storage | upper | replace(''B2500_'', ''B'') }} – Eco Tracker'
+                        meldung: >-
+                          {{ 'EcoTracker-IP bestätigt' if cd35_verify_valid and cd35_verify_padded == ecotracker_helper_padded
+                             else 'EcoTracker-IP konnte nicht bestätigt werden' }}
+                        details: 'Antwort: {{ cd35_verify_raw if cd35_verify_raw != "" else "keine Antwort" }}'
+                        append: true
+                        rueckmeldung: >-
+                          {% if cd35_verify_valid %}
+                            Ist: {{ cd35_verify_padded }} | Soll: {{ ecotracker_helper_padded }}
+                          {% else %}
+                            Keine gültige cd=35-Antwort erhalten.
+                          {% endif %}
+                        adresse: '{{ device_topic }}'
+                        quelle: script.b2500pkg_set_smartmeter
+
+                    - if:
+                        - condition: template
+                          value_template: >-
+                            {{ not cd35_verify_valid or cd35_verify_padded != ecotracker_helper_padded }}
+                      then:
+                        - variables:
+                            response:
+                              success: false
+                              code: ECOTRACKER_IP_VERIFY_FAILED
+                              message: EcoTracker-IP konnte nach dem Setzen nicht bestätigt werden.
+                              speicher: '{{ current_storage }}'
+                              smartmeter: Eco Tracker
+                              soll_ip: '{{ ecotracker_helper_padded }}'
+                              cd35: '{{ cd35_verify_raw }}'
+                        - stop: EcoTracker-IP konnte nicht bestätigt werden.
+                          response_variable: response
+
+                # Helper gefüllt und gespeicherte IP bereits identisch.
+                - if:
+                    - condition: template
+                      value_template: >-
+                        {{ ecotracker_helper_raw != ''
+                           and cd35_ip_valid
+                           and cd35_ip_padded == ecotracker_helper_padded }}
+                  then:
+                    - event: b2500pkg_status
+                      event_data:
+                        status: LAEUFT
+                        titel: B2500PKG Smartmeter
+                        untertitel: '{{ current_storage | upper | replace(''B2500_'', ''B'') }} – Eco Tracker'
+                        meldung: EcoTracker-IP stimmt bereits überein
+                        details: 'IP: {{ cd35_ip_padded }}'
+                        append: true
+                        rueckmeldung: 'Keine Änderung an cd=35 nötig.'
+                        adresse: '{{ device_topic }}'
+                        quelle: script.b2500pkg_set_smartmeter
+
+            # ==================================================================
+            # Smartmeter setzen und per cd=01 / Cache bestätigen
+            # ==================================================================
+            - event: b2500pkg_status
+              event_data:
+                status: LAEUFT
+                titel: B2500PKG Smartmeter
+                untertitel: '{{ current_storage | upper | replace(''B2500_'', ''B'') }} – {{ smartmeter_auswahl }}'
+                meldung: Smartmeter wird gesetzt
+                details: 'Sende {{ smartmeter_payload }}'
+                append: true
+                rueckmeldung: 'Erwartet ct_t={{ ct_t_expected | int }}'
+                adresse: '{{ worker_entity }}'
+                quelle: script.b2500pkg_set_smartmeter
+
+            - action: '{{ worker_entity }}'
+              data:
+                payload: '{{ smartmeter_payload }}'
+                followup_payload: cd=01
+                no_check: false
+                expected_answer:
+                  ct_t: '{{ ct_t_expected | int }}'
+
+            - variables:
+                worker_status: '{{ states(worker_status_entity) | int(0) }}'
+
+            - if:
+                - condition: template
+                  value_template: '{{ worker_status == 3 }}'
+              then:
+                - event: b2500pkg_status
+                  event_data:
+                    status: ERFOLGREICH
+                    titel: B2500PKG Smartmeter
+                    untertitel: '{{ current_storage | upper | replace(''B2500_'', ''B'') }} – {{ smartmeter_auswahl }}'
+                    meldung: Smartmeter bestätigt
+                    details: 'ct_t={{ ct_t_expected | int }} wurde bestätigt'
+                    append: true
+                    rueckmeldung: 'Worker-Status {{ worker_status }}'
+                    adresse: '{{ worker_status_entity }}'
+                    quelle: script.b2500pkg_set_smartmeter
+              else:
+                - variables:
+                    response:
+                      success: false
+                      code: WORKER_FAILED
+                      message: 'Smartmeter konnte für {{ current_storage }} nicht bestätigt werden.'
+                      speicher: '{{ current_storage }}'
+                      smartmeter: '{{ smartmeter_auswahl }}'
+                      worker_status: '{{ worker_status }}'
+                - event: b2500pkg_status
+                  event_data:
+                    status: FEHLER
+                    titel: B2500PKG Smartmeter
+                    untertitel: '{{ current_storage | upper | replace(''B2500_'', ''B'') }} – {{ smartmeter_auswahl }}'
+                    meldung: Smartmeter konnte nicht bestätigt werden
+                    details: 'Erwartet ct_t={{ ct_t_expected | int }}'
+                    append: true
+                    rueckmeldung: 'Worker-Status {{ worker_status }}'
+                    adresse: '{{ worker_status_entity }}'
+                    quelle: script.b2500pkg_set_smartmeter
+                - stop: Smartmeter konnte nicht bestätigt werden.
+                  response_variable: response
+
+            - delay:
+                seconds: 1
+
+      # ------------------------------------------------------------------------
+      # Abschluss
+      # ------------------------------------------------------------------------
       - variables:
           response:
             success: true
             code: SMARTMETER_CONFIRMED
-            message: Smartmeter wurde bestätigt.
+            message: 'Smartmeter wurde für {{ targets | count }} Speicher bestätigt.'
             speicher: '{{ speicher_auswahl }}'
             smartmeter: '{{ smartmeter_auswahl }}'
             ct_t: '{{ ct_t_expected | int }}'
-      - stop: Smartmeter gesetzt.
-        response_variable: response
-      else:
+            anzahl: '{{ targets | count }}'
+
       - event: b2500pkg_status
         event_data:
-          status: FEHLER
+          status: ERFOLGREICH
           titel: B2500PKG Smartmeter
-          untertitel: '{{ speicher_auswahl | upper | replace(''B2500_'', ''B'') }} – {{ smartmeter_auswahl }}'
-          meldung: Smartmeter konnte nicht bestätigt werden
-          details: Erwartet ct_t={{ ct_t_expected | int }}
-          rueckmeldung: Worker-Status {{ worker_status }}
-          adresse: '{{ worker_status_entity }}'
+          untertitel: '{{ speicher_auswahl }} – {{ smartmeter_auswahl }}'
+          meldung: Smartmeter-Vorgang abgeschlossen
+          details: '{{ targets | count }} Speicher bestätigt'
+          append: true
+          rueckmeldung: ''
+          adresse: script.b2500pkg_set_smartmeter
           quelle: script.b2500pkg_set_smartmeter
-      - variables:
-          response:
-            success: false
-            code: WORKER_FAILED
-            message: Smartmeter konnte nicht bestätigt werden.
-            speicher: '{{ speicher_auswahl }}'
-            smartmeter: '{{ smartmeter_auswahl }}'
-            worker_status: '{{ worker_status }}'
-      - stop: Smartmeter konnte nicht bestätigt werden.
+
+      - stop: Smartmeter gesetzt.
         response_variable: response
-    mode: queued
-    max: 10
-    trace:
-      stored_traces: 0

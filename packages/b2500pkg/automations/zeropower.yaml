@@ -260,6 +260,8 @@ automation:
   description: V1_5
   mode: queued
   max: 10
+  trace:
+    stored_traces: 0
   triggers:
     - trigger: state
       entity_id:
@@ -332,6 +334,8 @@ script:
   b2500pkg_zeropower_main:
     mode: queued
     max: 10
+    trace:
+      stored_traces: 5
     sequence:
       - variables:
           target_range_high: "{{ states('sensor.zeropower_target_range_high') | float(0) }}"
@@ -471,36 +475,62 @@ script:
                       max_limit_mode
                     ] | min | int %}
 
-                    {% set timer_enabled = is_state('binary_sensor.b2500_' ~ id_str ~ '_d1', 'on') %}
-                    {% set soc = states('sensor.b2500_' ~ id_str ~ '_pe') | float(0) | int %}
-                    {% set soc_rounded = [((soc / 5) | round(0, 'ceil') * 5), 100] | min | int %}
-                    {% set pv_power = states('sensor.b' ~ id_str ~ '_pv_gesamt') | float(0) | int %}
-                    {% set lmi = states('sensor.b2500_' ~ id_str ~ '_lmi') | float(0) - 20 | int %}
-                    {% set manual_bypass = manual_bypass %}
+                    {#
+                      B2500-Zustände ausschließlich aus dem internen CD01-Cache lesen.
+                      Keine Abhängigkeit von per MQTT-Discovery erzeugten Einzel-Sensoren.
 
-                    {% set sp_rounded = [[(((pv_power - [manual_bypass | float(0), lmi | float(0)] | min) / 10) | round(0, 'ceil') * 10), max_limit] | min, 0] | max | int %}
+                      Ein Speicher wird für diesen Regeldurchlauf nur verwendet, wenn
+                      alle für ZEROpower benötigten Rohwerte im Cache vorhanden sind.
+                    #}
+                    {% set cache_entity = 'sensor.b2500_cache_' ~ id_str %}
+                    {% set cd01_raw = state_attr(cache_entity, 'cd01') %}
+                    {% set cd01 = cd01_raw if cd01_raw is mapping else {} %}
+                    {% set required_keys = ['d1', 'pe', 'w1', 'w2', 'lmi', 'p2', 'o1', 'h1'] %}
+                    {% set bad_cache_values = ['unknown', 'unavailable', 'none', ''] %}
+                    {% set cache_valid = namespace(ok=(cd01_raw is mapping)) %}
 
-                    {% set pv_mode = states('sensor.b2500_' ~ id_str ~ '_p2') | float(0) | int %}
-                    {% set passthrough = (pv_mode == 2) %}
-                    {% set pv_mode3 = (pv_mode == 3) or (pv_mode == 0 and soc == 100) %}
-                    {% set output_act = is_state('sensor.b2500_' ~ id_str ~ '_o1', '1') %}
+                    {% for key in required_keys %}
+                      {% set raw_value = cd01.get(key) %}
+                      {% if raw_value is none or (raw_value | string | trim | lower) in bad_cache_values %}
+                        {% set cache_valid.ok = false %}
+                      {% endif %}
+                    {% endfor %}
 
-                    {# B09 nicht als normalen B2500 eintragen, wenn B09 gerade Venus ist #}
-                    {% if not (i == 9 and b09_venus_active) %}
-                      {% if enabled and timer_enabled and (output_act or passthrough) %}
-                        {% set entry = {
-                          'id': i,
-                          'type': 'b2500',
-                          'soc': soc,
-                          'soc_rounded': soc_rounded,
-                          'pt': passthrough,
-                          'pvm3': pv_mode3,
-                          'sp_rounded': sp_rounded,
-                          'max_limit': max_limit,
-                          'min_limit': min_limit,
-                          'needs_doubling': needs_doubling
-                        } %}
-                        {% set ns.batteries_list = ns.batteries_list + [entry] %}
+                    {% if cache_valid.ok %}
+                      {% set timer_enabled = (cd01.get('d1') | int(0)) == 1 %}
+                      {% set soc = cd01.get('pe') | float(0) | int %}
+                      {% set soc_rounded = [((soc / 5) | round(0, 'ceil') * 5), 100] | min | int %}
+
+                      {# bisher sensor.bXX_pv_gesamt: direkt aus den CD01-Rohwerten w1 + w2 #}
+                      {% set pv_power = ((cd01.get('w1') | float(0)) + (cd01.get('w2') | float(0))) | int %}
+
+                      {% set lmi = ((cd01.get('lmi') | float(0)) - 20) | int %}
+                      {% set manual_bypass = manual_bypass %}
+
+                      {% set sp_rounded = [[(((pv_power - [manual_bypass | float(0), lmi | float(0)] | min) / 10) | round(0, 'ceil') * 10), max_limit] | min, 0] | max | int %}
+
+                      {% set pv_mode = cd01.get('p2') | int(0) %}
+                      {% set passthrough = (pv_mode == 2) %}
+                      {% set pv_mode3 = (pv_mode == 3) or (pv_mode == 0 and soc == 100) %}
+                      {% set output_act = (cd01.get('o1') | int(0)) == 1 %}
+
+                      {# B09 nicht als normalen B2500 eintragen, wenn B09 gerade Venus ist #}
+                      {% if not (i == 9 and b09_venus_active) %}
+                        {% if enabled and timer_enabled and (output_act or passthrough) %}
+                          {% set entry = {
+                            'id': i,
+                            'type': 'b2500',
+                            'soc': soc,
+                            'soc_rounded': soc_rounded,
+                            'pt': passthrough,
+                            'pvm3': pv_mode3,
+                            'sp_rounded': sp_rounded,
+                            'max_limit': max_limit,
+                            'min_limit': min_limit,
+                            'needs_doubling': needs_doubling
+                          } %}
+                          {% set ns.batteries_list = ns.batteries_list + [entry] %}
+                        {% endif %}
                       {% endif %}
                     {% endif %}
                   {% endfor %}
@@ -927,8 +957,16 @@ script:
                             {% if battery_type == 'venus' %}
                               {{ venus_power_state | float(0) | int }}
                             {% else %}
-                              {% set i = current_id %}
-                              {{ states('sensor.b2500_' ~ '%02d' | format(i | int) ~ '_h1') | float(0) | int }}
+                              {% set id_str = '%02d' | format(current_id | int) %}
+                              {% set cache_entity = 'sensor.b2500_cache_' ~ id_str %}
+                              {% set cd01 = state_attr(cache_entity, 'cd01') | default({}, true) %}
+                              {% if cd01 is mapping
+                                    and cd01.get('h1') is not none
+                                    and (cd01.get('h1') | string | trim | lower) not in ['unknown', 'unavailable', 'none', ''] %}
+                                {{ cd01.get('h1') | float(0) | int }}
+                              {% else %}
+                                0
+                              {% endif %}
                             {% endif %}
                         enabled: true
                       - alias: Leistung setzen wenn nötig
