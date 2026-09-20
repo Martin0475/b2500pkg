@@ -34,10 +34,12 @@ script:
         selector:
           select:
             options:
-              - {label: "Hauptspeicher – Entitäten", value: "Hauptspeicher_Entitaeten"}
+              - {label: "CD01 Statistik", value: "CD01_Statistik"}
+              - {label: "CD01 optional", value: "CD01_Optional"}
+              - {label: "CD16 Statistik", value: "CD16_Statistik"}
+              - {label: "CD16 optional", value: "CD16_Optional"}
               - {label: "Spannungen", value: "Spannungen"}
               - {label: "Timer", value: "Timer"}
-              - {label: "CD16", value: "CD16"}
               - {label: "Kalibrierungsdaten", value: "Kalibrierungsdaten"}
               - {label: "Alle Bereiche", value: "Alle"}
 
@@ -83,10 +85,12 @@ script:
             - Alle_Speicher
 
           gueltige_bereiche:
-            - Hauptspeicher_Entitaeten
+            - CD01_Statistik
+            - CD01_Optional
+            - CD16_Statistik
+            - CD16_Optional
             - Spannungen
             - Timer
-            - CD16
             - Kalibrierungsdaten
             - Alle
 
@@ -193,10 +197,12 @@ script:
                   {{
                     do_create and
                     bereich_auswahl in [
-                      'Hauptspeicher_Entitaeten',
+                      'CD01_Statistik',
+                      'CD01_Optional',
                       'Spannungen',
                       'Timer',
-                      'CD16',
+                      'CD16_Statistik',
+                      'CD16_Optional',
                       'Alle'
                     ]
                   }}
@@ -214,7 +220,8 @@ script:
                   {{
                     do_create and
                     bereich_auswahl in [
-                      'CD16',
+                      'CD16_Statistik',
+                      'CD16_Optional',
                       'Alle'
                     ]
                   }}
@@ -228,7 +235,7 @@ script:
                     ]
                   }}
 
-                hauptspeicher_entities:
+                cd01_optional_entities:
                   - source_key: l0
                     component: binary_sensor
                     topic_suffix: l0_bit0
@@ -309,21 +316,6 @@ script:
                     topic_suffix: p2
                     config: >-
                       {% raw %}{"name":"Solar2 Input Status","state_topic":"B2500PKG/B2500_01/CD01/p2","default_entity_id":"sensor.b2500_01_p2","unique_id":"b2500_01_p2","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
-                  - source_key: w1
-                    component: sensor
-                    topic_suffix: w1
-                    config: >-
-                      {% raw %}{"name":"PV1 Leistung","state_topic":"B2500PKG/B2500_01/CD01/w1","state_class":"measurement","device_class":"power","unit_of_measurement":"W","default_entity_id":"sensor.b2500_01_w1","unique_id":"b2500_01_w1","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
-                  - source_key: w2
-                    component: sensor
-                    topic_suffix: w2
-                    config: >-
-                      {% raw %}{"name":"PV2 Leistung","state_topic":"B2500PKG/B2500_01/CD01/w2","state_class":"measurement","device_class":"power","unit_of_measurement":"W","default_entity_id":"sensor.b2500_01_w2","unique_id":"b2500_01_w2","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
-                  - source_key: pe
-                    component: sensor
-                    topic_suffix: pe
-                    config: >-
-                      {% raw %}{"name":"Batterie SOC","state_topic":"B2500PKG/B2500_01/CD01/pe","state_class":"measurement","device_class":"battery","unit_of_measurement":"%","default_entity_id":"sensor.b2500_01_pe","unique_id":"b2500_01_pe","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
                   - source_key: vv
                     component: sensor
                     topic_suffix: vv
@@ -379,16 +371,6 @@ script:
                     topic_suffix: kn
                     config: >-
                       {% raw %}{"name":"Gesamtkapazität","state_topic":"B2500PKG/B2500_01/CD01/kn","device_class":"energy_storage","state_class":"measurement","unit_of_measurement":"Wh","default_entity_id":"sensor.b2500_01_kn","unique_id":"b2500_01_kn","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
-                  - source_key: g1
-                    component: sensor
-                    topic_suffix: g1
-                    config: >-
-                      {% raw %}{"name":"Output1 Leistung","state_topic":"B2500PKG/B2500_01/CD01/g1","state_class":"measurement","device_class":"power","unit_of_measurement":"W","default_entity_id":"sensor.b2500_01_g1","unique_id":"b2500_01_g1","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
-                  - source_key: g2
-                    component: sensor
-                    topic_suffix: g2
-                    config: >-
-                      {% raw %}{"name":"Output2 Leistung","state_topic":"B2500PKG/B2500_01/CD01/g2","state_class":"measurement","device_class":"power","unit_of_measurement":"W","default_entity_id":"sensor.b2500_01_g2","unique_id":"b2500_01_g2","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
                   - source_key: tl
                     component: sensor
                     topic_suffix: tl
@@ -434,21 +416,6 @@ script:
                     topic_suffix: a2
                     config: >-
                       {% raw %}{"name":"Ladezustand Erweiterung2","state_topic":"B2500PKG/B2500_01/CD01/a2","unit_of_measurement":"%","default_entity_id":"sensor.b2500_01_a2","unique_id":"b2500_01_a2","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
-                  - source_key: bc
-                    component: sensor
-                    topic_suffix: bc
-                    config: >-
-                      {% raw %}{"name":"Tägliche Battterieladung","state_topic":"B2500PKG/B2500_01/CD01/bc","state_class":"total_increasing","device_class":"energy","unit_of_measurement":"Wh","default_entity_id":"sensor.b2500_01_bc","unique_id":"b2500_01_bc","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
-                  - source_key: bs
-                    component: sensor
-                    topic_suffix: bs
-                    config: >-
-                      {% raw %}{"name":"Tägliche Batterieentladung","state_topic":"B2500PKG/B2500_01/CD01/bs","state_class":"total_increasing","device_class":"energy","unit_of_measurement":"Wh","default_entity_id":"sensor.b2500_01_bs","unique_id":"b2500_01_bs","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
-                  - source_key: pt
-                    component: sensor
-                    topic_suffix: pt
-                    config: >-
-                      {% raw %}{"name":"Tägliche PV Erzeugung","state_topic":"B2500PKG/B2500_01/CD01/pt","state_class":"total_increasing","device_class":"energy","unit_of_measurement":"Wh","default_entity_id":"sensor.b2500_01_pt","unique_id":"b2500_01_pt","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
                   - source_key: md
                     component: sensor
                     topic_suffix: md
@@ -556,7 +523,76 @@ script:
                       {% raw %}{"name":"FKTC","state_topic":"B2500PKG/B2500_01/CD01/fktc","default_entity_id":"sensor.b2500_01_fktc","unique_id":"b2500_01_fktc","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
 
 
-                cd16_entities:
+                # CD01 Statistik:
+                # Echte HA-Entitäten für Verlauf/Statistik.
+                cd01_statistik_entities:
+                  # PV-Leistung
+                  - required_keys: [w1]
+                    component: sensor
+                    topic_suffix: w1
+                    config: >-
+                      {% raw %}{"name":"PV1 Leistung","state_topic":"B2500PKG/B2500_01/CD01/w1","state_class":"measurement","device_class":"power","unit_of_measurement":"W","default_entity_id":"sensor.b2500_01_w1","unique_id":"b2500_01_w1","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                  - required_keys: [w2]
+                    component: sensor
+                    topic_suffix: w2
+                    config: >-
+                      {% raw %}{"name":"PV2 Leistung","state_topic":"B2500PKG/B2500_01/CD01/w2","state_class":"measurement","device_class":"power","unit_of_measurement":"W","default_entity_id":"sensor.b2500_01_w2","unique_id":"b2500_01_w2","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                  - required_keys: [w1, w2]
+                    component: sensor
+                    topic_suffix: pv_gesamt
+                    config: >-
+                      {% raw %}{"name":"PV Gesamt","state_topic":"B2500PKG/B2500_01/CD01/last_updated","state_class":"measurement","device_class":"power","unit_of_measurement":"W","value_template":"{% set c = state_attr('sensor.b2500_cache_01', 'cd01') or {} %}{% if 'w1' in c and 'w2' in c %}{{ c.get('w1', 0) | int(0) + c.get('w2', 0) | int(0) }}{% else %}{{ none }}{% endif %}","default_entity_id":"sensor.b01_pv_gesamt","unique_id":"b01_pv_gesamt","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+
+                  # Ausgangsleistung
+                  - required_keys: [g1]
+                    component: sensor
+                    topic_suffix: g1
+                    config: >-
+                      {% raw %}{"name":"Output1 Leistung","state_topic":"B2500PKG/B2500_01/CD01/g1","state_class":"measurement","device_class":"power","unit_of_measurement":"W","default_entity_id":"sensor.b2500_01_g1","unique_id":"b2500_01_g1","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                  - required_keys: [g2]
+                    component: sensor
+                    topic_suffix: g2
+                    config: >-
+                      {% raw %}{"name":"Output2 Leistung","state_topic":"B2500PKG/B2500_01/CD01/g2","state_class":"measurement","device_class":"power","unit_of_measurement":"W","default_entity_id":"sensor.b2500_01_g2","unique_id":"b2500_01_g2","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                  - required_keys: [g1, g2]
+                    component: sensor
+                    topic_suffix: output_gesamt
+                    config: >-
+                      {% raw %}{"name":"Output Gesamt","state_topic":"B2500PKG/B2500_01/CD01/last_updated","state_class":"measurement","device_class":"power","unit_of_measurement":"W","value_template":"{% set c = state_attr('sensor.b2500_cache_01', 'cd01') or {} %}{% if 'g1' in c and 'g2' in c %}{{ c.get('g1', 0) | int(0) + c.get('g2', 0) | int(0) }}{% else %}{{ none }}{% endif %}","default_entity_id":"sensor.b01_output_gesamt","unique_id":"b01_output_gesamt","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+
+                  # Tagesenergie
+                  - required_keys: [pt]
+                    component: sensor
+                    topic_suffix: pt
+                    config: >-
+                      {% raw %}{"name":"Tägliche PV Erzeugung","state_topic":"B2500PKG/B2500_01/CD01/pt","state_class":"total_increasing","device_class":"energy","unit_of_measurement":"Wh","default_entity_id":"sensor.b2500_01_pt","unique_id":"b2500_01_pt","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                  - required_keys: [bc]
+                    component: sensor
+                    topic_suffix: bc
+                    config: >-
+                      {% raw %}{"name":"Tägliche Batterieladung","state_topic":"B2500PKG/B2500_01/CD01/bc","state_class":"total_increasing","device_class":"energy","unit_of_measurement":"Wh","default_entity_id":"sensor.b2500_01_bc","unique_id":"b2500_01_bc","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+                  - required_keys: [bs]
+                    component: sensor
+                    topic_suffix: bs
+                    config: >-
+                      {% raw %}{"name":"Tägliche Batterieentladung","state_topic":"B2500PKG/B2500_01/CD01/bs","state_class":"total_increasing","device_class":"energy","unit_of_measurement":"Wh","default_entity_id":"sensor.b2500_01_bs","unique_id":"b2500_01_bs","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+
+                  # Ladezustand
+                  - required_keys: [pe]
+                    component: sensor
+                    topic_suffix: pe
+                    config: >-
+                      {% raw %}{"name":"Batterie SOC","state_topic":"B2500PKG/B2500_01/CD01/pe","state_class":"measurement","device_class":"battery","unit_of_measurement":"%","default_entity_id":"sensor.b2500_01_pe","unique_id":"b2500_01_pe","entity_category":"diagnostic","device":{"identifiers":["b2500_01"],"name":"B01","manufacturer":"B2500PKG","model":"B2500PKG_TYP","serial_number":"B2500PKG_MAC"}}{% endraw %}
+
+                # CD16 Statistik:
+                # Bereich ist vorbereitet. Die gewünschten CD16-Entitäten
+                # werden später aus CD16 optional hierher verschoben.
+                cd16_statistik_entities: []
+
+                # Aktuell liegen noch alle bisherigen CD16-Entitäten hier.
+                # Die Statistikwerte werden später gezielt in
+                # cd16_statistik_entities verschoben.
+                cd16_optional_entities:
                   # ------------------------------------------------
                   # Hauptspeicher / PV / Ausgänge
                   # 17 Werte für die CD16-Seite:
@@ -874,17 +910,18 @@ script:
               then:
 
                 # --------------------------------------------------
-                # HAUPTSPEICHER – ENTITÄTEN LÖSCHEN
-                # komplette bisherige CD01-Haupt-Discovery
-                # ohne Timer und ohne Zellspannungen
+                # CD01 OPTIONAL LÖSCHEN
+                # Enthält vorerst die komplette bisherige CD01-Haupt-Discovery
+                # ohne die bereits getrennten Statistik-Entitäten.
+                # Die Feinsortierung erfolgt später.
                 # --------------------------------------------------
                 - if:
                     - condition: template
                       value_template: >
-                        {{ bereich_auswahl in ['Hauptspeicher_Entitaeten', 'Alle'] }}
+                        {{ bereich_auswahl in ['CD01_Optional', 'Alle'] }}
                   then:
                     - repeat:
-                        for_each: "{{ hauptspeicher_entities }}"
+                        for_each: "{{ cd01_optional_entities }}"
                         sequence:
                           - action: mqtt.publish
                             data:
@@ -900,7 +937,37 @@ script:
                         untertitel: >-
                           B{{ current_number }} – {{ aktion_auswahl }} – {{ bereich_auswahl }}
                         meldung: Discovery läuft
-                        details: "Lösche B{{ current_number }} Hauptspeicher ........ OK"
+                        details: "Lösche B{{ current_number }} CD01 optional ........ OK"
+                        append: true
+                        rueckmeldung: ""
+                        adresse: ""
+                        quelle: script.b2500pkg_discovery_script
+
+                # --------------------------------------------------
+                # CD01 STATISTIK LÖSCHEN
+                # --------------------------------------------------
+                - if:
+                    - condition: template
+                      value_template: "{{ bereich_auswahl in ['CD01_Statistik', 'Alle'] }}"
+                  then:
+                    - repeat:
+                        for_each: "{{ cd01_statistik_entities }}"
+                        sequence:
+                          - action: mqtt.publish
+                            data:
+                              topic: >-
+                                homeassistant/{{ repeat.item.component }}/b2500_{{ current_number }}/{{ repeat.item.topic_suffix }}/config
+                              payload: ""
+                              retain: true
+
+                    - event: b2500pkg_status
+                      event_data:
+                        status: LAEUFT
+                        titel: B2500PKG Discovery
+                        untertitel: >-
+                          B{{ current_number }} – {{ aktion_auswahl }} – {{ bereich_auswahl }}
+                        meldung: Discovery läuft
+                        details: "Lösche B{{ current_number }} CD01 Statistik ........ OK"
                         append: true
                         rueckmeldung: ""
                         adresse: ""
@@ -1082,17 +1149,16 @@ script:
                         quelle: script.b2500pkg_discovery_script
 
                 # --------------------------------------------------
-                # CD16 LÖSCHEN
-                # Beim Löschen immer alle 23 definierten Topics:
-                # 17 Hauptwerte inkl. p1/p2 + 6 optionale Erweiterungsakku-Werte.
-                # Unabhängig davon, ob b1/b2 aktuell aktiv sind.
+                # CD16 STATISTIK LÖSCHEN
+                # Bereich ist vorbereitet; aktuell noch keine Entitäten
+                # zugeordnet.
                 # --------------------------------------------------
                 - if:
                     - condition: template
-                      value_template: "{{ bereich_auswahl in ['CD16', 'Alle'] }}"
+                      value_template: "{{ bereich_auswahl in ['CD16_Statistik', 'Alle'] }}"
                   then:
                     - repeat:
-                        for_each: "{{ cd16_entities }}"
+                        for_each: "{{ cd16_statistik_entities }}"
                         sequence:
                           - action: mqtt.publish
                             data:
@@ -1108,7 +1174,40 @@ script:
                         untertitel: >-
                           B{{ current_number }} – {{ aktion_auswahl }} – {{ bereich_auswahl }}
                         meldung: Discovery läuft
-                        details: "Lösche B{{ current_number }} CD16 ................. OK"
+                        details: "Lösche B{{ current_number }} CD16 Statistik ........ OK"
+                        append: true
+                        rueckmeldung: ""
+                        adresse: ""
+                        quelle: script.b2500pkg_discovery_script
+
+                # --------------------------------------------------
+                # CD16 OPTIONAL LÖSCHEN
+                # Beim Löschen immer alle 23 definierten Topics:
+                # 17 Hauptwerte inkl. p1/p2 + 6 optionale Erweiterungsakku-Werte.
+                # Unabhängig davon, ob b1/b2 aktuell aktiv sind.
+                # --------------------------------------------------
+                - if:
+                    - condition: template
+                      value_template: "{{ bereich_auswahl in ['CD16_Optional', 'Alle'] }}"
+                  then:
+                    - repeat:
+                        for_each: "{{ cd16_optional_entities }}"
+                        sequence:
+                          - action: mqtt.publish
+                            data:
+                              topic: >-
+                                homeassistant/sensor/b2500_{{ current_number }}/{{ repeat.item.topic_suffix }}/config
+                              payload: ""
+                              retain: true
+
+                    - event: b2500pkg_status
+                      event_data:
+                        status: LAEUFT
+                        titel: B2500PKG Discovery
+                        untertitel: >-
+                          B{{ current_number }} – {{ aktion_auswahl }} – {{ bereich_auswahl }}
+                        meldung: Discovery läuft
+                        details: "Lösche B{{ current_number }} CD16 optional ........ OK"
                         append: true
                         rueckmeldung: ""
                         adresse: ""
@@ -1155,32 +1254,35 @@ script:
               then:
 
                 # --------------------------------------------------
-                # HAUPTSPEICHER – ENTITÄTEN ERZEUGEN
+                # CD01 OPTIONAL ERZEUGEN
                 #
-                # Die MQTT-Discovery-Konfigurationen stammen aus der
-                # bisherigen B01-CD01-Discovery. Nur Speicherbezug,
-                # IDs und Topics werden dynamisch auf current_number
-                # umgeschrieben.
+                # Enthält vorerst die bisherige CD01-Haupt-Discovery.
+                # Die Entitäten werden später zwischen CD01 Statistik
+                # und CD01 optional fein aufgeteilt.
                 # --------------------------------------------------
+                # Bei Neu_erstellen kurz warten, damit gelöschte MQTT-Discovery-Entitäten
+                # aus dem Home-Assistant-State-Machine verschwinden, bevor die ID-Prüfung läuft.
+                - if:
+                    - condition: template
+                      value_template: '{{ do_delete }}'
+                  then:
+                    - delay:
+                        seconds: 1
                 - if:
                     - condition: template
                       value_template: >
-                        {{ bereich_auswahl in ['Hauptspeicher_Entitaeten', 'Alle'] }}
+                        {{ bereich_auswahl in ['CD01_Optional', 'Alle'] }}
                   then:
                     - repeat:
-                        for_each: "{{ hauptspeicher_entities }}"
+                        for_each: "{{ cd01_optional_entities }}"
                         sequence:
                           - if:
                               - condition: template
                                 value_template: >-
                                   {{ repeat.item.source_key in cd01_dict }}
                             then:
-                              - action: mqtt.publish
-                                data:
-                                  topic: >-
-                                    homeassistant/{{ repeat.item.component }}/b2500_{{ current_number }}/{{ repeat.item.topic_suffix }}/config
-                                  retain: true
-                                  payload: >-
+                              - variables:
+                                  discovery_payload: >-
                                     {{
                                       (repeat.item.config | to_json)
                                       | replace('B2500_01', 'B2500_' ~ current_number)
@@ -1189,6 +1291,43 @@ script:
                                       | replace('"B2500PKG_TYP"', current_typ | to_json)
                                       | replace('"B2500PKG_MAC"', current_mac | to_json)
                                     }}
+                              - variables:
+                                  discovery_entity_id: >-
+                                    {% set cfg = discovery_payload if discovery_payload is mapping else discovery_payload | from_json({}) %}{{ cfg.get('default_entity_id', '') | string | trim }}
+                                  discovery_entity_name: >-
+                                    {% set cfg = discovery_payload if discovery_payload is mapping else discovery_payload | from_json({}) %}{{ cfg.get('name', 'Unbekannt') | string | trim }}
+                              - variables:
+                                  discovery_entity_exists: >-
+                                    {{ discovery_entity_id != '' and (expand(discovery_entity_id) | count > 0) }}
+                              - if:
+                                  - condition: template
+                                    value_template: '{{ not discovery_entity_exists }}'
+                                then:
+                                  - action: mqtt.publish
+                                    data:
+                                      topic: >-
+                                        homeassistant/{{ repeat.item.component }}/b2500_{{ current_number }}/{{ repeat.item.topic_suffix }}/config
+                                      retain: true
+                                      payload: >-
+                                        {{ discovery_payload }}
+
+                              - event: b2500pkg_status
+                                event_data:
+                                  status: LAEUFT
+                                  titel: B2500PKG Discovery
+                                  untertitel: >-
+                                    B{{ current_number }} – {{ aktion_auswahl }} – {{ bereich_auswahl }}
+                                  meldung: Discovery läuft
+                                  details: >-
+                                    {% if discovery_entity_exists %}
+                                      ⚠️ Übersprungen: {{ discovery_entity_name }} -> {{ discovery_entity_id }} bereits vorhanden
+                                    {% else %}
+                                      Erstelle {{ discovery_entity_name }} -> {{ discovery_entity_id }}
+                                    {% endif %}
+                                  append: true
+                                  rueckmeldung: ""
+                                  adresse: ""
+                                  quelle: script.b2500pkg_discovery_script
 
                     - event: b2500pkg_status
                       event_data:
@@ -1197,7 +1336,91 @@ script:
                         untertitel: >-
                           B{{ current_number }} – {{ aktion_auswahl }} – {{ bereich_auswahl }}
                         meldung: Discovery läuft
-                        details: "Erzeuge B{{ current_number }} Hauptspeicher ....... OK"
+                        details: "Erzeuge B{{ current_number }} CD01 optional ........ OK"
+                        append: true
+                        rueckmeldung: ""
+                        adresse: ""
+                        quelle: script.b2500pkg_discovery_script
+
+                # --------------------------------------------------
+                # CD01 STATISTIK ERZEUGEN
+                # --------------------------------------------------
+                - if:
+                    - condition: template
+                      value_template: "{{ bereich_auswahl in ['CD01_Statistik', 'Alle'] }}"
+                  then:
+                    - repeat:
+                        for_each: "{{ cd01_statistik_entities }}"
+                        sequence:
+                          - if:
+                              - condition: template
+                                value_template: >-
+                                  {% set ns = namespace(ok=true) %}
+                                  {% for key in repeat.item.required_keys | default([]) %}
+                                    {% if key not in cd01_dict %}
+                                      {% set ns.ok = false %}
+                                    {% endif %}
+                                  {% endfor %}
+                                  {{ ns.ok }}
+                            then:
+                              - variables:
+                                  discovery_payload: >-
+                                    {{
+                                      (repeat.item.config | to_json)
+                                      | replace('B2500_01', 'B2500_' ~ current_number)
+                                      | replace('b2500_01', 'b2500_' ~ current_number)
+                                      | replace('sensor.b01_', 'sensor.b' ~ current_number ~ '_')
+                                      | replace('b01_', 'b' ~ current_number ~ '_')
+                                      | replace('B01', 'B' ~ current_number)
+                                      | replace('"B2500PKG_TYP"', current_typ | to_json)
+                                      | replace('"B2500PKG_MAC"', current_mac | to_json)
+                                    }}
+                              - variables:
+                                  discovery_entity_id: >-
+                                    {% set cfg = discovery_payload if discovery_payload is mapping else discovery_payload | from_json({}) %}{{ cfg.get('default_entity_id', '') | string | trim }}
+                                  discovery_entity_name: >-
+                                    {% set cfg = discovery_payload if discovery_payload is mapping else discovery_payload | from_json({}) %}{{ cfg.get('name', 'Unbekannt') | string | trim }}
+                              - variables:
+                                  discovery_entity_exists: >-
+                                    {{ discovery_entity_id != '' and (expand(discovery_entity_id) | count > 0) }}
+                              - if:
+                                  - condition: template
+                                    value_template: '{{ not discovery_entity_exists }}'
+                                then:
+                                  - action: mqtt.publish
+                                    data:
+                                      topic: >-
+                                        homeassistant/{{ repeat.item.component }}/b2500_{{ current_number }}/{{ repeat.item.topic_suffix }}/config
+                                      retain: true
+                                      payload: >-
+                                        {{ discovery_payload }}
+
+                              - event: b2500pkg_status
+                                event_data:
+                                  status: LAEUFT
+                                  titel: B2500PKG Discovery
+                                  untertitel: >-
+                                    B{{ current_number }} – {{ aktion_auswahl }} – {{ bereich_auswahl }}
+                                  meldung: Discovery läuft
+                                  details: >-
+                                    {% if discovery_entity_exists %}
+                                      ⚠️ Übersprungen: {{ discovery_entity_name }} -> {{ discovery_entity_id }} bereits vorhanden
+                                    {% else %}
+                                      Erstelle {{ discovery_entity_name }} -> {{ discovery_entity_id }}
+                                    {% endif %}
+                                  append: true
+                                  rueckmeldung: ""
+                                  adresse: ""
+                                  quelle: script.b2500pkg_discovery_script
+
+                    - event: b2500pkg_status
+                      event_data:
+                        status: LAEUFT
+                        titel: B2500PKG Discovery
+                        untertitel: >-
+                          B{{ current_number }} – {{ aktion_auswahl }} – {{ bereich_auswahl }}
+                        meldung: Discovery läuft
+                        details: "Erzeuge B{{ current_number }} CD01 Statistik ........ OK"
                         append: true
                         rueckmeldung: ""
                         adresse: ""
@@ -1205,6 +1428,7 @@ script:
 
                 # --------------------------------------------------
                 # SPANNUNGEN ERZEUGEN
+                # Jede tatsächlich erzeugte Entität wird einzeln im Statusfenster protokolliert.
                 #
                 # CD01 liefert b1/b2 zur Erkennung der Erweiterungen.
                 # CD13 liefert a0..af, b0..bf und c0..cf.
@@ -1267,12 +1491,8 @@ script:
                                 value_template: >-
                                   {{ voltage_key in cd13_dict }}
                             then:
-                              - action: mqtt.publish
-                                data:
-                                  topic: >-
-                                    homeassistant/sensor/b2500_{{ current_number }}/voltage_{{ voltage_key }}/config
-                                  retain: true
-                                  payload: >-
+                              - variables:
+                                  discovery_payload: >-
                                     {{
                                       {
                                         'name':
@@ -1295,7 +1515,44 @@ script:
                                         }
                                       } | to_json
                                     }}
+                              - variables:
+                                  discovery_entity_id: >-
+                                    {% set cfg = discovery_payload if discovery_payload is mapping else discovery_payload | from_json({}) %}{{ cfg.get('default_entity_id', '') | string | trim }}
+                                  discovery_entity_name: >-
+                                    {% set cfg = discovery_payload if discovery_payload is mapping else discovery_payload | from_json({}) %}{{ cfg.get('name', 'Unbekannt') | string | trim }}
+                              - variables:
+                                  discovery_entity_exists: >-
+                                    {{ discovery_entity_id != '' and (expand(discovery_entity_id) | count > 0) }}
+                              - if:
+                                  - condition: template
+                                    value_template: '{{ not discovery_entity_exists }}'
+                                then:
+                                  - action: mqtt.publish
+                                    data:
+                                      topic: >-
+                                        homeassistant/sensor/b2500_{{ current_number }}/voltage_{{ voltage_key }}/config
+                                      retain: true
+                                      payload: >-
+                                        {{ discovery_payload }}
 
+
+                              - event: b2500pkg_status
+                                event_data:
+                                  status: LAEUFT
+                                  titel: B2500PKG Discovery
+                                  untertitel: >-
+                                    B{{ current_number }} – {{ aktion_auswahl }} – {{ bereich_auswahl }}
+                                  meldung: Discovery läuft
+                                  details: >-
+                                    {% if discovery_entity_exists %}
+                                      ⚠️ Übersprungen: {{ discovery_entity_name }} -> {{ discovery_entity_id }} bereits vorhanden
+                                    {% else %}
+                                      Erstelle {{ discovery_entity_name }} -> {{ discovery_entity_id }}
+                                    {% endif %}
+                                  append: true
+                                  rueckmeldung: ""
+                                  adresse: ""
+                                  quelle: script.b2500pkg_discovery_script
                     # Erweiterungen b0 ... bf / c0 ... cf
                     - repeat:
                         for_each:
@@ -1412,12 +1669,8 @@ script:
                                     )
                                   }}
                             then:
-                              - action: mqtt.publish
-                                data:
-                                  topic: >-
-                                    homeassistant/sensor/b2500_{{ current_number }}/voltage_{{ voltage_key }}/config
-                                  retain: true
-                                  payload: >-
+                              - variables:
+                                  discovery_payload: >-
                                     {{
                                       {
                                         'name':
@@ -1440,8 +1693,45 @@ script:
                                         }
                                       } | to_json
                                     }}
+                              - variables:
+                                  discovery_entity_id: >-
+                                    {% set cfg = discovery_payload if discovery_payload is mapping else discovery_payload | from_json({}) %}{{ cfg.get('default_entity_id', '') | string | trim }}
+                                  discovery_entity_name: >-
+                                    {% set cfg = discovery_payload if discovery_payload is mapping else discovery_payload | from_json({}) %}{{ cfg.get('name', 'Unbekannt') | string | trim }}
+                              - variables:
+                                  discovery_entity_exists: >-
+                                    {{ discovery_entity_id != '' and (expand(discovery_entity_id) | count > 0) }}
+                              - if:
+                                  - condition: template
+                                    value_template: '{{ not discovery_entity_exists }}'
+                                then:
+                                  - action: mqtt.publish
+                                    data:
+                                      topic: >-
+                                        homeassistant/sensor/b2500_{{ current_number }}/voltage_{{ voltage_key }}/config
+                                      retain: true
+                                      payload: >-
+                                        {{ discovery_payload }}
 
 
+
+                              - event: b2500pkg_status
+                                event_data:
+                                  status: LAEUFT
+                                  titel: B2500PKG Discovery
+                                  untertitel: >-
+                                    B{{ current_number }} – {{ aktion_auswahl }} – {{ bereich_auswahl }}
+                                  meldung: Discovery läuft
+                                  details: >-
+                                    {% if discovery_entity_exists %}
+                                      ⚠️ Übersprungen: {{ discovery_entity_name }} -> {{ discovery_entity_id }} bereits vorhanden
+                                    {% else %}
+                                      Erstelle {{ discovery_entity_name }} -> {{ discovery_entity_id }}
+                                    {% endif %}
+                                  append: true
+                                  rueckmeldung: ""
+                                  adresse: ""
+                                  quelle: script.b2500pkg_discovery_script
                     # --------------------------------------------------
                     # HAUPTSPEICHER – Min/Max/Zellnummer/Spannungsdifferenz
                     # Trigger ist CD13/last_updated; die Berechnung liest
@@ -1494,7 +1784,21 @@ script:
                                 {% elif repeat.item.suffix == 'voltage_diff' %}
                                   sensor.b{{ current_number }}_spannungsdifferenz
                                 {% else %}
-                                  sensor.b2500_{{ current_number }}_{{ repeat.item.suffix }}
+                                  sensor.b{{ current_number }}_{{ repeat.item.suffix }}
+                                {% endif %}
+                              derived_unique_id: >-
+                                {% if repeat.item.suffix == 'voltage_min' %}
+                                  b{{ current_number }}_min_spannung
+                                {% elif repeat.item.suffix == 'voltage_min_cell' %}
+                                  b{{ current_number }}_min_spannung_zelle
+                                {% elif repeat.item.suffix == 'voltage_max' %}
+                                  b{{ current_number }}_max_spannung
+                                {% elif repeat.item.suffix == 'voltage_max_cell' %}
+                                  b{{ current_number }}_max_spannung_zelle
+                                {% elif repeat.item.suffix == 'voltage_diff' %}
+                                  b{{ current_number }}_spannungsdifferenz
+                                {% else %}
+                                  b{{ current_number }}_{{ repeat.item.suffix }}
                                 {% endif %}
                               derived_template: >-
                                 {% set cache_entity = 'sensor.b2500_cache_' ~ current_number %}
@@ -1524,12 +1828,8 @@ script:
                                   {{ common ~ "{% if ns.count > 0 %}{{ ns.max - ns.min }}{% else %}{{ none }}{% endif %}" }}
                                 {% endif %}
 
-                          - action: mqtt.publish
-                            data:
-                              topic: >-
-                                homeassistant/sensor/b2500_{{ current_number }}/{{ derived_suffix }}/config
-                              retain: true
-                              payload: >-
+                          - variables:
+                              discovery_payload: >-
                                 {% if derived_is_voltage | bool %}
                                   {{
                                     {
@@ -1543,7 +1843,7 @@ script:
                                       'default_entity_id':
                                         derived_entity_id,
                                       'unique_id':
-                                        'b2500_' ~ current_number ~ '_' ~ derived_suffix,
+                                        derived_unique_id,
                                       'entity_category': 'diagnostic',
                                       'device': {
                                         'identifiers': ['b2500_' ~ current_number],
@@ -1564,7 +1864,7 @@ script:
                                       'default_entity_id':
                                         derived_entity_id,
                                       'unique_id':
-                                        'b2500_' ~ current_number ~ '_' ~ derived_suffix,
+                                        derived_unique_id,
                                       'entity_category': 'diagnostic',
                                       'device': {
                                         'identifiers': ['b2500_' ~ current_number],
@@ -1576,7 +1876,44 @@ script:
                                     } | to_json
                                   }}
                                 {% endif %}
+                          - variables:
+                              discovery_entity_id: >-
+                                {% set cfg = discovery_payload if discovery_payload is mapping else discovery_payload | from_json({}) %}{{ cfg.get('default_entity_id', '') | string | trim }}
+                              discovery_entity_name: >-
+                                {% set cfg = discovery_payload if discovery_payload is mapping else discovery_payload | from_json({}) %}{{ cfg.get('name', 'Unbekannt') | string | trim }}
+                          - variables:
+                              discovery_entity_exists: >-
+                                {{ discovery_entity_id != '' and (expand(discovery_entity_id) | count > 0) }}
+                          - if:
+                              - condition: template
+                                value_template: '{{ not discovery_entity_exists }}'
+                            then:
+                              - action: mqtt.publish
+                                data:
+                                  topic: >-
+                                    homeassistant/sensor/b2500_{{ current_number }}/{{ derived_suffix }}/config
+                                  retain: true
+                                  payload: >-
+                                    {{ discovery_payload }}
 
+
+                          - event: b2500pkg_status
+                            event_data:
+                              status: LAEUFT
+                              titel: B2500PKG Discovery
+                              untertitel: >-
+                                B{{ current_number }} – {{ aktion_auswahl }} – {{ bereich_auswahl }}
+                              meldung: Discovery läuft
+                              details: >-
+                                {% if discovery_entity_exists %}
+                                  ⚠️ Übersprungen: {{ discovery_entity_name }} -> {{ discovery_entity_id }} bereits vorhanden
+                                {% else %}
+                                  Erstelle {{ discovery_entity_name }} -> {{ discovery_entity_id }}
+                                {% endif %}
+                              append: true
+                              rueckmeldung: ""
+                              adresse: ""
+                              quelle: script.b2500pkg_discovery_script
                     # --------------------------------------------------
                     # ERWEITERUNG 1 – Min/Max/Zellnummer/Spannungsdifferenz
                     # Trigger ist CD13/last_updated; die Berechnung liest
@@ -1589,28 +1926,34 @@ script:
                         - repeat:
                             for_each:
                               - suffix: extern1_voltage_min
+                                id_suffix: e1_min_spannung
                                 name: "E1 Minimale Zellspannung"
                                 result: min
                                 voltage: true
                               - suffix: extern1_voltage_min_cell
+                                id_suffix: e1_min_spannung_zelle
                                 name: "E1 Zelle Minimum"
                                 result: min_cell
                                 voltage: false
                               - suffix: extern1_voltage_max
+                                id_suffix: e1_max_spannung
                                 name: "E1 Maximale Zellspannung"
                                 result: max
                                 voltage: true
                               - suffix: extern1_voltage_max_cell
+                                id_suffix: e1_max_spannung_zelle
                                 name: "E1 Zelle Maximum"
                                 result: max_cell
                                 voltage: false
                               - suffix: extern1_voltage_diff
+                                id_suffix: e1_spannungsdifferenz
                                 name: "E1 Spannungsdifferenz"
                                 result: diff
                                 voltage: true
                             sequence:
                               - variables:
                                   derived_suffix: "{{ repeat.item.suffix }}"
+                                  derived_id_suffix: "{{ repeat.item.id_suffix }}"
                                   derived_name: "{{ repeat.item.name }}"
                                   derived_result: "{{ repeat.item.result }}"
                                   derived_is_voltage: "{{ repeat.item.voltage }}"
@@ -1642,12 +1985,8 @@ script:
                                       {{ common ~ "{% if ns.count > 0 %}{{ ns.max - ns.min }}{% else %}{{ none }}{% endif %}" }}
                                     {% endif %}
 
-                              - action: mqtt.publish
-                                data:
-                                  topic: >-
-                                    homeassistant/sensor/b2500_{{ current_number }}/{{ derived_suffix }}/config
-                                  retain: true
-                                  payload: >-
+                              - variables:
+                                  discovery_payload: >-
                                     {% if derived_is_voltage | bool %}
                                       {{
                                         {
@@ -1659,9 +1998,9 @@ script:
                                           'state_class': 'measurement',
                                           'unit_of_measurement': 'mV',
                                           'default_entity_id':
-                                            'sensor.b2500_' ~ current_number ~ '_' ~ derived_suffix,
+                                            'sensor.b' ~ current_number ~ '_' ~ derived_id_suffix,
                                           'unique_id':
-                                            'b2500_' ~ current_number ~ '_' ~ derived_suffix,
+                                            'b' ~ current_number ~ '_' ~ derived_id_suffix,
                                           'entity_category': 'diagnostic',
                                           'device': {
                                             'identifiers': ['b2500_' ~ current_number],
@@ -1680,9 +2019,9 @@ script:
                                             'B2500PKG/B2500_' ~ current_number ~ '/CD13/last_updated',
                                           'value_template': derived_template,
                                           'default_entity_id':
-                                            'sensor.b2500_' ~ current_number ~ '_' ~ derived_suffix,
+                                            'sensor.b' ~ current_number ~ '_' ~ derived_id_suffix,
                                           'unique_id':
-                                            'b2500_' ~ current_number ~ '_' ~ derived_suffix,
+                                            'b' ~ current_number ~ '_' ~ derived_id_suffix,
                                           'entity_category': 'diagnostic',
                                           'device': {
                                             'identifiers': ['b2500_' ~ current_number],
@@ -1694,7 +2033,44 @@ script:
                                         } | to_json
                                       }}
                                     {% endif %}
+                              - variables:
+                                  discovery_entity_id: >-
+                                    {% set cfg = discovery_payload if discovery_payload is mapping else discovery_payload | from_json({}) %}{{ cfg.get('default_entity_id', '') | string | trim }}
+                                  discovery_entity_name: >-
+                                    {% set cfg = discovery_payload if discovery_payload is mapping else discovery_payload | from_json({}) %}{{ cfg.get('name', 'Unbekannt') | string | trim }}
+                              - variables:
+                                  discovery_entity_exists: >-
+                                    {{ discovery_entity_id != '' and (expand(discovery_entity_id) | count > 0) }}
+                              - if:
+                                  - condition: template
+                                    value_template: '{{ not discovery_entity_exists }}'
+                                then:
+                                  - action: mqtt.publish
+                                    data:
+                                      topic: >-
+                                        homeassistant/sensor/b2500_{{ current_number }}/{{ derived_suffix }}/config
+                                      retain: true
+                                      payload: >-
+                                        {{ discovery_payload }}
 
+
+                              - event: b2500pkg_status
+                                event_data:
+                                  status: LAEUFT
+                                  titel: B2500PKG Discovery
+                                  untertitel: >-
+                                    B{{ current_number }} – {{ aktion_auswahl }} – {{ bereich_auswahl }}
+                                  meldung: Discovery läuft
+                                  details: >-
+                                    {% if discovery_entity_exists %}
+                                      ⚠️ Übersprungen: {{ discovery_entity_name }} -> {{ discovery_entity_id }} bereits vorhanden
+                                    {% else %}
+                                      Erstelle {{ discovery_entity_name }} -> {{ discovery_entity_id }}
+                                    {% endif %}
+                                  append: true
+                                  rueckmeldung: ""
+                                  adresse: ""
+                                  quelle: script.b2500pkg_discovery_script
                     # --------------------------------------------------
                     # ERWEITERUNG 2 – Min/Max/Zellnummer/Spannungsdifferenz
                     # Trigger ist CD13/last_updated; die Berechnung liest
@@ -1707,28 +2083,34 @@ script:
                         - repeat:
                             for_each:
                               - suffix: extern2_voltage_min
+                                id_suffix: e2_min_spannung
                                 name: "E2 Minimale Zellspannung"
                                 result: min
                                 voltage: true
                               - suffix: extern2_voltage_min_cell
+                                id_suffix: e2_min_spannung_zelle
                                 name: "E2 Zelle Minimum"
                                 result: min_cell
                                 voltage: false
                               - suffix: extern2_voltage_max
+                                id_suffix: e2_max_spannung
                                 name: "E2 Maximale Zellspannung"
                                 result: max
                                 voltage: true
                               - suffix: extern2_voltage_max_cell
+                                id_suffix: e2_max_spannung_zelle
                                 name: "E2 Zelle Maximum"
                                 result: max_cell
                                 voltage: false
                               - suffix: extern2_voltage_diff
+                                id_suffix: e2_spannungsdifferenz
                                 name: "E2 Spannungsdifferenz"
                                 result: diff
                                 voltage: true
                             sequence:
                               - variables:
                                   derived_suffix: "{{ repeat.item.suffix }}"
+                                  derived_id_suffix: "{{ repeat.item.id_suffix }}"
                                   derived_name: "{{ repeat.item.name }}"
                                   derived_result: "{{ repeat.item.result }}"
                                   derived_is_voltage: "{{ repeat.item.voltage }}"
@@ -1760,12 +2142,8 @@ script:
                                       {{ common ~ "{% if ns.count > 0 %}{{ ns.max - ns.min }}{% else %}{{ none }}{% endif %}" }}
                                     {% endif %}
 
-                              - action: mqtt.publish
-                                data:
-                                  topic: >-
-                                    homeassistant/sensor/b2500_{{ current_number }}/{{ derived_suffix }}/config
-                                  retain: true
-                                  payload: >-
+                              - variables:
+                                  discovery_payload: >-
                                     {% if derived_is_voltage | bool %}
                                       {{
                                         {
@@ -1777,9 +2155,9 @@ script:
                                           'state_class': 'measurement',
                                           'unit_of_measurement': 'mV',
                                           'default_entity_id':
-                                            'sensor.b2500_' ~ current_number ~ '_' ~ derived_suffix,
+                                            'sensor.b' ~ current_number ~ '_' ~ derived_id_suffix,
                                           'unique_id':
-                                            'b2500_' ~ current_number ~ '_' ~ derived_suffix,
+                                            'b' ~ current_number ~ '_' ~ derived_id_suffix,
                                           'entity_category': 'diagnostic',
                                           'device': {
                                             'identifiers': ['b2500_' ~ current_number],
@@ -1798,9 +2176,9 @@ script:
                                             'B2500PKG/B2500_' ~ current_number ~ '/CD13/last_updated',
                                           'value_template': derived_template,
                                           'default_entity_id':
-                                            'sensor.b2500_' ~ current_number ~ '_' ~ derived_suffix,
+                                            'sensor.b' ~ current_number ~ '_' ~ derived_id_suffix,
                                           'unique_id':
-                                            'b2500_' ~ current_number ~ '_' ~ derived_suffix,
+                                            'b' ~ current_number ~ '_' ~ derived_id_suffix,
                                           'entity_category': 'diagnostic',
                                           'device': {
                                             'identifiers': ['b2500_' ~ current_number],
@@ -1812,7 +2190,44 @@ script:
                                         } | to_json
                                       }}
                                     {% endif %}
+                              - variables:
+                                  discovery_entity_id: >-
+                                    {% set cfg = discovery_payload if discovery_payload is mapping else discovery_payload | from_json({}) %}{{ cfg.get('default_entity_id', '') | string | trim }}
+                                  discovery_entity_name: >-
+                                    {% set cfg = discovery_payload if discovery_payload is mapping else discovery_payload | from_json({}) %}{{ cfg.get('name', 'Unbekannt') | string | trim }}
+                              - variables:
+                                  discovery_entity_exists: >-
+                                    {{ discovery_entity_id != '' and (expand(discovery_entity_id) | count > 0) }}
+                              - if:
+                                  - condition: template
+                                    value_template: '{{ not discovery_entity_exists }}'
+                                then:
+                                  - action: mqtt.publish
+                                    data:
+                                      topic: >-
+                                        homeassistant/sensor/b2500_{{ current_number }}/{{ derived_suffix }}/config
+                                      retain: true
+                                      payload: >-
+                                        {{ discovery_payload }}
 
+
+                              - event: b2500pkg_status
+                                event_data:
+                                  status: LAEUFT
+                                  titel: B2500PKG Discovery
+                                  untertitel: >-
+                                    B{{ current_number }} – {{ aktion_auswahl }} – {{ bereich_auswahl }}
+                                  meldung: Discovery läuft
+                                  details: >-
+                                    {% if discovery_entity_exists %}
+                                      ⚠️ Übersprungen: {{ discovery_entity_name }} -> {{ discovery_entity_id }} bereits vorhanden
+                                    {% else %}
+                                      Erstelle {{ discovery_entity_name }} -> {{ discovery_entity_id }}
+                                    {% endif %}
+                                  append: true
+                                  rueckmeldung: ""
+                                  adresse: ""
+                                  quelle: script.b2500pkg_discovery_script
                     - event: b2500pkg_status
                       event_data:
                         status: LAEUFT
@@ -1828,6 +2243,7 @@ script:
 
                 # --------------------------------------------------
                 # TIMER ERZEUGEN
+                # Jede tatsächlich erzeugte Entität wird einzeln im Statusfenster protokolliert.
                 #
                 # Die Konfigurationen entsprechen der bisherigen
                 # B01-Discovery, werden jetzt aber dynamisch für
@@ -1858,12 +2274,8 @@ script:
                                 value_template: >-
                                   {{ key_d in cd01_dict }}
                             then:
-                              - action: mqtt.publish
-                                data:
-                                  topic: >-
-                                    homeassistant/binary_sensor/b2500_{{ current_number }}/{{ key_d }}/config
-                                  retain: true
-                                  payload: >-
+                              - variables:
+                                  discovery_payload: >-
                                     {{
                                       {
                                         'name':
@@ -1886,19 +2298,52 @@ script:
                                         }
                                       } | to_json
                                     }}
+                              - variables:
+                                  discovery_entity_id: >-
+                                    {% set cfg = discovery_payload if discovery_payload is mapping else discovery_payload | from_json({}) %}{{ cfg.get('default_entity_id', '') | string | trim }}
+                                  discovery_entity_name: >-
+                                    {% set cfg = discovery_payload if discovery_payload is mapping else discovery_payload | from_json({}) %}{{ cfg.get('name', 'Unbekannt') | string | trim }}
+                              - variables:
+                                  discovery_entity_exists: >-
+                                    {{ discovery_entity_id != '' and (expand(discovery_entity_id) | count > 0) }}
+                              - if:
+                                  - condition: template
+                                    value_template: '{{ not discovery_entity_exists }}'
+                                then:
+                                  - action: mqtt.publish
+                                    data:
+                                      topic: >-
+                                        homeassistant/binary_sensor/b2500_{{ current_number }}/{{ key_d }}/config
+                                      retain: true
+                                      payload: >-
+                                        {{ discovery_payload }}
 
+
+                              - event: b2500pkg_status
+                                event_data:
+                                  status: LAEUFT
+                                  titel: B2500PKG Discovery
+                                  untertitel: >-
+                                    B{{ current_number }} – {{ aktion_auswahl }} – {{ bereich_auswahl }}
+                                  meldung: Discovery läuft
+                                  details: >-
+                                    {% if discovery_entity_exists %}
+                                      ⚠️ Übersprungen: {{ discovery_entity_name }} -> {{ discovery_entity_id }} bereits vorhanden
+                                    {% else %}
+                                      Erstelle {{ discovery_entity_name }} -> {{ discovery_entity_id }}
+                                    {% endif %}
+                                  append: true
+                                  rueckmeldung: ""
+                                  adresse: ""
+                                  quelle: script.b2500pkg_discovery_script
                           # Timer Beginn
                           - if:
                               - condition: template
                                 value_template: >-
                                   {{ key_e in cd01_dict }}
                             then:
-                              - action: mqtt.publish
-                                data:
-                                  topic: >-
-                                    homeassistant/sensor/b2500_{{ current_number }}/{{ key_e }}/config
-                                  retain: true
-                                  payload: >-
+                              - variables:
+                                  discovery_payload: >-
                                     {{
                                       {
                                         'name':
@@ -1919,19 +2364,52 @@ script:
                                         }
                                       } | to_json
                                     }}
+                              - variables:
+                                  discovery_entity_id: >-
+                                    {% set cfg = discovery_payload if discovery_payload is mapping else discovery_payload | from_json({}) %}{{ cfg.get('default_entity_id', '') | string | trim }}
+                                  discovery_entity_name: >-
+                                    {% set cfg = discovery_payload if discovery_payload is mapping else discovery_payload | from_json({}) %}{{ cfg.get('name', 'Unbekannt') | string | trim }}
+                              - variables:
+                                  discovery_entity_exists: >-
+                                    {{ discovery_entity_id != '' and (expand(discovery_entity_id) | count > 0) }}
+                              - if:
+                                  - condition: template
+                                    value_template: '{{ not discovery_entity_exists }}'
+                                then:
+                                  - action: mqtt.publish
+                                    data:
+                                      topic: >-
+                                        homeassistant/sensor/b2500_{{ current_number }}/{{ key_e }}/config
+                                      retain: true
+                                      payload: >-
+                                        {{ discovery_payload }}
 
+
+                              - event: b2500pkg_status
+                                event_data:
+                                  status: LAEUFT
+                                  titel: B2500PKG Discovery
+                                  untertitel: >-
+                                    B{{ current_number }} – {{ aktion_auswahl }} – {{ bereich_auswahl }}
+                                  meldung: Discovery läuft
+                                  details: >-
+                                    {% if discovery_entity_exists %}
+                                      ⚠️ Übersprungen: {{ discovery_entity_name }} -> {{ discovery_entity_id }} bereits vorhanden
+                                    {% else %}
+                                      Erstelle {{ discovery_entity_name }} -> {{ discovery_entity_id }}
+                                    {% endif %}
+                                  append: true
+                                  rueckmeldung: ""
+                                  adresse: ""
+                                  quelle: script.b2500pkg_discovery_script
                           # Timer Ende
                           - if:
                               - condition: template
                                 value_template: >-
                                   {{ key_f in cd01_dict }}
                             then:
-                              - action: mqtt.publish
-                                data:
-                                  topic: >-
-                                    homeassistant/sensor/b2500_{{ current_number }}/{{ key_f }}/config
-                                  retain: true
-                                  payload: >-
+                              - variables:
+                                  discovery_payload: >-
                                     {{
                                       {
                                         'name':
@@ -1952,19 +2430,52 @@ script:
                                         }
                                       } | to_json
                                     }}
+                              - variables:
+                                  discovery_entity_id: >-
+                                    {% set cfg = discovery_payload if discovery_payload is mapping else discovery_payload | from_json({}) %}{{ cfg.get('default_entity_id', '') | string | trim }}
+                                  discovery_entity_name: >-
+                                    {% set cfg = discovery_payload if discovery_payload is mapping else discovery_payload | from_json({}) %}{{ cfg.get('name', 'Unbekannt') | string | trim }}
+                              - variables:
+                                  discovery_entity_exists: >-
+                                    {{ discovery_entity_id != '' and (expand(discovery_entity_id) | count > 0) }}
+                              - if:
+                                  - condition: template
+                                    value_template: '{{ not discovery_entity_exists }}'
+                                then:
+                                  - action: mqtt.publish
+                                    data:
+                                      topic: >-
+                                        homeassistant/sensor/b2500_{{ current_number }}/{{ key_f }}/config
+                                      retain: true
+                                      payload: >-
+                                        {{ discovery_payload }}
 
+
+                              - event: b2500pkg_status
+                                event_data:
+                                  status: LAEUFT
+                                  titel: B2500PKG Discovery
+                                  untertitel: >-
+                                    B{{ current_number }} – {{ aktion_auswahl }} – {{ bereich_auswahl }}
+                                  meldung: Discovery läuft
+                                  details: >-
+                                    {% if discovery_entity_exists %}
+                                      ⚠️ Übersprungen: {{ discovery_entity_name }} -> {{ discovery_entity_id }} bereits vorhanden
+                                    {% else %}
+                                      Erstelle {{ discovery_entity_name }} -> {{ discovery_entity_id }}
+                                    {% endif %}
+                                  append: true
+                                  rueckmeldung: ""
+                                  adresse: ""
+                                  quelle: script.b2500pkg_discovery_script
                           # Timer Ausgabeleistung
                           - if:
                               - condition: template
                                 value_template: >-
                                   {{ key_h in cd01_dict }}
                             then:
-                              - action: mqtt.publish
-                                data:
-                                  topic: >-
-                                    homeassistant/sensor/b2500_{{ current_number }}/{{ key_h }}/config
-                                  retain: true
-                                  payload: >-
+                              - variables:
+                                  discovery_payload: >-
                                     {{
                                       {
                                         'name':
@@ -1986,7 +2497,44 @@ script:
                                         }
                                       } | to_json
                                     }}
+                              - variables:
+                                  discovery_entity_id: >-
+                                    {% set cfg = discovery_payload if discovery_payload is mapping else discovery_payload | from_json({}) %}{{ cfg.get('default_entity_id', '') | string | trim }}
+                                  discovery_entity_name: >-
+                                    {% set cfg = discovery_payload if discovery_payload is mapping else discovery_payload | from_json({}) %}{{ cfg.get('name', 'Unbekannt') | string | trim }}
+                              - variables:
+                                  discovery_entity_exists: >-
+                                    {{ discovery_entity_id != '' and (expand(discovery_entity_id) | count > 0) }}
+                              - if:
+                                  - condition: template
+                                    value_template: '{{ not discovery_entity_exists }}'
+                                then:
+                                  - action: mqtt.publish
+                                    data:
+                                      topic: >-
+                                        homeassistant/sensor/b2500_{{ current_number }}/{{ key_h }}/config
+                                      retain: true
+                                      payload: >-
+                                        {{ discovery_payload }}
 
+
+                              - event: b2500pkg_status
+                                event_data:
+                                  status: LAEUFT
+                                  titel: B2500PKG Discovery
+                                  untertitel: >-
+                                    B{{ current_number }} – {{ aktion_auswahl }} – {{ bereich_auswahl }}
+                                  meldung: Discovery läuft
+                                  details: >-
+                                    {% if discovery_entity_exists %}
+                                      ⚠️ Übersprungen: {{ discovery_entity_name }} -> {{ discovery_entity_id }} bereits vorhanden
+                                    {% else %}
+                                      Erstelle {{ discovery_entity_name }} -> {{ discovery_entity_id }}
+                                    {% endif %}
+                                  append: true
+                                  rueckmeldung: ""
+                                  adresse: ""
+                                  quelle: script.b2500pkg_discovery_script
                     - event: b2500pkg_status
                       event_data:
                         status: LAEUFT
@@ -2001,18 +2549,17 @@ script:
                         quelle: script.b2500pkg_discovery_script
 
                 # --------------------------------------------------
-                # CD16 ERZEUGEN
-                # Hauptwerte inkl. p1/p2: nur wenn das Kürzel im frischen CD16
-                # tatsächlich vorhanden ist.
-                # E1 sb/sv/sc: zusätzlich nur bei frischem CD01 b1=1.
-                # E2 lb/lv/lc: zusätzlich nur bei frischem CD01 b2=1.
+                # CD16 STATISTIK ERZEUGEN
+                # Bereich ist vorbereitet; aktuell noch keine Entitäten
+                # zugeordnet. Beim späteren Verschieben bleibt dieselbe
+                # Datenblock- und Statusfenster-Logik erhalten.
                 # --------------------------------------------------
                 - if:
                     - condition: template
-                      value_template: "{{ bereich_auswahl in ['CD16', 'Alle'] }}"
+                      value_template: "{{ bereich_auswahl in ['CD16_Statistik', 'Alle'] }}"
                   then:
                     - repeat:
-                        for_each: "{{ cd16_entities }}"
+                        for_each: "{{ cd16_statistik_entities }}"
                         sequence:
                           - if:
                               - condition: template
@@ -2028,12 +2575,8 @@ script:
                                     )
                                   }}
                             then:
-                              - action: mqtt.publish
-                                data:
-                                  topic: >-
-                                    homeassistant/sensor/b2500_{{ current_number }}/{{ repeat.item.topic_suffix }}/config
-                                  retain: true
-                                  payload: >-
+                              - variables:
+                                  discovery_payload: >-
                                     {{
                                       (repeat.item.config | to_json)
                                       | replace('B2500_01', 'B2500_' ~ current_number)
@@ -2042,6 +2585,43 @@ script:
                                       | replace('"B2500PKG_TYP"', current_typ | to_json)
                                       | replace('"B2500PKG_MAC"', current_mac | to_json)
                                     }}
+                              - variables:
+                                  discovery_entity_id: >-
+                                    {% set cfg = discovery_payload if discovery_payload is mapping else discovery_payload | from_json({}) %}{{ cfg.get('default_entity_id', '') | string | trim }}
+                                  discovery_entity_name: >-
+                                    {% set cfg = discovery_payload if discovery_payload is mapping else discovery_payload | from_json({}) %}{{ cfg.get('name', 'Unbekannt') | string | trim }}
+                              - variables:
+                                  discovery_entity_exists: >-
+                                    {{ discovery_entity_id != '' and (expand(discovery_entity_id) | count > 0) }}
+                              - if:
+                                  - condition: template
+                                    value_template: '{{ not discovery_entity_exists }}'
+                                then:
+                                  - action: mqtt.publish
+                                    data:
+                                      topic: >-
+                                        homeassistant/sensor/b2500_{{ current_number }}/{{ repeat.item.topic_suffix }}/config
+                                      retain: true
+                                      payload: >-
+                                        {{ discovery_payload }}
+
+                              - event: b2500pkg_status
+                                event_data:
+                                  status: LAEUFT
+                                  titel: B2500PKG Discovery
+                                  untertitel: >-
+                                    B{{ current_number }} – {{ aktion_auswahl }} – {{ bereich_auswahl }}
+                                  meldung: Discovery läuft
+                                  details: >-
+                                    {% if discovery_entity_exists %}
+                                      ⚠️ Übersprungen: {{ discovery_entity_name }} -> {{ discovery_entity_id }} bereits vorhanden
+                                    {% else %}
+                                      Erstelle {{ discovery_entity_name }} -> {{ discovery_entity_id }}
+                                    {% endif %}
+                                  append: true
+                                  rueckmeldung: ""
+                                  adresse: ""
+                                  quelle: script.b2500pkg_discovery_script
 
                     - event: b2500pkg_status
                       event_data:
@@ -2050,7 +2630,96 @@ script:
                         untertitel: >-
                           B{{ current_number }} – {{ aktion_auswahl }} – {{ bereich_auswahl }}
                         meldung: Discovery läuft
-                        details: "Erzeuge B{{ current_number }} CD16 ................ OK"
+                        details: "Erzeuge B{{ current_number }} CD16 Statistik ........ OK"
+                        append: true
+                        rueckmeldung: ""
+                        adresse: ""
+                        quelle: script.b2500pkg_discovery_script
+
+                # --------------------------------------------------
+                # CD16 OPTIONAL ERZEUGEN
+                # Hauptwerte inkl. p1/p2: nur wenn das Kürzel im frischen CD16
+                # tatsächlich vorhanden ist.
+                # E1 sb/sv/sc: zusätzlich nur bei frischem CD01 b1=1.
+                # E2 lb/lv/lc: zusätzlich nur bei frischem CD01 b2=1.
+                # --------------------------------------------------
+                - if:
+                    - condition: template
+                      value_template: "{{ bereich_auswahl in ['CD16_Optional', 'Alle'] }}"
+                  then:
+                    - repeat:
+                        for_each: "{{ cd16_optional_entities }}"
+                        sequence:
+                          - if:
+                              - condition: template
+                                value_template: >-
+                                  {% set ext = repeat.item.extension | default(0) | int(0) %}
+                                  {{
+                                    repeat.item.source_key in cd16_dict
+                                    and
+                                    (
+                                      ext == 0
+                                      or (ext == 1 and expansion1_present)
+                                      or (ext == 2 and expansion2_present)
+                                    )
+                                  }}
+                            then:
+                              - variables:
+                                  discovery_payload: >-
+                                    {{
+                                      (repeat.item.config | to_json)
+                                      | replace('B2500_01', 'B2500_' ~ current_number)
+                                      | replace('b2500_01', 'b2500_' ~ current_number)
+                                      | replace('B01', 'B' ~ current_number)
+                                      | replace('"B2500PKG_TYP"', current_typ | to_json)
+                                      | replace('"B2500PKG_MAC"', current_mac | to_json)
+                                    }}
+                              - variables:
+                                  discovery_entity_id: >-
+                                    {% set cfg = discovery_payload if discovery_payload is mapping else discovery_payload | from_json({}) %}{{ cfg.get('default_entity_id', '') | string | trim }}
+                                  discovery_entity_name: >-
+                                    {% set cfg = discovery_payload if discovery_payload is mapping else discovery_payload | from_json({}) %}{{ cfg.get('name', 'Unbekannt') | string | trim }}
+                              - variables:
+                                  discovery_entity_exists: >-
+                                    {{ discovery_entity_id != '' and (expand(discovery_entity_id) | count > 0) }}
+                              - if:
+                                  - condition: template
+                                    value_template: '{{ not discovery_entity_exists }}'
+                                then:
+                                  - action: mqtt.publish
+                                    data:
+                                      topic: >-
+                                        homeassistant/sensor/b2500_{{ current_number }}/{{ repeat.item.topic_suffix }}/config
+                                      retain: true
+                                      payload: >-
+                                        {{ discovery_payload }}
+
+                              - event: b2500pkg_status
+                                event_data:
+                                  status: LAEUFT
+                                  titel: B2500PKG Discovery
+                                  untertitel: >-
+                                    B{{ current_number }} – {{ aktion_auswahl }} – {{ bereich_auswahl }}
+                                  meldung: Discovery läuft
+                                  details: >-
+                                    {% if discovery_entity_exists %}
+                                      ⚠️ Übersprungen: {{ discovery_entity_name }} -> {{ discovery_entity_id }} bereits vorhanden
+                                    {% else %}
+                                      Erstelle {{ discovery_entity_name }} -> {{ discovery_entity_id }}
+                                    {% endif %}
+                                  append: true
+                                  rueckmeldung: ""
+                                  adresse: ""
+                                  quelle: script.b2500pkg_discovery_script
+
+                    - event: b2500pkg_status
+                      event_data:
+                        status: LAEUFT
+                        titel: B2500PKG Discovery
+                        untertitel: >-
+                          B{{ current_number }} – {{ aktion_auswahl }} – {{ bereich_auswahl }}
+                        meldung: Discovery läuft
+                        details: "Erzeuge B{{ current_number }} CD16 optional ........ OK"
                         append: true
                         rueckmeldung: ""
                         adresse: ""
@@ -2074,12 +2743,8 @@ script:
                                 value_template: >-
                                   {{ repeat.item.source_key in cd21_dict }}
                             then:
-                              - action: mqtt.publish
-                                data:
-                                  topic: >-
-                                    homeassistant/sensor/b2500_{{ current_number }}/{{ repeat.item.topic_suffix }}/config
-                                  retain: true
-                                  payload: >-
+                              - variables:
+                                  discovery_payload: >-
                                     {{
                                       (repeat.item.config | to_json)
                                       | replace('B2500_01', 'B2500_' ~ current_number)
@@ -2088,6 +2753,43 @@ script:
                                       | replace('"B2500PKG_TYP"', current_typ | to_json)
                                       | replace('"B2500PKG_MAC"', current_mac | to_json)
                                     }}
+                              - variables:
+                                  discovery_entity_id: >-
+                                    {% set cfg = discovery_payload if discovery_payload is mapping else discovery_payload | from_json({}) %}{{ cfg.get('default_entity_id', '') | string | trim }}
+                                  discovery_entity_name: >-
+                                    {% set cfg = discovery_payload if discovery_payload is mapping else discovery_payload | from_json({}) %}{{ cfg.get('name', 'Unbekannt') | string | trim }}
+                              - variables:
+                                  discovery_entity_exists: >-
+                                    {{ discovery_entity_id != '' and (expand(discovery_entity_id) | count > 0) }}
+                              - if:
+                                  - condition: template
+                                    value_template: '{{ not discovery_entity_exists }}'
+                                then:
+                                  - action: mqtt.publish
+                                    data:
+                                      topic: >-
+                                        homeassistant/sensor/b2500_{{ current_number }}/{{ repeat.item.topic_suffix }}/config
+                                      retain: true
+                                      payload: >-
+                                        {{ discovery_payload }}
+
+                              - event: b2500pkg_status
+                                event_data:
+                                  status: LAEUFT
+                                  titel: B2500PKG Discovery
+                                  untertitel: >-
+                                    B{{ current_number }} – {{ aktion_auswahl }} – {{ bereich_auswahl }}
+                                  meldung: Discovery läuft
+                                  details: >-
+                                    {% if discovery_entity_exists %}
+                                      ⚠️ Übersprungen: {{ discovery_entity_name }} -> {{ discovery_entity_id }} bereits vorhanden
+                                    {% else %}
+                                      Erstelle {{ discovery_entity_name }} -> {{ discovery_entity_id }}
+                                    {% endif %}
+                                  append: true
+                                  rueckmeldung: ""
+                                  adresse: ""
+                                  quelle: script.b2500pkg_discovery_script
 
                     - event: b2500pkg_status
                       event_data:
