@@ -16,9 +16,6 @@ input_text:
     icon: mdi:ip-network
     mode: text
     max: 15
-    # Leer ist erlaubt. Wenn gefüllt, muss die Anzeige immer NNN.NNN.NNN.NNN sein.
-    # Den Wertebereich 000..255 prüft zusätzlich das Script.
-    pattern: '(^$)|(^[0-9]{3}\.[0-9]{3}\.[0-9]{3}\.[0-9]{3}$)'
 
 script:
   # ============================================================================
