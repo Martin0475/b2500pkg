@@ -2761,377 +2761,112 @@ views:
             heading_style: title
             heading: Timer Status
             badges: []
-          - show_name: false
-            show_icon: false
-            show_state: true
-            type: glance
-            entities:
-              - entity: binary_sensor.b2500_01_d1
-              - entity: sensor.b2500_01_h1
-              - entity: sensor.b2500_01_e1
-              - entity: sensor.b2500_01_f1
-              - entity: binary_sensor.b2500_01_d2
-              - entity: sensor.b2500_01_h2
-              - entity: sensor.b2500_01_e2
-              - entity: sensor.b2500_01_f2
-              - entity: binary_sensor.b2500_01_d3
-              - entity: sensor.b2500_01_h3
-              - entity: sensor.b2500_01_e3
-              - entity: sensor.b2500_01_f3
-              - entity: binary_sensor.b2500_01_d4
-              - entity: sensor.b2500_01_h4
-              - entity: sensor.b2500_01_e4
-              - entity: sensor.b2500_01_f4
-              - entity: binary_sensor.b2500_01_d5
-              - entity: sensor.b2500_01_h5
-              - entity: sensor.b2500_01_e5
-              - entity: sensor.b2500_01_f5
-            title: B2500_01 Timer 1 bis 5
-            columns: 4
-            visibility:
-              - condition: state
-                entity: input_text.b01_mac
-                state_not: '0'
-          - show_name: false
-            show_icon: false
-            show_state: true
-            type: glance
-            entities:
-              - entity: binary_sensor.b2500_02_d1
-              - entity: sensor.b2500_02_h1
-              - entity: sensor.b2500_02_e1
-              - entity: sensor.b2500_02_f1
-              - entity: binary_sensor.b2500_02_d2
-              - entity: sensor.b2500_02_h2
-              - entity: sensor.b2500_02_e2
-              - entity: sensor.b2500_02_f2
-              - entity: binary_sensor.b2500_02_d3
-              - entity: sensor.b2500_02_h3
-              - entity: sensor.b2500_02_e3
-              - entity: sensor.b2500_02_f3
-              - entity: binary_sensor.b2500_02_d4
-              - entity: sensor.b2500_02_h4
-              - entity: sensor.b2500_02_e4
-              - entity: sensor.b2500_02_f4
-              - entity: binary_sensor.b2500_02_d5
-              - entity: sensor.b2500_02_h5
-              - entity: sensor.b2500_02_e5
-              - entity: sensor.b2500_02_f5
-            title: B2500_02 Timer 1 bis 5
-            columns: 4
-            visibility:
-              - condition: state
-                entity: input_text.b02_mac
-                state_not: '0'
-          - show_name: false
-            show_icon: false
-            show_state: true
-            type: glance
-            entities:
-              - entity: binary_sensor.b2500_03_d1
-              - entity: sensor.b2500_03_h1
-              - entity: sensor.b2500_03_e1
-              - entity: sensor.b2500_03_f1
-              - entity: binary_sensor.b2500_03_d2
-              - entity: sensor.b2500_03_h2
-              - entity: sensor.b2500_03_e2
-              - entity: sensor.b2500_03_f2
-              - entity: binary_sensor.b2500_03_d3
-              - entity: sensor.b2500_03_h3
-              - entity: sensor.b2500_03_e3
-              - entity: sensor.b2500_03_f3
-              - entity: binary_sensor.b2500_03_d4
-              - entity: sensor.b2500_03_h4
-              - entity: sensor.b2500_03_e4
-              - entity: sensor.b2500_03_f4
-              - entity: binary_sensor.b2500_03_d5
-              - entity: sensor.b2500_03_h5
-              - entity: sensor.b2500_03_e5
-              - entity: sensor.b2500_03_f5
-            title: B2500_03 Timer 1 bis 5
-            columns: 4
-            visibility:
-              - condition: state
-                entity: input_text.b03_mac
-                state_not: '0'
-          - show_name: false
-            show_icon: false
-            show_state: true
-            type: glance
-            entities:
-              - entity: binary_sensor.b2500_04_d1
-              - entity: sensor.b2500_04_h1
-              - entity: sensor.b2500_04_e1
-              - entity: sensor.b2500_04_f1
-              - entity: binary_sensor.b2500_04_d2
-              - entity: sensor.b2500_04_h2
-              - entity: sensor.b2500_04_e2
-              - entity: sensor.b2500_04_f2
-              - entity: binary_sensor.b2500_04_d3
-              - entity: sensor.b2500_04_h3
-              - entity: sensor.b2500_04_e3
-              - entity: sensor.b2500_04_f3
-              - entity: binary_sensor.b2500_04_d4
-              - entity: sensor.b2500_04_h4
-              - entity: sensor.b2500_04_e4
-              - entity: sensor.b2500_04_f4
-              - entity: binary_sensor.b2500_04_d5
-              - entity: sensor.b2500_04_h5
-              - entity: sensor.b2500_04_e5
-              - entity: sensor.b2500_04_f5
-            title: B2500_04 Timer 1 bis 5
-            columns: 4
-            visibility:
-              - condition: state
-                entity: input_text.b04_mac
-                state_not: '0'
-          - show_name: false
-            show_icon: false
-            show_state: true
-            type: glance
-            entities:
-              - entity: binary_sensor.b2500_05_d1
-              - entity: sensor.b2500_05_h1
-              - entity: sensor.b2500_05_e1
-              - entity: sensor.b2500_05_f1
-              - entity: binary_sensor.b2500_05_d2
-              - entity: sensor.b2500_05_h2
-              - entity: sensor.b2500_05_e2
-              - entity: sensor.b2500_05_f2
-              - entity: binary_sensor.b2500_05_d3
-              - entity: sensor.b2500_05_h3
-              - entity: sensor.b2500_05_e3
-              - entity: sensor.b2500_05_f3
-              - entity: binary_sensor.b2500_05_d4
-              - entity: sensor.b2500_05_h4
-              - entity: sensor.b2500_05_e4
-              - entity: sensor.b2500_05_f4
-              - entity: binary_sensor.b2500_05_d5
-              - entity: sensor.b2500_05_h5
-              - entity: sensor.b2500_05_e5
-              - entity: sensor.b2500_05_f5
-            title: B2500_05 Timer 1 bis 5
-            columns: 4
-            visibility:
-              - condition: state
-                entity: input_text.b05_mac
-                state_not: '0'
-          - show_name: false
-            show_icon: false
-            show_state: true
-            type: glance
-            entities:
-              - entity: binary_sensor.b2500_06_d1
-              - entity: sensor.b2500_06_h1
-              - entity: sensor.b2500_06_e1
-              - entity: sensor.b2500_06_f1
-              - entity: binary_sensor.b2500_06_d2
-              - entity: sensor.b2500_06_h2
-              - entity: sensor.b2500_06_e2
-              - entity: sensor.b2500_06_f2
-              - entity: binary_sensor.b2500_06_d3
-              - entity: sensor.b2500_06_h3
-              - entity: sensor.b2500_06_e3
-              - entity: sensor.b2500_06_f3
-              - entity: binary_sensor.b2500_06_d4
-              - entity: sensor.b2500_06_h4
-              - entity: sensor.b2500_06_e4
-              - entity: sensor.b2500_06_f4
-              - entity: binary_sensor.b2500_06_d5
-              - entity: sensor.b2500_06_h5
-              - entity: sensor.b2500_06_e5
-              - entity: sensor.b2500_06_f5
-            title: B2500_06 Timer 1 bis 5
-            columns: 4
-            visibility:
-              - condition: state
-                entity: input_text.b06_mac
-                state_not: '0'
-          - show_name: false
-            show_icon: false
-            show_state: true
-            type: glance
-            entities:
-              - entity: binary_sensor.b2500_07_d1
-              - entity: sensor.b2500_07_h1
-              - entity: sensor.b2500_07_e1
-              - entity: sensor.b2500_07_f1
-              - entity: binary_sensor.b2500_07_d2
-              - entity: sensor.b2500_07_h2
-              - entity: sensor.b2500_07_e2
-              - entity: sensor.b2500_07_f2
-              - entity: binary_sensor.b2500_07_d3
-              - entity: sensor.b2500_07_h3
-              - entity: sensor.b2500_07_e3
-              - entity: sensor.b2500_07_f3
-              - entity: binary_sensor.b2500_07_d4
-              - entity: sensor.b2500_07_h4
-              - entity: sensor.b2500_07_e4
-              - entity: sensor.b2500_07_f4
-              - entity: binary_sensor.b2500_07_d5
-              - entity: sensor.b2500_07_h5
-              - entity: sensor.b2500_07_e5
-              - entity: sensor.b2500_07_f5
-            title: B2500_07 Timer 1 bis 5
-            columns: 4
-            visibility:
-              - condition: state
-                entity: input_text.b07_mac
-                state_not: '0'
-          - show_name: false
-            show_icon: false
-            show_state: true
-            type: glance
-            entities:
-              - entity: binary_sensor.b2500_08_d1
-              - entity: sensor.b2500_08_h1
-              - entity: sensor.b2500_08_e1
-              - entity: sensor.b2500_08_f1
-              - entity: binary_sensor.b2500_08_d2
-              - entity: sensor.b2500_08_h2
-              - entity: sensor.b2500_08_e2
-              - entity: sensor.b2500_08_f2
-              - entity: binary_sensor.b2500_08_d3
-              - entity: sensor.b2500_08_h3
-              - entity: sensor.b2500_08_e3
-              - entity: sensor.b2500_08_f3
-              - entity: binary_sensor.b2500_08_d4
-              - entity: sensor.b2500_08_h4
-              - entity: sensor.b2500_08_e4
-              - entity: sensor.b2500_08_f4
-              - entity: binary_sensor.b2500_08_d5
-              - entity: sensor.b2500_08_h5
-              - entity: sensor.b2500_08_e5
-              - entity: sensor.b2500_08_f5
-            title: B2500_08 Timer 1 bis 5
-            columns: 4
-            visibility:
-              - condition: state
-                entity: input_text.b08_mac
-                state_not: '0'
-          - show_name: false
-            show_icon: false
-            show_state: true
-            type: glance
-            entities:
-              - entity: binary_sensor.b2500_09_d1
-              - entity: sensor.b2500_09_h1
-              - entity: sensor.b2500_09_e1
-              - entity: sensor.b2500_09_f1
-              - entity: binary_sensor.b2500_09_d2
-              - entity: sensor.b2500_09_h2
-              - entity: sensor.b2500_09_e2
-              - entity: sensor.b2500_09_f2
-              - entity: binary_sensor.b2500_09_d3
-              - entity: sensor.b2500_09_h3
-              - entity: sensor.b2500_09_e3
-              - entity: sensor.b2500_09_f3
-              - entity: binary_sensor.b2500_09_d4
-              - entity: sensor.b2500_09_h4
-              - entity: sensor.b2500_09_e4
-              - entity: sensor.b2500_09_f4
-              - entity: binary_sensor.b2500_09_d5
-              - entity: sensor.b2500_09_h5
-              - entity: sensor.b2500_09_e5
-              - entity: sensor.b2500_09_f5
-            title: B2500_09 Timer 1 bis 5
-            columns: 4
-            visibility:
-              - condition: state
-                entity: input_text.b09_mac
-                state_not: '0'
-          - type: vertical-stack
-            cards:
-              - type: conditional
-                conditions:
-                  - condition: state
-                    entity: input_text.b01_mac
-                    state_not: '0'
-                card:
-                  type: entities
-                  entities:
-                    - entity: sensor.b2500_01_md
-                  show_header_toggle: false
-              - type: conditional
-                conditions:
-                  - condition: state
-                    entity: input_text.b02_mac
-                    state_not: '0'
-                card:
-                  type: entities
-                  entities:
-                    - entity: sensor.b2500_02_md
-                  show_header_toggle: false
-              - type: conditional
-                conditions:
-                  - condition: state
-                    entity: input_text.b03_mac
-                    state_not: '0'
-                card:
-                  type: entities
-                  entities:
-                    - entity: sensor.b2500_03_md
-                  show_header_toggle: false
-              - type: conditional
-                conditions:
-                  - condition: state
-                    entity: input_text.b04_mac
-                    state_not: '0'
-                card:
-                  type: entities
-                  entities:
-                    - entity: sensor.b2500_04_md
-                  show_header_toggle: false
-              - type: conditional
-                conditions:
-                  - condition: state
-                    entity: input_text.b05_mac
-                    state_not: '0'
-                card:
-                  type: entities
-                  entities:
-                    - entity: sensor.b2500_05_md
-                  show_header_toggle: false
-              - type: conditional
-                conditions:
-                  - condition: state
-                    entity: input_text.b06_mac
-                    state_not: '0'
-                card:
-                  type: entities
-                  entities:
-                    - entity: sensor.b2500_06_md
-                  show_header_toggle: false
-              - type: conditional
-                conditions:
-                  - condition: state
-                    entity: input_text.b07_mac
-                    state_not: '0'
-                card:
-                  type: entities
-                  entities:
-                    - entity: sensor.b2500_07_md
-                  show_header_toggle: false
-              - type: conditional
-                conditions:
-                  - condition: state
-                    entity: input_text.b08_mac
-                    state_not: '0'
-                card:
-                  type: entities
-                  entities:
-                    - entity: sensor.b2500_08_md
-                  show_header_toggle: false
-              - type: conditional
-                conditions:
-                  - condition: state
-                    entity: input_text.b09_mac
-                    state_not: '0'
-                card:
-                  type: entities
-                  entities:
-                    - entity: sensor.b2500_09_md
-                  show_header_toggle: false
+          - type: markdown
+            title: B2500 Timer
+            entity_id:
+              - input_text.b01_mac
+              - input_text.b02_mac
+              - input_text.b03_mac
+              - input_text.b04_mac
+              - input_text.b05_mac
+              - input_text.b06_mac
+              - input_text.b07_mac
+              - input_text.b08_mac
+              - input_text.b09_mac
+              - sensor.b2500_cache_01
+              - sensor.b2500_cache_02
+              - sensor.b2500_cache_03
+              - sensor.b2500_cache_04
+              - sensor.b2500_cache_05
+              - sensor.b2500_cache_06
+              - sensor.b2500_cache_07
+              - sensor.b2500_cache_08
+              - sensor.b2500_cache_09
+            content: |
+              {% for nr in range(1, 10) %}
+                {% set n = '%02d' | format(nr) %}
+                {% set mac = states('input_text.b' ~ n ~ '_mac') %}
+                {% set cache = 'sensor.b2500_cache_' ~ n %}
+                {% set c = state_attr(cache, 'cd01') or {} %}
+
+                {% if mac not in ['0', '', 'unknown', 'unavailable', 'none'] %}
+
+              ### 🔋 B{{ n }}
+
+              {% if c %}
+
+                {% set md = c.get('md', '-1') | int(-1) %}
+                {% set cs = c.get('cs', '-1') | int(-1) %}
+                {% set soc = c.get('pe', '-') %}
+                {% set dod = c.get('do', '-') %}
+
+                {% if md == 1 %}
+                  {% set modus = '🧠 Selbstanpassung' %}
+                {% elif md == 0 %}
+                  {% set modus = '⏱️ Timer' %}
+                {% else %}
+                  {% set modus = '❔ Unbekannt' %}
+                {% endif %}
+
+                {% if cs == 1 %}
+                  {% set ladeart = 'Laden vor Entladen' %}
+                {% elif cs == 0 %}
+                  {% set ladeart = 'Laden + Entladen' %}
+                {% else %}
+                  {% set ladeart = 'Unbekannt' %}
+                {% endif %}
+
+              **{{ modus }}**  
+              🔋 SOC `{{ soc }} %` · DOD `{{ dod }} %`  
+              ⚙️ {{ ladeart }}
+
+                {% set rows = namespace(v=[]) %}
+
+                {% for t in range(1, 6) %}
+                  {% set aktiv = c.get('d' ~ t, '0') | int(0) %}
+                  {% set start_raw = c.get('e' ~ t, '0:0') %}
+                  {% set ende_raw = c.get('f' ~ t, '0:0') %}
+
+                  {% set sp = start_raw.split(':') %}
+                  {% set ep = ende_raw.split(':') %}
+
+                  {% if sp | count == 2 %}
+                    {% set start = '%2d:%02d' | format(sp[0] | int(0), sp[1] | int(0)) %}
+                  {% else %}
+                    {% set start = '--:--' %}
+                  {% endif %}
+
+                  {% if ep | count == 2 %}
+                    {% set ende = '%2d:%02d' | format(ep[0] | int(0), ep[1] | int(0)) %}
+                  {% else %}
+                    {% set ende = '--:--' %}
+                  {% endif %}
+
+                  {% set leistung = '%4d W' | format(c.get('h' ~ t, 0) | int(0)) %}
+                  {% set status = '🟢 Ein' if aktiv == 1 else '⚫ Aus' %}
+
+                  {% set rows.v = rows.v + [
+                    '| **' ~ t ~ '** | ' ~ status ~
+                    ' | `' ~ start ~
+                    '` | `' ~ ende ~
+                    '` | `' ~ leistung ~ '` |'
+                  ] %}
+                {% endfor %}
+
+              | Timer | Status | Beginn | Ende | Leistung |
+              |:--:|:--:|:--:|:--:|--:|
+              {{ rows.v | join('\n') }}
+
+              {% else %}
+
+              🟡 **Keine Daten im Cache**
+
+              {% endif %}
+
+              ---
+
+                {% endif %}
+              {% endfor %}
         column_span: 2
     max_columns: 2
     badges:
@@ -3809,6 +3544,8 @@ views:
             entities:
               - entity: input_select.speicherauswahl
               - entity: input_select.smartmeter
+              - entity: input_text.ecotrackerip
+                color: state
             title: Smartmeter
             show_header_toggle: false
             footer:
@@ -4850,6 +4587,16 @@ views:
           - type: tile
             entity: sensor.b2500_01_a1
           - type: tile
+            entity: sensor.b01_e1_min_spannung
+          - type: tile
+            entity: sensor.b01_e1_min_spannung_zelle
+          - type: tile
+            entity: sensor.b01_e1_max_spannung
+          - type: tile
+            entity: sensor.b01_e1_max_spannung_zelle
+          - type: tile
+            entity: sensor.b01_e1_spannungsdifferenz
+          - type: tile
             entity: sensor.b2500_01_extern1_zelle01
             features_position: bottom
             vertical: false
@@ -4903,6 +4650,16 @@ views:
             entity: binary_sensor.b2500_02_l1_bit7
           - type: tile
             entity: sensor.b2500_02_a1
+          - type: tile
+            entity: sensor.b02_e1_min_spannung
+          - type: tile
+            entity: sensor.b02_e1_min_spannung_zelle
+          - type: tile
+            entity: sensor.b02_e1_max_spannung
+          - type: tile
+            entity: sensor.b02_e1_max_spannung_zelle
+          - type: tile
+            entity: sensor.b02_e1_spannungsdifferenz
           - type: tile
             entity: sensor.b2500_02_extern1_zelle01
             features_position: bottom
@@ -4958,6 +4715,16 @@ views:
           - type: tile
             entity: sensor.b2500_03_a1
           - type: tile
+            entity: sensor.b03_e1_min_spannung
+          - type: tile
+            entity: sensor.b03_e1_min_spannung_zelle
+          - type: tile
+            entity: sensor.b03_e1_max_spannung
+          - type: tile
+            entity: sensor.b03_e1_max_spannung_zelle
+          - type: tile
+            entity: sensor.b03_e1_spannungsdifferenz
+          - type: tile
             entity: sensor.b2500_03_extern1_zelle01
             features_position: bottom
             vertical: false
@@ -5011,6 +4778,16 @@ views:
             entity: binary_sensor.b2500_04_l1_bit7
           - type: tile
             entity: sensor.b2500_04_a1
+          - type: tile
+            entity: sensor.b04_e1_min_spannung
+          - type: tile
+            entity: sensor.b04_e1_min_spannung_zelle
+          - type: tile
+            entity: sensor.b04_e1_max_spannung
+          - type: tile
+            entity: sensor.b04_e1_max_spannung_zelle
+          - type: tile
+            entity: sensor.b04_e1_spannungsdifferenz
           - type: tile
             entity: sensor.b2500_04_extern1_zelle01
             features_position: bottom
@@ -5066,6 +4843,16 @@ views:
           - type: tile
             entity: sensor.b2500_05_a1
           - type: tile
+            entity: sensor.b05_e1_min_spannung
+          - type: tile
+            entity: sensor.b05_e1_min_spannung_zelle
+          - type: tile
+            entity: sensor.b05_e1_max_spannung
+          - type: tile
+            entity: sensor.b05_e1_max_spannung_zelle
+          - type: tile
+            entity: sensor.b05_e1_spannungsdifferenz
+          - type: tile
             entity: sensor.b2500_05_extern1_zelle01
             features_position: bottom
             vertical: false
@@ -5119,6 +4906,16 @@ views:
             entity: binary_sensor.b2500_06_l1_bit7
           - type: tile
             entity: sensor.b2500_06_a1
+          - type: tile
+            entity: sensor.b06_e1_min_spannung
+          - type: tile
+            entity: sensor.b06_e1_min_spannung_zelle
+          - type: tile
+            entity: sensor.b06_e1_max_spannung
+          - type: tile
+            entity: sensor.b06_e1_max_spannung_zelle
+          - type: tile
+            entity: sensor.b06_e1_spannungsdifferenz
           - type: tile
             entity: sensor.b2500_06_extern1_zelle01
             features_position: bottom
@@ -5174,6 +4971,16 @@ views:
           - type: tile
             entity: sensor.b2500_07_a1
           - type: tile
+            entity: sensor.b07_e1_min_spannung
+          - type: tile
+            entity: sensor.b07_e1_min_spannung_zelle
+          - type: tile
+            entity: sensor.b07_e1_max_spannung
+          - type: tile
+            entity: sensor.b07_e1_max_spannung_zelle
+          - type: tile
+            entity: sensor.b07_e1_spannungsdifferenz
+          - type: tile
             entity: sensor.b2500_07_extern1_zelle01
             features_position: bottom
             vertical: false
@@ -5228,6 +5035,16 @@ views:
           - type: tile
             entity: sensor.b2500_08_a1
           - type: tile
+            entity: sensor.b08_e1_min_spannung
+          - type: tile
+            entity: sensor.b08_e1_min_spannung_zelle
+          - type: tile
+            entity: sensor.b08_e1_max_spannung
+          - type: tile
+            entity: sensor.b08_e1_max_spannung_zelle
+          - type: tile
+            entity: sensor.b08_e1_spannungsdifferenz
+          - type: tile
             entity: sensor.b2500_08_extern1_zelle01
             features_position: bottom
             vertical: false
@@ -5281,6 +5098,16 @@ views:
             entity: binary_sensor.b2500_09_l1_bit7
           - type: tile
             entity: sensor.b2500_09_a1
+          - type: tile
+            entity: sensor.b09_e1_min_spannung
+          - type: tile
+            entity: sensor.b09_e1_min_spannung_zelle
+          - type: tile
+            entity: sensor.b09_e1_max_spannung
+          - type: tile
+            entity: sensor.b09_e1_max_spannung_zelle
+          - type: tile
+            entity: sensor.b09_e1_spannungsdifferenz
           - type: tile
             entity: sensor.b2500_09_extern1_zelle01
             features_position: bottom
@@ -5343,6 +5170,16 @@ views:
           - type: tile
             entity: sensor.b2500_01_a2
           - type: tile
+            entity: sensor.b01_e2_min_spannung
+          - type: tile
+            entity: sensor.b01_e2_min_spannung_zelle
+          - type: tile
+            entity: sensor.b01_e2_max_spannung
+          - type: tile
+            entity: sensor.b01_e2_max_spannung_zelle
+          - type: tile
+            entity: sensor.b01_e2_spannungsdifferenz
+          - type: tile
             entity: sensor.b2500_01_extern2_zelle01
           - type: tile
             entity: sensor.b2500_01_extern2_zelle02
@@ -5395,6 +5232,16 @@ views:
             entity: binary_sensor.b2500_02_l1_bit3
           - type: tile
             entity: sensor.b2500_02_a2
+          - type: tile
+            entity: sensor.b02_e2_min_spannung
+          - type: tile
+            entity: sensor.b02_e2_min_spannung_zelle
+          - type: tile
+            entity: sensor.b02_e2_max_spannung
+          - type: tile
+            entity: sensor.b02_e2_max_spannung_zelle
+          - type: tile
+            entity: sensor.b02_e2_spannungsdifferenz
           - type: tile
             entity: sensor.b2500_02_extern2_zelle01
           - type: tile
@@ -5449,6 +5296,16 @@ views:
           - type: tile
             entity: sensor.b2500_03_a2
           - type: tile
+            entity: sensor.b03_e2_min_spannung
+          - type: tile
+            entity: sensor.b03_e2_min_spannung_zelle
+          - type: tile
+            entity: sensor.b03_e2_max_spannung
+          - type: tile
+            entity: sensor.b03_e2_max_spannung_zelle
+          - type: tile
+            entity: sensor.b03_e2_spannungsdifferenz
+          - type: tile
             entity: sensor.b2500_03_extern2_zelle01
           - type: tile
             entity: sensor.b2500_03_extern2_zelle02
@@ -5501,6 +5358,16 @@ views:
             entity: binary_sensor.b2500_04_l1_bit3
           - type: tile
             entity: sensor.b2500_04_a2
+          - type: tile
+            entity: sensor.b04_e2_min_spannung
+          - type: tile
+            entity: sensor.b04_e2_min_spannung_zelle
+          - type: tile
+            entity: sensor.b04_e2_max_spannung
+          - type: tile
+            entity: sensor.b04_e2_max_spannung_zelle
+          - type: tile
+            entity: sensor.b04_e2_spannungsdifferenz
           - type: tile
             entity: sensor.b2500_04_extern2_zelle01
           - type: tile
@@ -5555,6 +5422,16 @@ views:
           - type: tile
             entity: sensor.b2500_05_a2
           - type: tile
+            entity: sensor.b05_e2_min_spannung
+          - type: tile
+            entity: sensor.b05_e2_min_spannung_zelle
+          - type: tile
+            entity: sensor.b05_e2_max_spannung
+          - type: tile
+            entity: sensor.b05_e2_max_spannung_zelle
+          - type: tile
+            entity: sensor.b05_e2_spannungsdifferenz
+          - type: tile
             entity: sensor.b2500_05_extern2_zelle01
           - type: tile
             entity: sensor.b2500_05_extern2_zelle02
@@ -5607,6 +5484,16 @@ views:
             entity: binary_sensor.b2500_06_l1_bit3
           - type: tile
             entity: sensor.b2500_06_a2
+          - type: tile
+            entity: sensor.b06_e2_min_spannung
+          - type: tile
+            entity: sensor.b06_e2_min_spannung_zelle
+          - type: tile
+            entity: sensor.b06_e2_max_spannung
+          - type: tile
+            entity: sensor.b06_e2_max_spannung_zelle
+          - type: tile
+            entity: sensor.b06_e2_spannungsdifferenz
           - type: tile
             entity: sensor.b2500_06_extern2_zelle01
           - type: tile
@@ -5661,6 +5548,16 @@ views:
           - type: tile
             entity: sensor.b2500_07_a2
           - type: tile
+            entity: sensor.b07_e2_min_spannung
+          - type: tile
+            entity: sensor.b07_e2_min_spannung_zelle
+          - type: tile
+            entity: sensor.b07_e2_max_spannung
+          - type: tile
+            entity: sensor.b07_e2_max_spannung_zelle
+          - type: tile
+            entity: sensor.b07_e2_spannungsdifferenz
+          - type: tile
             entity: sensor.b2500_07_extern2_zelle01
           - type: tile
             entity: sensor.b2500_07_extern2_zelle02
@@ -5714,6 +5611,16 @@ views:
           - type: tile
             entity: sensor.b2500_08_a2
           - type: tile
+            entity: sensor.b08_e2_min_spannung
+          - type: tile
+            entity: sensor.b08_e2_min_spannung_zelle
+          - type: tile
+            entity: sensor.b08_e2_max_spannung
+          - type: tile
+            entity: sensor.b08_e2_max_spannung_zelle
+          - type: tile
+            entity: sensor.b08_e2_spannungsdifferenz
+          - type: tile
             entity: sensor.b2500_08_extern2_zelle01
           - type: tile
             entity: sensor.b2500_08_extern2_zelle02
@@ -5766,6 +5673,16 @@ views:
             entity: binary_sensor.b2500_09_l1_bit3
           - type: tile
             entity: sensor.b2500_09_a2
+          - type: tile
+            entity: sensor.b09_e2_min_spannung
+          - type: tile
+            entity: sensor.b09_e2_min_spannung_zelle
+          - type: tile
+            entity: sensor.b09_e2_max_spannung
+          - type: tile
+            entity: sensor.b09_e2_max_spannung_zelle
+          - type: tile
+            entity: sensor.b09_e2_spannungsdifferenz
           - type: tile
             entity: sensor.b2500_09_extern2_zelle01
           - type: tile
