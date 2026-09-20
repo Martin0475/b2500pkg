@@ -102,9 +102,10 @@ script:
     description: >-
       Setzt den Smartmeter-Typ für einen oder alle B2500-Speicher.
       Bei Eco Tracker wird vorher die im B2500 gespeicherte Monitor-IP per
-      cd=35,ip? geprüft. Falls input_text.ecotrackerip gefüllt ist und von der
-      gespeicherten IP abweicht (oder keine IP gespeichert ist), wird cd=35
-      gesetzt, erneut abgefragt und erst danach meter=7 gesetzt.
+      cd=35,ip? geprüft. Eine per Action übergebene ecotracker_ip hat Vorrang
+      vor input_text.ecotrackerip. Wird ecotracker_ip explizit leer übergeben,
+      wird der Helper ignoriert und eine bereits im B2500 gespeicherte IP verwendet.
+      Erst nach erfolgreicher IP-Prüfung wird meter=7 gesetzt.
     mode: queued
     max: 10
     trace:
@@ -154,6 +155,16 @@ script:
               - Shelly Pro EM50
               - CT003
               - CT001
+      ecotracker_ip:
+        name: EcoTracker IP
+        description: >-
+          Optional für Action-Aufrufe. Wenn angegeben, hat dieser Wert Vorrang
+          vor input_text.ecotrackerip. Ein explizit leerer Wert ignoriert den
+          Helper und verwendet eine bereits im B2500 gespeicherte EcoTracker-IP.
+        required: false
+        example: 192.168.178.105
+        selector:
+          text:
 
     sequence:
       # ------------------------------------------------------------------------
@@ -173,6 +184,15 @@ script:
               {{ states('input_select.smartmeter') | string | trim }}
             {% endif %}
           ecotracker_helper_raw: "{{ states('input_text.ecotrackerip') | string | trim }}"
+          ecotracker_action_given: "{{ ecotracker_ip is defined }}"
+          ecotracker_ip_raw: >-
+            {% if ecotracker_ip is defined %}
+              {{ ecotracker_ip | string | trim }}
+            {% else %}
+              {{ states('input_text.ecotrackerip') | string | trim }}
+            {% endif %}
+          ecotracker_ip_source: >-
+            {{ 'Action' if ecotracker_ip is defined else 'Helper' }}
           erlaubte_speicher:
             - b2500_01
             - b2500_02
@@ -219,13 +239,13 @@ script:
           ct_t_expected: '{{ ct_t_raw_map.get(smartmeter_auswahl, -1) }}'
           smartmeter_payload: >-
             cd=27,meter={{ meter_set_map.get(smartmeter_auswahl, -1) | int(-1) }},mac=000000000000
-          ecotracker_helper_valid: >-
-            {% set ip = ecotracker_helper_raw %}
+          ecotracker_ip_valid: >-
+            {% set ip = ecotracker_ip_raw %}
             {% set p = ip.split('.') %}
             {{
               ip == ''
               or (
-                (ip | regex_match('^[0-9]{3}\.[0-9]{3}\.[0-9]{3}\.[0-9]{3}$'))
+                (ip | regex_match('^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$'))
                 and p | count == 4
                 and (p[0] | int(-1)) >= 0 and (p[0] | int(-1)) <= 255
                 and (p[1] | int(-1)) >= 0 and (p[1] | int(-1)) <= 255
@@ -270,25 +290,25 @@ script:
           - condition: template
             value_template: >-
               {{ smartmeter_auswahl == 'Eco Tracker'
-                 and ecotracker_helper_raw != ''
-                 and not ecotracker_helper_valid }}
+                 and ecotracker_ip_raw != ''
+                 and not ecotracker_ip_valid }}
         then:
           - variables:
               response:
                 success: false
                 code: ECOTRACKER_IP_INVALID
-                message: EcoTracker-IP im Helper hat ein ungültiges Format.
+                message: EcoTracker-IP hat ein ungültiges Format.
                 speicher: '{{ speicher_auswahl }}'
                 smartmeter: '{{ smartmeter_auswahl }}'
-                ecotrackerip: '{{ ecotracker_helper_raw }}'
+                ecotrackerip: '{{ ecotracker_ip_raw }}'
           - event: b2500pkg_status
             event_data:
               status: FEHLER
               titel: B2500PKG Smartmeter
               untertitel: '{{ speicher_auswahl }} – Eco Tracker'
               meldung: EcoTracker-IP ungültig
-              details: 'Helper: {{ ecotracker_helper_raw }}'
-              rueckmeldung: 'Erwartet NNN.NNN.NNN.NNN, z. B. 192.168.169.023; jedes Oktett 000–255.'
+              details: '{{ ecotracker_ip_source }}: {{ ecotracker_ip_raw }}'
+              rueckmeldung: 'Erwartet eine IPv4-Adresse, z. B. 192.168.178.105; jedes Oktett 0–255.'
               adresse: input_text.ecotrackerip
               quelle: script.b2500pkg_set_smartmeter
           - stop: Ungültige EcoTracker-IP.
@@ -297,15 +317,20 @@ script:
       # Nach erfolgreicher Helper-Prüfung in kanonische Schreibform umwandeln.
       # Beispiel: 192.168.169.023 -> 192.168.169.23 (len=14).
       - variables:
-          ecotracker_helper_canonical: >-
-            {% if smartmeter_auswahl == 'Eco Tracker' and ecotracker_helper_raw != '' %}
-              {% set p = ecotracker_helper_raw.split('.') %}
+          ecotracker_ip_canonical: >-
+            {% if smartmeter_auswahl == 'Eco Tracker' and ecotracker_ip_raw != '' %}
+              {% set p = ecotracker_ip_raw.split('.') %}
               {{ '%d.%d.%d.%d' | format(p[0] | int, p[1] | int, p[2] | int, p[3] | int) }}
             {% else %}
               {{ '' }}
             {% endif %}
-          ecotracker_helper_padded: >-
-            {{ ecotracker_helper_raw if smartmeter_auswahl == 'Eco Tracker' else '' }}
+          ecotracker_ip_padded: >-
+            {% if smartmeter_auswahl == 'Eco Tracker' and ecotracker_ip_raw != '' %}
+              {% set p = ecotracker_ip_raw.split('.') %}
+              {{ '%03d.%03d.%03d.%03d' | format(p[0] | int, p[1] | int, p[2] | int, p[3] | int) }}
+            {% else %}
+              {{ '' }}
+            {% endif %}
 
       # Neues Statusfenster starten; die folgenden Schritte werden angehängt.
       - event: b2500pkg_status
@@ -317,7 +342,7 @@ script:
           details: >-
             Ziel: {{ speicher_auswahl }} | Smartmeter: {{ smartmeter_auswahl }}
             {% if smartmeter_auswahl == 'Eco Tracker' %}
-            | Helper: {{ ecotracker_helper_raw if ecotracker_helper_raw != '' else 'leer' }}
+            | {{ ecotracker_ip_source }}: {{ ecotracker_ip_raw if ecotracker_ip_raw != '' else 'leer' }}
             {% endif %}
           rueckmeldung: ''
           adresse: script.b2500pkg_set_smartmeter
@@ -356,7 +381,7 @@ script:
                     meldung: EcoTracker-IP wird abgefragt
                     details: 'Sende cd=35,ip?'
                     append: true
-                    rueckmeldung: 'Helper: {{ ecotracker_helper_raw if ecotracker_helper_raw != "" else "leer" }}'
+                    rueckmeldung: '{{ ecotracker_ip_source }}: {{ ecotracker_ip_raw if ecotracker_ip_raw != "" else "leer" }}'
                     adresse: '{{ request_topic }}'
                     quelle: script.b2500pkg_set_smartmeter
 
@@ -441,11 +466,11 @@ script:
                     quelle: script.b2500pkg_set_smartmeter
 
                 # --------------------------------------------------------------
-                # Helper leer: gültige IP im B2500 reicht aus.
+                # Effektive IP leer: gültige IP im B2500 reicht aus.
                 # --------------------------------------------------------------
                 - if:
                     - condition: template
-                      value_template: "{{ ecotracker_helper_raw == '' and cd35_ip_valid }}"
+                      value_template: "{{ ecotracker_ip_raw == '' and cd35_ip_valid }}"
                   then:
                     - event: b2500pkg_status
                       event_data:
@@ -455,21 +480,21 @@ script:
                         meldung: Gespeicherte EcoTracker-IP wird verwendet
                         details: 'IP: {{ cd35_ip_padded }}'
                         append: true
-                        rueckmeldung: 'Helper ist leer – cd=35 bleibt unverändert.'
+                        rueckmeldung: 'Keine IP vorgegeben – cd=35 bleibt unverändert.'
                         adresse: '{{ device_topic }}'
                         quelle: script.b2500pkg_set_smartmeter
 
-                # Helper leer und keine gültige gespeicherte IP: NICHT meter=7
+                # Keine IP vorgegeben und keine gültige gespeicherte IP: NICHT meter=7
                 # aktivieren; das verhindert den reproduzierten Hänger.
                 - if:
                     - condition: template
-                      value_template: "{{ ecotracker_helper_raw == '' and not cd35_ip_valid }}"
+                      value_template: "{{ ecotracker_ip_raw == '' and not cd35_ip_valid }}"
                   then:
                     - variables:
                         response:
                           success: false
                           code: ECOTRACKER_IP_MISSING
-                          message: Keine gültige EcoTracker-IP im B2500 gespeichert und Helper ist leer.
+                          message: Keine gültige EcoTracker-IP im B2500 gespeichert und keine EcoTracker-IP wurde vorgegeben.
                           speicher: '{{ current_storage }}'
                           smartmeter: Eco Tracker
                           cd35: '{{ cd35_raw }}'
@@ -481,24 +506,24 @@ script:
                         meldung: EcoTracker-IP fehlt
                         details: 'cd35: {{ cd35_raw if cd35_raw != "" else "keine Antwort" }}'
                         append: true
-                        rueckmeldung: 'input_text.ecotrackerip ist leer. EcoTracker wird NICHT aktiviert.'
+                        rueckmeldung: 'Keine EcoTracker-IP vorgegeben und im B2500 ist keine gültige IP gespeichert. EcoTracker wird NICHT aktiviert.'
                         adresse: input_text.ecotrackerip
                         quelle: script.b2500pkg_set_smartmeter
                     - stop: EcoTracker-IP fehlt.
                       response_variable: response
 
                 # --------------------------------------------------------------
-                # Helper gefüllt und IP stimmt nicht / fehlt: cd35 setzen.
+                # IP vorgegeben und gespeicherte IP stimmt nicht / fehlt: cd35 setzen.
                 # --------------------------------------------------------------
                 - if:
                     - condition: template
                       value_template: >-
-                        {{ ecotracker_helper_raw != ''
-                           and (not cd35_ip_valid or cd35_ip_padded != ecotracker_helper_padded) }}
+                        {{ ecotracker_ip_raw != ''
+                           and (not cd35_ip_valid or cd35_ip_padded != ecotracker_ip_padded) }}
                   then:
                     - variables:
                         cd35_set_payload: >-
-                          cd=35,len={{ ecotracker_helper_canonical | length }},ip={{ ecotracker_helper_canonical }}
+                          cd=35,len={{ ecotracker_ip_canonical | length }},ip={{ ecotracker_ip_canonical }}
 
                     - event: b2500pkg_status
                       event_data:
@@ -510,9 +535,9 @@ script:
                         append: true
                         rueckmeldung: >-
                           {% if cd35_ip_valid %}
-                            Ist: {{ cd35_ip_padded }} | Soll: {{ ecotracker_helper_padded }}
+                            Ist: {{ cd35_ip_padded }} | Soll: {{ ecotracker_ip_padded }}
                           {% else %}
-                            Keine gültige gespeicherte IP | Soll: {{ ecotracker_helper_padded }}
+                            Keine gültige gespeicherte IP | Soll: {{ ecotracker_ip_padded }}
                           {% endif %}
                         adresse: '{{ request_topic }}'
                         quelle: script.b2500pkg_set_smartmeter
@@ -536,7 +561,7 @@ script:
                         meldung: EcoTracker-IP wird kontrolliert
                         details: 'Sende erneut cd=35,ip?'
                         append: true
-                        rueckmeldung: 'Erwartet: {{ ecotracker_helper_padded }}'
+                        rueckmeldung: 'Erwartet: {{ ecotracker_ip_padded }}'
                         adresse: '{{ request_topic }}'
                         quelle: script.b2500pkg_set_smartmeter
 
@@ -596,17 +621,17 @@ script:
                     - event: b2500pkg_status
                       event_data:
                         status: >-
-                          {{ 'LAEUFT' if cd35_verify_valid and cd35_verify_padded == ecotracker_helper_padded else 'FEHLER' }}
+                          {{ 'LAEUFT' if cd35_verify_valid and cd35_verify_padded == ecotracker_ip_padded else 'FEHLER' }}
                         titel: B2500PKG Smartmeter
                         untertitel: '{{ current_storage | upper | replace(''B2500_'', ''B'') }} – Eco Tracker'
                         meldung: >-
-                          {{ 'EcoTracker-IP bestätigt' if cd35_verify_valid and cd35_verify_padded == ecotracker_helper_padded
+                          {{ 'EcoTracker-IP bestätigt' if cd35_verify_valid and cd35_verify_padded == ecotracker_ip_padded
                              else 'EcoTracker-IP konnte nicht bestätigt werden' }}
                         details: 'Antwort: {{ cd35_verify_raw if cd35_verify_raw != "" else "keine Antwort" }}'
                         append: true
                         rueckmeldung: >-
                           {% if cd35_verify_valid %}
-                            Ist: {{ cd35_verify_padded }} | Soll: {{ ecotracker_helper_padded }}
+                            Ist: {{ cd35_verify_padded }} | Soll: {{ ecotracker_ip_padded }}
                           {% else %}
                             Keine gültige cd=35-Antwort erhalten.
                           {% endif %}
@@ -616,7 +641,7 @@ script:
                     - if:
                         - condition: template
                           value_template: >-
-                            {{ not cd35_verify_valid or cd35_verify_padded != ecotracker_helper_padded }}
+                            {{ not cd35_verify_valid or cd35_verify_padded != ecotracker_ip_padded }}
                       then:
                         - variables:
                             response:
@@ -625,18 +650,18 @@ script:
                               message: EcoTracker-IP konnte nach dem Setzen nicht bestätigt werden.
                               speicher: '{{ current_storage }}'
                               smartmeter: Eco Tracker
-                              soll_ip: '{{ ecotracker_helper_padded }}'
+                              soll_ip: '{{ ecotracker_ip_padded }}'
                               cd35: '{{ cd35_verify_raw }}'
                         - stop: EcoTracker-IP konnte nicht bestätigt werden.
                           response_variable: response
 
-                # Helper gefüllt und gespeicherte IP bereits identisch.
+                # Vorgegebene und gespeicherte IP sind bereits identisch.
                 - if:
                     - condition: template
                       value_template: >-
-                        {{ ecotracker_helper_raw != ''
+                        {{ ecotracker_ip_raw != ''
                            and cd35_ip_valid
-                           and cd35_ip_padded == ecotracker_helper_padded }}
+                           and cd35_ip_padded == ecotracker_ip_padded }}
                   then:
                     - event: b2500pkg_status
                       event_data:
