@@ -1,6 +1,6 @@
 {
-  "version": "20.09.2026",
-  "changes": "Spannungen für Erweiterungen",
+  "version": "22.09.2026",
+  "changes": "Bugfix -gesamt Sensoren, Dashboard Optimierungen",
   "b2500pkg": [
     "b2500pkg_input.yaml",
     "b2500pkg_templates.yaml",
