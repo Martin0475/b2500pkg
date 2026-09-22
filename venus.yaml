@@ -67,8 +67,10 @@ modbus:
         offset: 0
         precision: 0
 
-      - name: "Venus Total Charging Energy"
-        unique_id: venus_total_charging_energy
+      # Rohwerte der internen Venus-Gesamtenergiezaehler.
+      # Diese Sensoren NICHT direkt im Energiedashboard verwenden.
+      - name: "Venus Total Charging Energy Raw"
+        unique_id: venus_total_charging_energy_raw
         address: 33000
         slave: 1
         scan_interval: 30
@@ -76,13 +78,12 @@ modbus:
         data_type: uint32
         unit_of_measurement: kWh
         device_class: energy
-        state_class: total_increasing
         scale: 0.01
         offset: 0
-        precision: 1
+        precision: 2
 
-      - name: "Venus Total Discharging Energy"
-        unique_id: venus_total_discharging_energy
+      - name: "Venus Total Discharging Energy Raw"
+        unique_id: venus_total_discharging_energy_raw
         address: 33002
         slave: 1
         scan_interval: 30
@@ -90,10 +91,9 @@ modbus:
         data_type: uint32
         unit_of_measurement: kWh
         device_class: energy
-        state_class: total_increasing
         scale: 0.01
         offset: 0
-        precision: 1
+        precision: 2
 
       - name: "Venus Internal Temperature"
         unique_id: venus_internal_temperature
@@ -285,6 +285,57 @@ template:
             {{ (states('sensor.venus_ac_power') | float(0)) }}
           {% else %}
             0
+          {% endif %}
+
+      # Sichere Gesamtenergiezaehler fuer das Home-Assistant-Energiedashboard.
+      # Bei ungueltigem Rohwert oder Ruecksprung bleibt der letzte gueltige Wert erhalten.
+      # Dadurch erzeugen Kommunikationsfehler/Fehlmessungen keinen falschen Zaehler-Reset.
+      - name: "Venus Total Charging Energy"
+        unique_id: venus_total_charging_energy_wrapper
+        unit_of_measurement: "kWh"
+        device_class: energy
+        state_class: total_increasing
+        state: >
+          {% set raw = states('sensor.venus_total_charging_energy_raw') %}
+          {% set old = this.state if this is defined else 'unknown' %}
+          {% set invalid = ['unknown', 'unavailable', 'none', 'None', ''] %}
+          {% if raw not in invalid and is_number(raw) %}
+            {% set value = raw | float(0) %}
+            {% if value >= 0 and (old in invalid or not is_number(old) or value >= old | float(0)) %}
+              {{ value }}
+            {% elif old not in invalid and is_number(old) %}
+              {{ old }}
+            {% else %}
+              {{ none }}
+            {% endif %}
+          {% elif old not in invalid and is_number(old) %}
+            {{ old }}
+          {% else %}
+            {{ none }}
+          {% endif %}
+
+      - name: "Venus Total Discharging Energy"
+        unique_id: venus_total_discharging_energy_wrapper
+        unit_of_measurement: "kWh"
+        device_class: energy
+        state_class: total_increasing
+        state: >
+          {% set raw = states('sensor.venus_total_discharging_energy_raw') %}
+          {% set old = this.state if this is defined else 'unknown' %}
+          {% set invalid = ['unknown', 'unavailable', 'none', 'None', ''] %}
+          {% if raw not in invalid and is_number(raw) %}
+            {% set value = raw | float(0) %}
+            {% if value >= 0 and (old in invalid or not is_number(old) or value >= old | float(0)) %}
+              {{ value }}
+            {% elif old not in invalid and is_number(old) %}
+              {{ old }}
+            {% else %}
+              {{ none }}
+            {% endif %}
+          {% elif old not in invalid and is_number(old) %}
+            {{ old }}
+          {% else %}
+            {{ none }}
           {% endif %}
 
       - name: "Venus Force Charge/Discharge Mode Status"
